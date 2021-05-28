@@ -48,7 +48,7 @@ public class CustomerService {
     public CustomerDto replaceCustomer(Customer customer) {
         if (customer.getId() == null || findById(customer.getId()).isEmpty()) {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
-            throw new NotObjectFound( OBJECT_NOT_FOUND));
+            throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
         return mapper.toDto(repository.save(customer));
     }

@@ -25,7 +25,7 @@ public class SeatService {
     private final CustomerRepository customerRepository;
     private final SeatRepository seatRepository;
     private final TripRepository tripRepository;
-    private SeatMapper seatMapper;
+    private final SeatMapper seatMapper;
 
     public SeatService(CustomerRepository customerRepository, SeatRepository seatRepository, TripRepository tripRepository, SeatMapper seatMapper) {
         this.customerRepository = customerRepository;
@@ -62,8 +62,8 @@ public class SeatService {
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
 
-        Seat seat  = seatMapper.dtoToSeat(seatDto);
-        seat = seatRepository.save(seat);
+        Seat seat  = seatRepository.save(seatMapper.dtoToSeat(seatDto));
+        //seat = seatRepository.save(seat);
 
         SeatDtoOut seatDtoDestination = seatMapper.toDtoOut(seat);
         seatDtoDestination = seatMapper.tripToDtoOut( seatDtoDestination, trip.get());
