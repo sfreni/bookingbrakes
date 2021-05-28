@@ -7,7 +7,7 @@ import java.util.Date;
 @Data
 public class CustomerDto {
     private Long id;
-    private String nameFirstName;
+    private String firstName;
     private String lastName;
     private String streetAddress;
     private String city;

@@ -1,0 +1,9 @@
+package it.freni.bookingbrakes.domain;
+
+public enum TypeAirplanes {
+    AIRBUS, TURBOPROP, PISTON, JETS, LIGHT_JETS, MIDSIZE_JETS, JUMBO_JETS, REGIONAL_JETS,
+    NARROW_BODY_AIRCRAFT,
+    WIDE_BODY_AIRLINERS,
+    COMMUTER_LINERS,
+    REGIONAL_AIRCRAFT
+}
