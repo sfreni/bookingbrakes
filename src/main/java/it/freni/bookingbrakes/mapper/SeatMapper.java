@@ -15,9 +15,21 @@ import org.mapstruct.MappingTarget;
 public interface SeatMapper {
     SeatDto toDto(Seat seat);
     SeatDtoOut toDtoOut(Seat seat);
+
     @Mapping(target = "idTrip", source = "id")
     @Mapping(target = "id", ignore = true)
     SeatDtoOut tripToDtoOut(@MappingTarget SeatDtoOut dto, Trip trip);
+
+    @Mapping(target = "id", source = "seat.id")
+    @Mapping(target = "nrSeat", source = "seat.nrSeat")
+    @Mapping(target = "customer", source = "seat.customer")
+    @Mapping(target = "startDateFlight", source = "trip.startDateFlight")
+    @Mapping(target = "endDateFlight", source = "trip.endDateFlight")
+    @Mapping(target = "airplane", source = "trip.airplane")
+    @Mapping(target = "departure", source = "trip.departure")
+    @Mapping(target = "destination", source = "trip.destination")
+    @Mapping(target = "idTrip", source = "trip.id")
+    SeatDtoOut seatAndTripToDto(Seat seat, Trip trip);
 
     Iterable<SeatDto> toDtos(Iterable<Seat> seats);
     Seat dtoToSeat(SeatDto seatDto);

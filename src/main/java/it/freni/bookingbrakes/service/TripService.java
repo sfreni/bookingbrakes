@@ -5,8 +5,6 @@ import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.TripMapper;
-import it.freni.bookingbrakes.repository.AirplaneRepository;
-import it.freni.bookingbrakes.repository.AirportRepository;
 import it.freni.bookingbrakes.repository.TripRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
@@ -24,14 +22,14 @@ public class TripService {
     public static final String ID_ALREADY_EXISTS = "Id already exists";
     public static final String METHOD_NOT_ALLOWED_BECAUSE_SEATS_ALREADY_BOOKED = "Method not allowed because seats already booked";
     private final TripRepository tripRepository;
-    private final AirportRepository airportRepository;
-    private final AirplaneRepository airplaneRepository;
+    private final AirportService airportService;
+    private final AirplaneService airplaneService;
     private TripMapper tripMapper;
 
-    public TripService(TripRepository tripRepository, AirportRepository airportRepository, AirplaneRepository airplaneRepository, TripMapper tripMapper) {
+    public TripService(TripRepository tripRepository, AirportService airportService, AirplaneService airplaneService, TripMapper tripMapper) {
         this.tripRepository = tripRepository;
-        this.airportRepository = airportRepository;
-        this.airplaneRepository = airplaneRepository;
+        this.airportService = airportService;
+        this.airplaneService = airplaneService;
         this.tripMapper = tripMapper;
     }
 
@@ -49,15 +47,15 @@ public class TripService {
             log.log(Level.SEVERE, ID_ALREADY_EXISTS);
             throw new IdAlreadyExists( ID_ALREADY_EXISTS);
         }
-        if (airplaneRepository.findById(trip.getAirplane().getId()).isEmpty()) {
+        if (airplaneService.findById(trip.getAirplane().getId()).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
             throw new NotObjectFound( AIRPLANE_NOT_FOUND);
         }
-        if (airportRepository.findById(trip.getDeparture().getId()).isEmpty()) {
+        if (airportService.findById(trip.getDeparture().getId()).isEmpty()) {
             log.log(Level.SEVERE, DEPARTURE_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
-        if (airportRepository.findById(trip.getDestination().getId()).isEmpty()) {
+        if (airportService.findById(trip.getDestination().getId()).isEmpty()) {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
@@ -73,17 +71,17 @@ public class TripService {
             throw new NotObjectFound( TRIP_NOT_FOUND);
         }
 
-        if (airplaneRepository.findById(trip.getAirplane().getId()).isEmpty()) {
+        if (airplaneService.findById(trip.getAirplane().getId()).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
             throw new NotObjectFound( AIRPLANE_NOT_FOUND);
         }
 
-        if (airportRepository.findById(trip.getDestination().getId()).isEmpty()) {
+        if (airportService.findById(trip.getDestination().getId()).isEmpty()) {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
 
-        if (airportRepository.findById(trip.getDeparture().getId()).isEmpty()) {
+        if (airportService.findById(trip.getDeparture().getId()).isEmpty()) {
             log.log(Level.SEVERE, DEPARTURE_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
