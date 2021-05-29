@@ -19,7 +19,8 @@ public class Trip {
     private Airport departure;
     @OneToOne
     private Airport destination;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "trip")
+    @OneToMany
+    @JoinColumn(name="Trip_Id")
     List<Seat> seats;
     @Enumerated(EnumType.STRING)
     private StatusTrip statusTrip;

@@ -110,5 +110,10 @@ public class TripService {
         tripRepository.deleteById(id);
     }
 
+    public TripDto saveTripSeats(Trip trip) {
+        return tripMapper.toDto(tripRepository.save(trip));
 
-}
+    }
+
+
+    }

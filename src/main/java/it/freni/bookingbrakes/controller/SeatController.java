@@ -1,6 +1,7 @@
 package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.SeatDto;
+import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
 import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
 import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.mapper.SeatMapper;
@@ -43,10 +44,10 @@ public class SeatController {
     }
 
     @PostMapping
-    public ResponseEntity<SeatDtoOut> postSeat(@RequestBody SeatDto seatDto) {
+    public ResponseEntity<SeatDtoOut> postSeat(@RequestBody SeatDtoIn seatDtoIn) {
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(seatService.saveSeat(seatDto));
+                .body(seatService.saveSeat(seatDtoIn));
     }
 
     @PutMapping("/{id}")

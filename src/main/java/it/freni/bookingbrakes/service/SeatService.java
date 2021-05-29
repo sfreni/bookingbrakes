@@ -1,6 +1,7 @@
 package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.SeatDto;
+import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
 import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
 import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.domain.Trip;
@@ -41,28 +42,30 @@ public class SeatService {
     }
 
 
-    public SeatDtoOut saveSeat(SeatDto seatDto) {
+    public SeatDtoOut saveSeat(SeatDtoIn seatDtoIn) {
 
 
-        if (seatDto.getId() != null && findById(seatDto.getId()).isPresent()) {
+        if (seatDtoIn.getId() != null && findById(seatDtoIn.getId()).isPresent()) {
             log.log(Level.SEVERE, ID_ALREADY_EXISTS);
             throw new IdAlreadyExists( ID_ALREADY_EXISTS);
         }
 
-        if (customerService.findById(seatDto.getCustomer().getId()).isEmpty()) {
+        if (customerService.findById(seatDtoIn.getCustomer().getId()).isEmpty()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
             throw new NotObjectFound(CUSTOMER_NOT_FOUND);
         }
 
-        Optional<Trip> trip = tripService.findById(seatDto.getTrip().getId());
+        Optional<Trip> trip = tripService.findById(seatDtoIn.getTrip().getId());
         if(trip.isEmpty()){
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
-
+        SeatDtoOut seatDtoOut =seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
+        trip.get().getSeats().add(seatMapper.dtoInToSeat(seatDtoIn));
+        tripService.saveTripSeats(trip.get());
         //        SeatDtoOut seatDtoDestination  = seatMapper.toDtoOut(seatRepository.save(seatMapper.dtoToSeat(seatDto)));
         //seatDtoDestination = seatMapper.tripToDtoOut( seatDtoDestination, trip.get());
-        return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoToSeat(seatDto)),trip.get());
+        return seatDtoOut;
     }
 
 
