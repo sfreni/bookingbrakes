@@ -1,13 +1,18 @@
 package it.freni.bookingbrakes.controller;
 
+import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
+import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
 import it.freni.bookingbrakes.controller.dto.TripDto;
 import it.freni.bookingbrakes.domain.Airplane;
 import it.freni.bookingbrakes.domain.Airport;
+import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.error.NotObjectFound;
+import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.service.AirplaneService;
 import it.freni.bookingbrakes.service.AirportService;
+import it.freni.bookingbrakes.service.SeatService;
 import it.freni.bookingbrakes.service.TripService;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -25,13 +30,17 @@ public class TripController {
     private final TripService tripService;
     private final AirportService airportService;
     private final AirplaneService airplaneService;
-    private TripMapper tripMapper;
+    private final SeatService seatService;
+    private final TripMapper tripMapper;
+    private final SeatMapper  seatMapper;
 
-    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, TripMapper tripMapper) {
+    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, SeatService seatService, TripMapper tripMapper, SeatMapper seatMapper) {
         this.tripService = tripService;
         this.airportService = airportService;
         this.airplaneService = airplaneService;
+        this.seatService = seatService;
         this.tripMapper = tripMapper;
+        this.seatMapper = seatMapper;
     }
 
     @GetMapping
@@ -64,67 +73,7 @@ public class TripController {
                 .body(tripService.replaceTrip(tripMapper.dtoToTrip(tripDto)));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<TripDto> patchTrip(@PathVariable("id") Long id, @RequestBody TripDto tripDto){
-        Optional<Trip> trip = tripService.findById(id);
-        if (trip.isPresent()) {
-            if (tripDto.getStartDateFlight() != null) {
-                trip.get().setStartDateFlight(tripDto.getStartDateFlight());
-            }
-            checkEndDateFlight(tripDto, trip);
-            checkAirplane(tripDto, trip);
-            if (tripDto.getDeparture() != null) {
-                Optional<Airport> airport = airportService
-                        .findById(tripMapper.airportDtoToAirport(tripDto.getDeparture()).getId());
-                if (airport.isEmpty()) {
-                    log.log(Level.SEVERE, "Departure Airport not found");
-                    throw new NotObjectFound("Departure Airport not found");
-                }
-                trip.get().setDeparture(airport.get());
-            }
-            if (tripDto.getDestination() != null) {
-                Optional<Airport> airport = airportService
-                        .findById(tripMapper.airportDtoToAirport(tripDto.getDestination()).getId());
-                if (airport.isEmpty()) {
-                    log.log(Level.SEVERE, "Destination Airport not found");
-                    throw new NotObjectFound("Destination Airport not found");
-                }
-                trip.get().setDestination(airport.get());
-            }
-            if (tripDto.getStatusTrip() != null) {
-                trip.get().setStatusTrip(tripDto.getStatusTrip());
-            }
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(tripService.modifyTrip(trip.get()));
-        }
-        log.log(Level.SEVERE, "Trip not found");
-        throw new NotObjectFound("Trip not found");
 
-    }
-
-    private void checkEndDateFlight(TripDto tripDto, Optional<Trip> trip) {
-        if (trip.isPresent() && tripDto.getEndDateFlight() != null) {
-            trip.get().setEndDateFlight(tripDto.getEndDateFlight());
-        }
-    }
-
-    private void checkAirplane(TripDto tripDto, Optional<Trip> trip) {
-        if (tripDto.getAirplane() != null) {
-            Optional<Airplane> airplane = airplaneService
-                    .findById(tripMapper.airplaneDtoToAirplane(tripDto.getAirplane()).getId());
-            checkAirplaneIsEmpty(airplane);
-            if(trip.isPresent()){
-                trip.get().setAirplane(airplane.get());
-            }
-        }
-    }
-
-    private void checkAirplaneIsEmpty(Optional<Airplane> airplane) {
-        if (airplane.isEmpty()) {
-            log.log(Level.SEVERE, "Airplane not found");
-            throw new NotObjectFound("Airplane not found");
-        }
-    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(code=HttpStatus.NO_CONTENT)
@@ -132,6 +81,40 @@ public class TripController {
         tripService.deleteTripById(id);
     }
 
+
+    @GetMapping("/seats/{id}")
+    public ResponseEntity<SeatDtoOut> getSeat(@PathVariable("id") Long id){
+
+        Optional<Seat> seat = seatService.findById(id);
+
+        if(seat.isPresent()) {
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(seatMapper.seatAndTripToDto(seat.get(),seat.get().getTrip()));
+        }
+
+
+        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/seats")
+    public ResponseEntity<SeatDtoOut> postSeat(@RequestBody SeatDtoIn seatDtoIn) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(seatService.saveSeat(seatDtoIn));
+    }
+
+    @PutMapping("/seats/{id}")
+    public ResponseEntity<SeatDtoOut> putSeat(@RequestBody SeatDtoIn seatDtoIn) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(seatService.replaceSeat(seatDtoIn));
+    }
+
+
+    @DeleteMapping("/seats/{id}")
+    @ResponseStatus(code=HttpStatus.NO_CONTENT)
+    public void deleteSeat(@PathVariable("id") Long id){
+        seatService.deleteSeatById(id);
+    }
 
 
 }

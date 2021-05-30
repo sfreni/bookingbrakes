@@ -6,7 +6,6 @@ import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.domain.Trip;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface SeatMapper {

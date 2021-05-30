@@ -1,6 +1,5 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.SeatDto;
 import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
 import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
 import it.freni.bookingbrakes.domain.Seat;
@@ -33,12 +32,8 @@ public class SeatService {
         this.seatMapper = seatMapper;
     }
 
-    public Iterable<SeatDto> findAll(){
-        return seatMapper.toDtos(seatRepository.findAll());
-
-    }
     public Optional<Seat> findById(Long id) {
-        return seatRepository.findById(id);
+         return seatRepository.findById(id);
     }
 
 
@@ -60,28 +55,29 @@ public class SeatService {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
-        SeatDtoOut seatDtoOut =seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
-        trip.get().getSeats().add(seatMapper.dtoInToSeat(seatDtoIn));
-        tripService.saveTripSeats(trip.get());
-        //        SeatDtoOut seatDtoDestination  = seatMapper.toDtoOut(seatRepository.save(seatMapper.dtoToSeat(seatDto)));
-        //seatDtoDestination = seatMapper.tripToDtoOut( seatDtoDestination, trip.get());
-        return seatDtoOut;
+        return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
+
     }
 
 
-    public SeatDto replaceSeat(Seat seat) {
+    public SeatDtoOut replaceSeat(SeatDtoIn seatDtoIn) {
 
-        if (seat.getId() == null || findById(seat.getId()).isEmpty()) {
+        if (seatDtoIn.getId() == null || findById(seatDtoIn.getId()).isEmpty()) {
             log.log(Level.SEVERE, SEAT_NOT_FOUND);
             throw new NotObjectFound(SEAT_NOT_FOUND);
         }
 
-        if (customerService.findById(seat.getCustomer().getId()).isEmpty()) {
+        if (customerService.findById(seatDtoIn.getCustomer().getId()).isEmpty()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
             throw new NotObjectFound(CUSTOMER_NOT_FOUND);
         }
+        Optional<Trip> trip = tripService.findById(seatDtoIn.getTrip().getId());
+        if(trip.isEmpty()){
+            log.log(Level.SEVERE, TRIP_NOT_FOUND);
+            throw new NotObjectFound(TRIP_NOT_FOUND);
+        }
+        return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
 
-        return seatMapper.toDto(seatRepository.save(seat));
     }
 
     public void deleteSeatById(Long id) {

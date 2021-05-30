@@ -89,8 +89,9 @@ public class TripService {
         if(!tripRepository.findById(trip.getId()).get()
                                                  .getSeats()
                                                  .isEmpty()) {
-                log.log(Level.SEVERE, METHOD_NOT_ALLOWED_BECAUSE_SEATS_ALREADY_BOOKED);
-                throw new NotObjectFound(METHOD_NOT_ALLOWED_BECAUSE_SEATS_ALREADY_BOOKED);
+
+            trip.setSeats(tripRepository.findById(trip.getId()).get()
+                    .getSeats());
             }
 
         return tripMapper.toDto(tripRepository.save(trip));

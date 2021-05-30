@@ -19,8 +19,7 @@ public class Trip {
     private Airport departure;
     @OneToOne
     private Airport destination;
-    @OneToMany
-    @JoinColumn(name="Trip_Id")
+    @OneToMany(mappedBy = "trip")
     List<Seat> seats;
     @Enumerated(EnumType.STRING)
     private StatusTrip statusTrip;
