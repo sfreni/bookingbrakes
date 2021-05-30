@@ -60,9 +60,9 @@ public class SeatService {
     }
 
 
-    public SeatDtoOut replaceSeat(SeatDtoIn seatDtoIn) {
+    public SeatDtoOut replaceSeat(Long id, SeatDtoIn seatDtoIn) {
 
-        if (seatDtoIn.getId() == null || findById(seatDtoIn.getId()).isEmpty()) {
+        if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, SEAT_NOT_FOUND);
             throw new NotObjectFound(SEAT_NOT_FOUND);
         }
@@ -76,6 +76,8 @@ public class SeatService {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
+
+        seatDtoIn.setId(id);
         return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
 
     }

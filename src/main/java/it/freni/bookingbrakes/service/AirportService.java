@@ -40,11 +40,13 @@ public class AirportService {
         return airportMapper.toDto(airportRepository.save(airport));
     }
 
-    public AirportDto replaceAirport(Airport airport) {
-        if (airport.getId() == null || findById(airport.getId()).isEmpty()) {
+    public AirportDto replaceAirport(Long id, Airport airport) {
+        if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, AIRPORT_NOT_FOUND);
             throw new NotObjectFound(AIRPORT_NOT_FOUND);
+
         }
+        airport.setId(id);
         return airportMapper.toDto(airportRepository.save(airport));
     }
 

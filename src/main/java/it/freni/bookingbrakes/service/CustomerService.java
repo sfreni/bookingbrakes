@@ -45,11 +45,12 @@ public class CustomerService {
         return mapper.toDto(repository.save(customer));
     }
 
-    public CustomerDto replaceCustomer(Customer customer) {
-        if (customer.getId() == null || findById(customer.getId()).isEmpty()) {
+    public CustomerDto replaceCustomer(Long id, Customer customer) {
+        if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
+        customer.setId(id);
         return mapper.toDto(repository.save(customer));
     }
 

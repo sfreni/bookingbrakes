@@ -47,9 +47,9 @@ public class AirportController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AirportDto> putAirport(@RequestBody AirportDto airportDto) {
+    public ResponseEntity<AirportDto> putAirport(@PathVariable("id") Long id,  @RequestBody AirportDto airportDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(airportService.replaceAirport(airportMapper.dtoToAirport(airportDto)));
+                .body(airportService.replaceAirport(id, airportMapper.dtoToAirport(airportDto)));
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(code=HttpStatus.NO_CONTENT)

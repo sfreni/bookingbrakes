@@ -68,9 +68,9 @@ public class TripController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TripDto> putTrip(@RequestBody TripDto tripDto) {
+    public ResponseEntity<TripDto> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(tripService.replaceTrip(tripMapper.dtoToTrip(tripDto)));
+                .body(tripService.replaceTrip(Id,tripMapper.dtoToTrip(tripDto)));
     }
 
 
@@ -104,9 +104,9 @@ public class TripController {
     }
 
     @PutMapping("/seats/{id}")
-    public ResponseEntity<SeatDtoOut> putSeat(@RequestBody SeatDtoIn seatDtoIn) {
+    public ResponseEntity<SeatDtoOut> putSeat(@PathVariable("id") Long Id, @RequestBody SeatDtoIn seatDtoIn) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(seatService.replaceSeat(seatDtoIn));
+                .body(seatService.replaceSeat(Id, seatDtoIn));
     }
 
 

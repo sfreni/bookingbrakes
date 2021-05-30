@@ -59,14 +59,15 @@ public class TripService {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
+        trip.setSeats(null);
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
 
 
-    public TripDto replaceTrip(Trip trip) {
+    public TripDto replaceTrip(Long id, Trip trip) {
 
-        if (trip.getId() == null || findById(trip.getId()).isEmpty()) {
+        if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound( TRIP_NOT_FOUND);
         }
@@ -93,15 +94,10 @@ public class TripService {
             trip.setSeats(tripRepository.findById(trip.getId()).get()
                     .getSeats());
             }
-
+        trip.setId(id);
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
-
-    public TripDto modifyTrip(Trip trip) {
-
-        return tripMapper.toDto(tripRepository.save(trip));
-    }
 
     public void deleteTripById(Long id) {
         if (id == null || findById(id).isEmpty()) {
@@ -111,10 +107,7 @@ public class TripService {
         tripRepository.deleteById(id);
     }
 
-    public TripDto saveTripSeats(Trip trip) {
-        return tripMapper.toDto(tripRepository.save(trip));
 
-    }
 
 
     }

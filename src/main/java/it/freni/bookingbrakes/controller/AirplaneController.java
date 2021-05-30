@@ -44,9 +44,9 @@ public class AirplaneController {
                 .body(airplaneService.saveAirplane(airplaneMapper.dtoToAirplane(airplaneDto)));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<AirplaneDto> putAirplane(@RequestBody AirplaneDto airplaneDto) {
+    public ResponseEntity<AirplaneDto> putAirplane(@PathVariable("id")Long id, @RequestBody AirplaneDto airplaneDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(airplaneService.replaceAirplane(airplaneMapper.dtoToAirplane(airplaneDto)));
+                .body(airplaneService.replaceAirplane(id,airplaneMapper.dtoToAirplane(airplaneDto)));
     }
 
     @DeleteMapping("/{id}")

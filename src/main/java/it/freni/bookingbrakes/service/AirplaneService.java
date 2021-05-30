@@ -40,11 +40,12 @@ public class AirplaneService {
         return mapper.toDto(airplaneRepository.save(airplane));
     }
 
-    public AirplaneDto replaceAirplane(Airplane airplane) {
-        if (airplane.getId() == null || findById(airplane.getId()).isEmpty()) {
+    public AirplaneDto replaceAirplane(Long id, Airplane airplane) {
+        if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND_MESSAGE);
             throw new NotObjectFound(AIRPLANE_NOT_FOUND_MESSAGE);
         }
+        airplane.setId(id);
         return mapper.toDto(airplaneRepository.save(airplane));
     }
 

@@ -48,9 +48,9 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerDto> putCustomer(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<CustomerDto> putCustomer(@PathVariable("id") Long id,@RequestBody CustomerDto customerDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(service.replaceCustomer(customerMapper.dtoToCustomer(customerDto)));
+                .body(service.replaceCustomer(id, customerMapper.dtoToCustomer(customerDto)));
     }
     @DeleteMapping("/{id}")
     @ResponseStatus(code=HttpStatus.NO_CONTENT)
