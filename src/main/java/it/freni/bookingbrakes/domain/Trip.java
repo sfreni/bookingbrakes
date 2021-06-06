@@ -9,8 +9,10 @@ import java.util.List;
 @Entity
 @Data
 public class Trip {
-@Id
+    @Id
     private Long id;
+    @Enumerated(EnumType.STRING)
+    private TripStatus tripStatus;
     private Date startDateFlight ;
     private Date endDateFlight ;
     @OneToOne
@@ -20,7 +22,7 @@ public class Trip {
     @OneToOne
     private Airport destination;
     @OneToMany(mappedBy = "trip")
-    List<Seat> seats;
-    @Enumerated(EnumType.STRING)
-    private StatusTrip statusTrip;
+    List<Booking> bookings ;
+
+
 }

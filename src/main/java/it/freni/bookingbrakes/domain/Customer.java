@@ -1,11 +1,10 @@
 package it.freni.bookingbrakes.domain;
 
 import lombok.Data;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,4 +17,7 @@ public class Customer {
     private String streetAddress;
     private String city;
     private Date birthDay;
+    private String creditCard;
+    @OneToMany(mappedBy = "customer")
+    private List<Booking> booking;
 }

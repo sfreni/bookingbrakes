@@ -7,6 +7,8 @@ import it.freni.bookingbrakes.domain.Trip;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface SeatMapper {
     SeatDto toDto(Seat seat);
@@ -17,7 +19,6 @@ public interface SeatMapper {
 
     @Mapping(target = "id", source = "seat.id")
     @Mapping(target = "nrSeat", source = "seat.nrSeat")
-    @Mapping(target = "customer", source = "seat.customer")
     @Mapping(target = "startDateFlight", source = "trip.startDateFlight")
     @Mapping(target = "endDateFlight", source = "trip.endDateFlight")
     @Mapping(target = "airplane", source = "trip.airplane")
@@ -26,15 +27,15 @@ public interface SeatMapper {
     @Mapping(target = "idTrip", source = "trip.id")
     SeatDtoOut seatAndTripToDto(Seat seat, Trip trip);
 
-    Iterable<SeatDto> toDtos(Iterable<Seat> seats);
+    List<SeatDto> toDtos(List<Seat> seats);
 
     Seat dtoToSeat(SeatDto seatDto);
 
     Seat dtoInToSeat(SeatDtoIn seatDtoIn);
 
-    CustomerDto customerToCustomerDto(Customer customer);
+  /*  CustomerDto customerToCustomerDto(Customer customer);
     Customer customerDtotoCustomer(CustomerDto customerDto);
     TripDto tripToTripDto(Trip trip);
     Trip tripDtoToTrip(TripDto tripDto);
-
+*/
 }

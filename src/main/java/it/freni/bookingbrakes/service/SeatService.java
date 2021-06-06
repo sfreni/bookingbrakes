@@ -2,6 +2,7 @@ package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
 import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
+import it.freni.bookingbrakes.domain.Booking;
 import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
@@ -11,6 +12,7 @@ import it.freni.bookingbrakes.repository.SeatRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 @Log
@@ -36,51 +38,22 @@ public class SeatService {
          return seatRepository.findById(id);
     }
 
+    public List<Seat> findByBooking(Booking booking) {
+        List<Seat> seats = seatRepository.findByBooking(booking);
 
-    public SeatDtoOut saveSeat(SeatDtoIn seatDtoIn) {
+        return seatRepository.findByBooking(booking);
+    }
+
+    public List<Seat> saveSeat(List<Seat> seats) {
 
 
-        if (seatDtoIn.getId() != null && findById(seatDtoIn.getId()).isPresent()) {
-            log.log(Level.SEVERE, ID_ALREADY_EXISTS);
-            throw new IdAlreadyExists( ID_ALREADY_EXISTS);
-        }
 
-        if (customerService.findById(seatDtoIn.getCustomer().getId()).isEmpty()) {
-            log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
-            throw new NotObjectFound(CUSTOMER_NOT_FOUND);
-        }
-
-        Optional<Trip> trip = tripService.findById(seatDtoIn.getTrip().getId());
-        if(trip.isEmpty()){
-            log.log(Level.SEVERE, TRIP_NOT_FOUND);
-            throw new NotObjectFound(TRIP_NOT_FOUND);
-        }
-        return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
+        return seatRepository.saveAll(seats);
 
     }
 
 
-    public SeatDtoOut replaceSeat(Long id, SeatDtoIn seatDtoIn) {
 
-        if (id == null || findById(id).isEmpty()) {
-            log.log(Level.SEVERE, SEAT_NOT_FOUND);
-            throw new NotObjectFound(SEAT_NOT_FOUND);
-        }
-
-        if (customerService.findById(seatDtoIn.getCustomer().getId()).isEmpty()) {
-            log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
-            throw new NotObjectFound(CUSTOMER_NOT_FOUND);
-        }
-        Optional<Trip> trip = tripService.findById(seatDtoIn.getTrip().getId());
-        if(trip.isEmpty()){
-            log.log(Level.SEVERE, TRIP_NOT_FOUND);
-            throw new NotObjectFound(TRIP_NOT_FOUND);
-        }
-
-        seatDtoIn.setId(id);
-        return seatMapper.seatAndTripToDto(seatRepository.save(seatMapper.dtoInToSeat(seatDtoIn)),trip.get());
-
-    }
 
     public void deleteSeatById(Long id) {
         if (id == null || findById(id).isEmpty()) {
@@ -88,6 +61,10 @@ public class SeatService {
             throw new NotObjectFound(SEAT_NOT_FOUND);
         }
         seatRepository.deleteById(id);
+    }
+
+    public void deleteAllSeat(List<Seat> seats){
+        seatRepository.deleteAll(seats);
     }
 
 }

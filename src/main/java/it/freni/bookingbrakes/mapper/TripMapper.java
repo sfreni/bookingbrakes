@@ -1,13 +1,7 @@
 package it.freni.bookingbrakes.mapper;
 
-import it.freni.bookingbrakes.controller.dto.AirplaneDto;
-import it.freni.bookingbrakes.controller.dto.AirportDto;
-import it.freni.bookingbrakes.controller.dto.SeatDto;
-import it.freni.bookingbrakes.controller.dto.TripDto;
-import it.freni.bookingbrakes.domain.Airplane;
-import it.freni.bookingbrakes.domain.Airport;
-import it.freni.bookingbrakes.domain.Seat;
-import it.freni.bookingbrakes.domain.Trip;
+import it.freni.bookingbrakes.controller.dto.*;
+import it.freni.bookingbrakes.domain.*;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -16,7 +10,7 @@ import java.util.List;
 public interface TripMapper  {
     TripDto toDto(Trip trip);
     Trip dtoToTrip(TripDto tripDto);
-
+    TripDtoOut toDtoOut(Trip Trip);
     Iterable<TripDto> toDtos(Iterable<Trip> trips);
 
     Airplane airplaneDtoToAirplane(AirplaneDto airplaneDto);

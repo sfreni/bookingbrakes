@@ -12,4 +12,6 @@ public class CustomerDto {
     private String streetAddress;
     private String city;
     private Date birthDay;
+    private String creditCard;
+
 }

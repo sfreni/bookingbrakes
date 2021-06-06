@@ -1,19 +1,11 @@
 package it.freni.bookingbrakes.controller;
 
-import it.freni.bookingbrakes.controller.dto.SeatDtoIn;
-import it.freni.bookingbrakes.controller.dto.SeatDtoOut;
-import it.freni.bookingbrakes.controller.dto.TripDto;
-import it.freni.bookingbrakes.domain.Airplane;
-import it.freni.bookingbrakes.domain.Airport;
-import it.freni.bookingbrakes.domain.Seat;
-import it.freni.bookingbrakes.domain.Trip;
+import it.freni.bookingbrakes.controller.dto.*;
+import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.mapper.TripMapper;
-import it.freni.bookingbrakes.service.AirplaneService;
-import it.freni.bookingbrakes.service.AirportService;
-import it.freni.bookingbrakes.service.SeatService;
-import it.freni.bookingbrakes.service.TripService;
+import it.freni.bookingbrakes.service.*;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,15 +22,15 @@ public class TripController {
     private final TripService tripService;
     private final AirportService airportService;
     private final AirplaneService airplaneService;
-    private final SeatService seatService;
+    private final BookingService bookingService;
     private final TripMapper tripMapper;
     private final SeatMapper  seatMapper;
 
-    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, SeatService seatService, TripMapper tripMapper, SeatMapper seatMapper) {
+    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, BookingService bookingService, TripMapper tripMapper, SeatMapper seatMapper) {
         this.tripService = tripService;
         this.airportService = airportService;
         this.airplaneService = airplaneService;
-        this.seatService = seatService;
+        this.bookingService = bookingService;
         this.tripMapper = tripMapper;
         this.seatMapper = seatMapper;
     }
@@ -52,11 +44,11 @@ public class TripController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripDto> getTripById(@PathVariable("id") Long id) {
+    public ResponseEntity<TripDtoOut> getTripById(@PathVariable("id") Long id) {
         Optional<Trip> trip = tripService.findById(id);
         if (trip.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(tripMapper.toDto(trip.get()));
+                    .body(tripMapper.toDtoOut(trip.get()));
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
@@ -68,7 +60,7 @@ public class TripController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TripDto> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
+    public ResponseEntity<TripDtoOut> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tripService.replaceTrip(Id,tripMapper.dtoToTrip(tripDto)));
     }
@@ -81,11 +73,20 @@ public class TripController {
         tripService.deleteTripById(id);
     }
 
+    @GetMapping("/bookings")
+    public ResponseEntity<Iterable<BookingDto>> getBooking(){
 
-    @GetMapping("/seats/{id}")
+        Iterable<BookingDto> bookingDtos = bookingService.findAll();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(bookingDtos);
+
+        }
+
+/*
+    @GetMapping("/bookings/{id}")
     public ResponseEntity<SeatDtoOut> getSeat(@PathVariable("id") Long id){
 
-        Optional<Seat> seat = seatService.findById(id);
+        Optional<Seat> seat = bookingService.findById(id);
 
         if(seat.isPresent()) {
 
@@ -97,24 +98,24 @@ public class TripController {
         return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/seats")
+    @PostMapping("/bookings")
     public ResponseEntity<SeatDtoOut> postSeat(@RequestBody SeatDtoIn seatDtoIn) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(seatService.saveSeat(seatDtoIn));
     }
 
-    @PutMapping("/seats/{id}")
+    @PutMapping("/bookings/{id}")
     public ResponseEntity<SeatDtoOut> putSeat(@PathVariable("id") Long Id, @RequestBody SeatDtoIn seatDtoIn) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(seatService.replaceSeat(Id, seatDtoIn));
     }
 
 
-    @DeleteMapping("/seats/{id}")
+    @DeleteMapping("/bookings/{id}")
     @ResponseStatus(code=HttpStatus.NO_CONTENT)
     public void deleteSeat(@PathVariable("id") Long id){
         seatService.deleteSeatById(id);
     }
 
-
+*/
 }

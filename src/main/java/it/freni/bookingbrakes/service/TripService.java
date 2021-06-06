@@ -1,6 +1,9 @@
 package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.TripDto;
+import it.freni.bookingbrakes.controller.dto.TripDtoOut;
+import it.freni.bookingbrakes.domain.Booking;
+import it.freni.bookingbrakes.domain.Seat;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
@@ -9,6 +12,7 @@ import it.freni.bookingbrakes.repository.TripRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -59,13 +63,13 @@ public class TripService {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
-        trip.setSeats(null);
+        trip.setBookings(null);
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
 
 
-    public TripDto replaceTrip(Long id, Trip trip) {
+    public TripDtoOut replaceTrip(Long id, Trip trip) {
 
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
@@ -88,15 +92,16 @@ public class TripService {
         }
 
         if(!tripRepository.findById(trip.getId()).get()
-                                                 .getSeats()
+                                                 .getBookings()
                                                  .isEmpty()) {
 
-            trip.setSeats(tripRepository.findById(trip.getId()).get()
-                    .getSeats());
+            trip.setBookings(tripRepository.findById(trip.getId()).get()
+                    .getBookings());
             }
         trip.setId(id);
-        return tripMapper.toDto(tripRepository.save(trip));
+        return tripMapper.toDtoOut(tripRepository.save(trip));
     }
+
 
 
     public void deleteTripById(Long id) {
@@ -106,8 +111,6 @@ public class TripService {
         }
         tripRepository.deleteById(id);
     }
-
-
 
 
     }

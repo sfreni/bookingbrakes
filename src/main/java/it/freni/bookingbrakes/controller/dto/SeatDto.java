@@ -6,5 +6,8 @@ import lombok.Data;
 public class SeatDto {
     private Long id;
     private String nrSeat;
-    private CustomerDto customer;
+    private Double price;
+    private String firstNamePassenger;
+    private String LastNamePassenger;
+
 }

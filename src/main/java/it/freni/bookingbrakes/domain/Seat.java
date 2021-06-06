@@ -8,11 +8,14 @@ import javax.persistence.*;
 @Data
 public class Seat {
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private String nrSeat;
-    @OneToOne
-    private Customer customer;
+    private Double price;
+    private String firstNamePassenger;
+    private String LastNamePassenger;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trip_id")
-    private Trip trip;
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
 }
