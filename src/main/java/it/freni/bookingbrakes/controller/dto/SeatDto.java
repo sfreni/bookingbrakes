@@ -2,12 +2,16 @@ package it.freni.bookingbrakes.controller.dto;
 
 import lombok.Data;
 
+
+import java.util.Date;
+
 @Data
 public class SeatDto {
     private Long id;
     private String nrSeat;
-    private Double price;
+    private Double priceAmount;
     private String firstNamePassenger;
-    private String LastNamePassenger;
-
+    private String lastNamePassenger;
+    private Date dateOfBirth;
+    private PurchaseSeatDto purchase;
 }

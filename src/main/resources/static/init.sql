@@ -1,5 +1,5 @@
 -- bookingbrakes_dev.customer definition
-
+/*
 CREATE TABLE `customer`
 (
     `id`             bigint NOT NULL,
@@ -16,3 +16,4 @@ CREATE TABLE `customer`
 INSERT INTO bookingbrakes_dev.customer
     (id, birth_day, city, first_name, last_name, street_address)
 VALUES (1, '1989-12-31 20:10:01', 'Florence', 'Rocco', 'Commisso', 'via delle vie n.12');
+*/

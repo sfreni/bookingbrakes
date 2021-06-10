@@ -19,5 +19,5 @@ public class BookingDtoOut {
         private Date dateBooking;
         private List<SeatDto> seats ;
         private BookingStatus bookingStatus;
-        private String creditCard;
+        private List<CreditCardDto> creditCards;
 }

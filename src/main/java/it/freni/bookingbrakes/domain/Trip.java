@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class Trip {
     @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     @Enumerated(EnumType.STRING)
     private TripStatus tripStatus;

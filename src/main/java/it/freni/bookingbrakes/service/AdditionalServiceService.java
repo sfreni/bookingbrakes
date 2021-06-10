@@ -1,44 +1,39 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
-import it.freni.bookingbrakes.domain.Customer;
-import it.freni.bookingbrakes.domain.Purchase;
-import it.freni.bookingbrakes.domain.Seat;
-import it.freni.bookingbrakes.error.IdAlreadyExists;
-import it.freni.bookingbrakes.error.NotObjectFound;
-import it.freni.bookingbrakes.mapper.SeatMapper;
-import it.freni.bookingbrakes.repository.SeatRepository;
+import it.freni.bookingbrakes.domain.AdditionalService;
+import it.freni.bookingbrakes.mapper.AdditionalServiceMapper;
+import it.freni.bookingbrakes.repository.AdditionalServiceRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
+
 @Log
 @Service
-public class SeatService {
+public class AdditionalServiceService {
     public static final String SEAT_NOT_FOUND = "Seat not found";
     public static final String CUSTOMER_NOT_FOUND = "Customer Not Found";
     public static final String TRIP_NOT_FOUND = "Trip not found";
     public static final String ID_ALREADY_EXISTS = "Id already exists";
     private final CustomerService customerService;
-    private final SeatRepository seatRepository;
+    private final AdditionalServiceRepository additionalServiceRepository;
     private final TripService tripService;
-    private final SeatMapper seatMapper;
+    private final AdditionalServiceMapper additionalServiceMapper;
 
-    public SeatService(CustomerService customerService, SeatRepository seatRepository, TripService tripService, SeatMapper seatMapper) {
+    public AdditionalServiceService(CustomerService customerService, AdditionalServiceRepository additionalServiceRepository, TripService tripService, AdditionalServiceMapper additionalServiceMapper) {
         this.customerService = customerService;
-        this.seatRepository = seatRepository;
+        this.additionalServiceRepository = additionalServiceRepository;
         this.tripService = tripService;
-        this.seatMapper = seatMapper;
+        this.additionalServiceMapper = additionalServiceMapper;
     }
 
-    public List<Seat> findAll() {
-        return seatRepository.findAll();
+    public List<AdditionalService> findAll() {
+        return additionalServiceRepository.findAll();
     }
 
-    public Optional<Seat> findById(Long id) {
-         return seatRepository.findById(id);
+    public Optional<AdditionalService> findById(Long id) {
+         return additionalServiceRepository.findById(id);
     }
 
  //   public List<Purchase> findByBooking(Purchase purchase) {
@@ -50,7 +45,7 @@ public class SeatService {
 
 
 
-    public Seat saveSeat(Seat seat) {
+    public AdditionalService saveSeat(AdditionalService additionalService) {
 
 
      /*   if (Seat.getId() != null && findById(Seat.getId()).isPresent()) {
@@ -59,12 +54,12 @@ public class SeatService {
         }*/
 
 
-        return seatRepository.save(seat);
+        return additionalServiceRepository.save(additionalService);
     }
 
 
 
-
+/*
 
     public void deleteSeatById(Long id) {
         if (id == null || findById(id).isEmpty()) {
@@ -76,6 +71,6 @@ public class SeatService {
 
     public void deleteAllSeat(List<Seat> seats){
         seatRepository.deleteAll(seats);
-    }
+    }*/
 
 }

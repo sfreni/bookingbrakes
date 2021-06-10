@@ -2,7 +2,9 @@ package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.CustomerDto;
 import it.freni.bookingbrakes.domain.Customer;
+import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
+import it.freni.bookingbrakes.service.CreditCardService;
 import it.freni.bookingbrakes.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import java.util.Optional;
 public class CustomerController {
 
     private final CustomerService service;
-    private  CustomerMapper customerMapper;
+    private final CustomerMapper customerMapper;
 
     public CustomerController(CustomerService service, CustomerMapper customerMapper) {
         this.service = service;
@@ -43,6 +45,7 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<CustomerDto> postCustomer(@RequestBody CustomerDto customerDto) {
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(service.saveCustomer(customerMapper.dtoToCustomer(customerDto)));
     }

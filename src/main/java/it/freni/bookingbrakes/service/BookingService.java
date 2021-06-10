@@ -76,10 +76,10 @@ public class BookingService {
         }
 
 
-        if (customerService.findById(bookingDtoIn.getCustomer().getId()).isEmpty()) {
-            log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
-            throw new NotObjectFound(CUSTOMER_NOT_FOUND);
-        }
+    //    if (customerService.findById(bookingDtoIn.getCustomer().getId()).isEmpty()) {
+      //      log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
+        //    throw new NotObjectFound(CUSTOMER_NOT_FOUND);
+      //  }
         if (bookingDtoIn.getSeats().isEmpty()) {
             log.log(Level.SEVERE, SEATS_NOT_FOUND);
             throw new NotObjectFound(SEATS_NOT_FOUND);
@@ -99,7 +99,7 @@ public class BookingService {
         }
         List<Seat> seatsBooking = bookingDtoIn.getSeats();
         List<Booking> bookings = findByBooking(bookingDtoIn.getTrip());
-        for (Booking booking : bookings) {
+      /*  for (Booking booking : bookings) {
             for (Seat seat : booking.getSeats()) {
                 for (Seat seatValuated : seatsBooking) {
                     if (seatValuated.getNrSeat().equals(seat.getNrSeat())) {
@@ -108,15 +108,16 @@ public class BookingService {
                     }
                 }
             }
-        }
+        }*/
         bookingDtoIn.setDateBooking(new Date(System.currentTimeMillis()));
         Booking booking = bookingRepository.save(bookingMapper.bookingDtoInToBooking(bookingDtoIn));
-        for (Seat seat : seatsBooking) {
+     /*   for (Seat seat : seatsBooking) {
             seat.setBooking(booking);
-        }
+        }*/
 
-        return bookingMapper.bookingAndTripToDto(booking, trip.get(), seatMapper.toDtos(seatService.saveSeat(seatsBooking)),
-                customerMapper.toDto(customerService.findById(bookingDtoIn.getCustomer().getId()).get()));
+     //   return bookingMapper.bookingAndTripToDto(booking, trip.get(), seatMapper.toDtos(seatService.saveSeat(seatsBooking)),
+       //         customerMapper.toDto(customerService.findById(bookingDtoIn.getCustomer().getId()).get()));
+    return null;
     }
 
     public BookingDtoOut replaceBooking(Long id, BookingDtoIn bookingDtoIn) {
@@ -129,13 +130,13 @@ public class BookingService {
         }
 
 
-        if (customerService.findById(bookingDtoIn.getCustomer().getId()).isEmpty()) {
+       /* if (customerService.findById(bookingDtoIn.getCustomer().getId()).isEmpty()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
             throw new NotObjectFound(CUSTOMER_NOT_FOUND);
         } else if (bookingDtoIn.getCustomer().getId() != bookingFromDB.get().getCustomer().getId()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_EQUAL);
             throw new NotObjectFound(CUSTOMER_NOT_EQUAL);
-        }
+        }*/
 
 
         Optional<Trip> trip = tripService.findById(bookingDtoIn.getTrip().getId());
@@ -158,7 +159,7 @@ public class BookingService {
             throw new NotObjectFound(SEATS_NOT_FOUND);
         }
 
-         for (Seat seat : bookingDtoIn.getSeats()) {
+       /*  for (Seat seat : bookingDtoIn.getSeats()) {
             if ((seat.getId() != null && seatService.findById(seat.getId()).isEmpty())
                     || (seat.getId() != null && seatService.findById(seat.getId()).get().getBooking().getId()
                     != id)) {
@@ -168,10 +169,10 @@ public class BookingService {
 
 
         }
-
+*/
 
         List<Booking> bookings = findByBooking(bookingFromDB.get().getTrip());
-        for (Booking booking : bookings) {
+/*        for (Booking booking : bookings) {
             for (Seat seatDb : booking.getSeats())
                 for (Seat seatValuated : bookingDtoIn.getSeats()) {
 
@@ -189,12 +190,12 @@ public class BookingService {
 
 
                 }
-        }
+        }*/
 
-        List<Seat> seats = bookingFromDB.get().getSeats();
+      //  List<Seat> seats = bookingFromDB.get().getSeats();
         List<Seat> seatsBooking = bookingDtoIn.getSeats();
         boolean isPresent = false;
-        for (Seat seat : seats) {
+/*        for (Seat seat : seats) {
             for (Seat seatBooking : seatsBooking) {
                 if (seatBooking.getId()==seat.getId()) {
                     isPresent = true;
@@ -210,21 +211,23 @@ public class BookingService {
             }
             isPresent = false;
 
-        }
+        }*/
 
-        for (Seat seat : seatsBooking) {
+     /*   for (Seat seat : seatsBooking) {
             seat.setBooking(bookingMapper.bookingDtoInToBooking(bookingDtoIn));
-        }
+        }*/
 
         bookingDtoIn.setSeats(seatsBooking);
         Booking booking = bookingRepository.save(bookingMapper.bookingDtoInToBooking(bookingDtoIn));
 
 
-        List<Seat> savedSet = seatService.saveSeat(seatsBooking);
+       // List<Seat> savedSet = seatService.saveSeat(seatsBooking);
 
 
-        return bookingMapper.bookingAndTripToDto(booking, trip.get(), seatMapper.toDtos(savedSet),
+      /*  return bookingMapper.bookingAndTripToDto(booking, trip.get(), seatMapper.toDtos(savedSet),
                 customerMapper.toDto(customerService.findById(bookingDtoIn.getCustomer().getId()).get()));
+   */
+        return null;
     }
 
 
@@ -233,7 +236,7 @@ public class BookingService {
             log.log(Level.SEVERE, BOOKING_NOT_FOUND);
             throw new NotObjectFound( BOOKING_NOT_FOUND);
         }
-        deleteSeats(findById(id).get().getSeats());
+      //  deleteSeats(findById(id).get().getSeats());
         bookingRepository.deleteById(id);
     }
 

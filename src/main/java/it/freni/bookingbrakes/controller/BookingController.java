@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/bookings")
 @Log
-public class BookingController {
+public class    BookingController {
     public final SeatService seatService;
     public final SeatMapper seatMapper;
     public final CustomerService customerService;

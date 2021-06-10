@@ -5,7 +5,8 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class CustomerDto {
+public class CustomerWithIdDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private String streetAddress;
