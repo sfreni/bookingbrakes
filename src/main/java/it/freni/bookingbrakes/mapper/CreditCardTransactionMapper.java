@@ -1,6 +1,7 @@
 package it.freni.bookingbrakes.mapper;
 
 import it.freni.bookingbrakes.controller.dto.*;
+import it.freni.bookingbrakes.controller.dto.purchase.PurchaseCreditCardTransactionDto;
 import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.CreditCardTransaction;
 import it.freni.bookingbrakes.domain.Customer;
@@ -12,15 +13,21 @@ import org.mapstruct.Mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public abstract class CreditCardTransactionMapper {
+@Mapper(componentModel = "spring", uses = { PurchaseMapper.class })
+public abstract class CreditCardTransactionMapper{
 
 
     public abstract CreditCardTransaction dtoToCreditCardTransaction(CreditCardTransactionDto creditCardTransactionDto);
     public abstract CreditCardTransactionDto toDto(CreditCardTransaction CreditCardTransaction);
-         public abstract List<CreditCardTransactionWithCustomerDto> todtos(List<CreditCardTransaction> CreditCardTransactions);
+    public abstract List<CreditCardTransactionWithCustomerDto> todtos(List<CreditCardTransaction> CreditCardTransactions);
 
-         @Mapping(target = "id", source = "creditCardTransaction.id")
+    public abstract List<CreditCardTransaction> purchaseCreditCardDtoToCreditCardTransactionList(List<PurchaseCreditCardTransactionDto> purchaseCreditCardTransactionDtoList);
+
+
+    public abstract List<PurchaseCreditCardTransactionDto> toPurchaseCreditCardTransactionDto(List<CreditCardTransaction> creditCardTransactions);
+
+
+    @Mapping(target = "id", source = "creditCardTransaction.id")
          @Mapping(target = "totalePriceAmount", source = "creditCardTransaction.totalePriceAmount")
          @Mapping(target = "transactionStatus", source = "creditCardTransaction.transactionStatus")
          @Mapping(target = "creditcard", source = "creditCardTransaction.creditcard")

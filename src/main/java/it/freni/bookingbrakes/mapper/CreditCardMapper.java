@@ -6,7 +6,7 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { PurchaseMapper.class })
 public abstract class CreditCardMapper {
 
         public abstract CreditCardDto toDto(CreditCard creditCard);
@@ -21,4 +21,5 @@ public abstract class CreditCardMapper {
                 creditCardDtoList.setCustomerCreditCardDto(customerDto);
                 return creditCardDtoList;
         }
+
 }

@@ -3,9 +3,9 @@ package it.freni.bookingbrakes.service;
 import it.freni.bookingbrakes.controller.dto.CreditCardDto;
 import it.freni.bookingbrakes.controller.dto.CreditCardNoTransactionsDto;
 import it.freni.bookingbrakes.controller.dto.CreditCardTransactionDto;
-import it.freni.bookingbrakes.domain.CreditCard;
-import it.freni.bookingbrakes.domain.CreditCardTransaction;
-import it.freni.bookingbrakes.domain.Customer;
+import it.freni.bookingbrakes.controller.dto.purchase.ProductDto;
+import it.freni.bookingbrakes.controller.dto.purchase.PurchaseCreditCardTransactionDto;
+import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
@@ -39,7 +39,7 @@ public class CreditCardTransactionService {
     private final CreditCardMapper creditCardMapper;
     public final CreditCardTransactionRepository creditCardTransactionRepository;
     public final CreditCardTransactionMapper creditCardTransactionMapper;
-    public final PurchaseMapper purchaseMapper;
+    private final PurchaseMapper purchaseMapper;
 
     public CreditCardTransactionService(CreditCardService creditCardService, PurchaseService purchaseService, CreditCardMapper creditCardMapper, CreditCardTransactionRepository creditCardTransactionRepository, CreditCardTransactionMapper creditCardTransactionMapper, PurchaseMapper purchaseMapper) {
         this.creditCardService = creditCardService;
@@ -75,18 +75,22 @@ public class CreditCardTransactionService {
             throw new IdAlreadyExists( CREDITCARD_NOT_FOUND);
         }
 
-        if(creditCardTransactionDto.getCreditcard().getId()== null || purchaseService.findById(creditCardTransactionDto.getCreditcard().getId()).isEmpty()){
+        if(creditCardTransactionDto.getCreditcard().getId()== null || purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).isEmpty()){
             log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
             throw new IdAlreadyExists( PURCHASE_NOT_FOUND);
         }
+
+
+
+
         creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).get()));
         creditCardTransactionDto.setPurchase(purchaseMapper.toDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
+
         return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
     }
 
 
     public CreditCardTransactionDto replaceCreditCardTransaction(Long id, CreditCardTransactionDto creditCardTransactionDto) {
-
 
         if (id == null || creditCardTransactionRepository.findById(id).isEmpty() ) {
             log.log(Level.SEVERE, CREDITCARD_TRANSACTION_NOT_FOUND);
@@ -114,6 +118,30 @@ public class CreditCardTransactionService {
         return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
     }
 
+      public List<CreditCardTransaction> saveCreditCardTransactionList(List<CreditCardTransaction> creditCardTransactions) {
+
+          return creditCardTransactionRepository.saveAll(creditCardTransactions);
+
+
+        }
+
+    public void checkDtoBeforeSaving(List<CreditCardTransaction> creditCardTransactions) {
+        for(CreditCardTransaction creditCardTransaction : creditCardTransactions) {
+            if (creditCardTransaction.getId() != null) {
+                creditCardTransaction.setId(null);
+            }
+
+            if (creditCardTransaction.getCreditcard() == null ||
+            creditCardTransaction.getCreditcard().getId() == null ||
+            creditCardService.findById(creditCardTransaction.getCreditcard().getId()).isEmpty())
+            {
+                log.log(Level.SEVERE, CREDITCARD_NOT_FOUND);
+                throw new IdAlreadyExists(CREDITCARD_NOT_FOUND);
+            }
+
+
+        }
+    }
 
     public void deleteCreditCardTransactionById(Long id) {
         if (id == null || findById(id).isEmpty()) {

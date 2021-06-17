@@ -1,5 +1,5 @@
 package it.freni.bookingbrakes.domain;
 
 public enum CreditCardTransactionStatus {
-    PAID,REFUSED,SUSPENDED
+    PAID,REFUSED,REFUND
 }

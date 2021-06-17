@@ -1,45 +1,41 @@
 package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.*;
-import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.CreditCardTransaction;
-import it.freni.bookingbrakes.domain.Customer;
-import it.freni.bookingbrakes.error.NotObjectFound;
+import it.freni.bookingbrakes.domain.CreditCardTransactionStatus;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
 import it.freni.bookingbrakes.service.CreditCardService;
 import it.freni.bookingbrakes.service.CreditCardTransactionService;
 import it.freni.bookingbrakes.service.CustomerService;
+import it.freni.bookingbrakes.service.PurchaseService;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 
 @RestController
 @RequestMapping("/creditcardtransactions")
 @Log
+@Transactional
 public class CreditCardTransactionController {
     public static final String CREDITCARD_NOT_FOUND = "Credit Card not found";
-    private final CustomerService customerService;
-    private final CustomerMapper customerMapper;
-    private final CreditCardService creditCardService;
-    private final CreditCardMapper creditCardMapper;
+
     private final CreditCardTransactionService creditCardTransactionService;
     private final CreditCardTransactionMapper creditCardTransactionMapper;
+    private final PurchaseService purchaseService;
 
-    public CreditCardTransactionController(CustomerService customerService, CustomerMapper customerMapper, CreditCardService creditCardService, CreditCardMapper creditCardMapper, CreditCardTransactionService creditCardTransactionService, CreditCardTransactionMapper creditCardTransactionMapper) {
-        this.customerService = customerService;
-        this.customerMapper = customerMapper;
-        this.creditCardService = creditCardService;
-        this.creditCardMapper = creditCardMapper;
+    public CreditCardTransactionController(CreditCardTransactionService creditCardTransactionService, CreditCardTransactionMapper creditCardTransactionMapper, PurchaseService purchaseService) {
         this.creditCardTransactionService = creditCardTransactionService;
         this.creditCardTransactionMapper = creditCardTransactionMapper;
+        this.purchaseService = purchaseService;
     }
+
     @GetMapping
     public ResponseEntity<List<CreditCardTransactionWithCustomerDto>> getAllCreditCardTransactions(){
         List<CreditCardTransactionWithCustomerDto> dtos = creditCardTransactionMapper.toDtosList(creditCardTransactionService.findAll());
@@ -60,10 +56,18 @@ public class CreditCardTransactionController {
 
 
     @PostMapping
-    public ResponseEntity<CreditCardTransactionDto> postCreditCardTransacton(@RequestBody CreditCardTransactionDto CreditCardTransactionDto) {
+    public ResponseEntity<CreditCardTransactionDto> postCreditCardTransacton(@RequestBody CreditCardTransactionDto creditCardTransactionDto) {
+
+        CreditCardTransactionDto creditCardTransactionDtoSaved = creditCardTransactionService.saveCreditCardTransaction(creditCardTransactionDto);
+        if(creditCardTransactionDtoSaved.getTransactionStatus().equals(CreditCardTransactionStatus.PAID)){
+            purchaseService.updatePurchaseTransactions(creditCardTransactionDtoSaved);
+        }
+        if(creditCardTransactionDtoSaved.getTransactionStatus().equals(CreditCardTransactionStatus.REFUND)){
+           purchaseService.updateRefusedPurchaseTransactions(creditCardTransactionDtoSaved);
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(creditCardTransactionService.saveCreditCardTransaction(CreditCardTransactionDto));
+                .body(creditCardTransactionDtoSaved);
     }
 
     @PutMapping("/{id}")
