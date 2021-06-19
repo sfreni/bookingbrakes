@@ -1,25 +1,15 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardDto;
-import it.freni.bookingbrakes.controller.dto.CreditCardNoTransactionsDto;
-import it.freni.bookingbrakes.controller.dto.CreditCardTransactionDto;
-import it.freni.bookingbrakes.controller.dto.purchase.ProductDto;
-import it.freni.bookingbrakes.controller.dto.purchase.PurchaseCreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
 import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
-import it.freni.bookingbrakes.mapper.CustomerMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
-import it.freni.bookingbrakes.repository.CreditCardRepository;
 import it.freni.bookingbrakes.repository.CreditCardTransactionRepository;
 import lombok.extern.java.Log;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -84,7 +74,7 @@ public class CreditCardTransactionService {
 
 
         creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).get()));
-        creditCardTransactionDto.setPurchase(purchaseMapper.toDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
+        creditCardTransactionDto.setPurchase(purchaseMapper.toPurchaseTransactionsDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
 
         return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
     }
@@ -114,7 +104,7 @@ public class CreditCardTransactionService {
         }
         creditCardTransactionDto.setId(id);
         creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).get()));
-        creditCardTransactionDto.setPurchase(purchaseMapper.toDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
+        creditCardTransactionDto.setPurchase(purchaseMapper.toPurchaseTransactionsDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
         return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
     }
 

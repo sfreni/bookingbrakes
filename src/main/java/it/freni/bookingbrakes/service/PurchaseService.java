@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
 import it.freni.bookingbrakes.controller.dto.purchase.ProductDto;
 import it.freni.bookingbrakes.controller.dto.purchase.ProductSeatDto;
 import it.freni.bookingbrakes.controller.dto.purchase.PurchaseDto;
@@ -164,36 +164,42 @@ public class PurchaseService {
 
         if (totalPurchase <= totalTransactions) {
             purchase.setPurchaseStatus(PurchaseStatus.COMPLETE);
+            creditCardTransactionDto.getPurchase().setPurchaseStatus(purchase.getPurchaseStatus());
             repository.save(purchase);
         }
-
     }
 
 
     public void updateRefusedPurchaseTransactions(CreditCardTransactionDto creditCardTransactionDto) {
         Purchase purchase = repository.findById(creditCardTransactionDto.getPurchase().getId()).get();
         purchase.getCreditCardTransactions().add(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto));
+        double totalPaid = 0;
+        for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
+            if (creditCardTransactionAmount.getTransactionStatus().equals(CreditCardTransactionStatus.PAID)) {
+                totalPaid += creditCardTransactionAmount.getTotalePriceAmount();
+            }
+        }
+        double totalRefused = 0;
+        for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
+            if (creditCardTransactionAmount.getTransactionStatus().equals(CreditCardTransactionStatus.REFUND)) {
+                totalRefused += creditCardTransactionAmount.getTotalePriceAmount();
+            }
+        }
         double totalPurchase = 0;
         for (Product product : purchase.getProducts()) {
             totalPurchase += product.getPriceAmount();
         }
-        double totalTransactions = 0;
-        for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
-            if (creditCardTransactionAmount.getTransactionStatus().equals(CreditCardTransactionStatus.REFUND)) {
-                totalTransactions += creditCardTransactionAmount.getTotalePriceAmount();
-            }
-        }
-        System.out.println(totalPurchase + " "+ totalTransactions);
-        if (totalPurchase < totalTransactions) {
+
+        if (totalPaid < totalRefused) {
             log.log(Level.SEVERE, ERROR_REFUND);
             throw new IdAlreadyExists(ERROR_REFUND);
         }
+        if (totalPurchase > (totalPaid - totalRefused)) {
 
-        if (totalPurchase == totalTransactions) {
-            purchase.setPurchaseStatus(PurchaseStatus.REFUND);
+            purchase.setPurchaseStatus(PurchaseStatus.NOT_COMPLETE);
+            creditCardTransactionDto.getPurchase().setPurchaseStatus(purchase.getPurchaseStatus());
             repository.save(purchase);
         }
-
 
 
     }

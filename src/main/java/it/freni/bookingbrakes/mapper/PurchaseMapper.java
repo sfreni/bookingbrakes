@@ -1,5 +1,6 @@
 package it.freni.bookingbrakes.mapper;
 
+import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.PurchaseTransactionsDto;
 import it.freni.bookingbrakes.controller.dto.purchase.*;
 import it.freni.bookingbrakes.domain.*;
 import org.mapstruct.Mapper;
@@ -17,7 +18,22 @@ public abstract class PurchaseMapper {
         purchaseDto.setDatePurchase(purchase.getDatePurchase());
         purchaseDto.setCreditCardTransactions(toDtoCreditCardTransaction(purchase.getCreditCardTransactions()));
         purchaseDto.setBooking(BookingtoBookingDto(purchase.getBooking()));
+        purchaseDto.setProducts(getProductDtos(purchase));
+        return purchaseDto;
+    }
 
+    public PurchaseTransactionsDto toPurchaseTransactionsDto(Purchase purchase){
+        PurchaseTransactionsDto purchaseDto = new PurchaseTransactionsDto();
+        purchaseDto.setId(purchase.getId());
+        purchaseDto.setPurchaseStatus(purchase.getPurchaseStatus());
+        purchaseDto.setDatePurchase(purchase.getDatePurchase());
+        purchaseDto.setBooking(BookingtoBookingDto(purchase.getBooking()));
+        purchaseDto.setProducts(getProductDtos(purchase));
+        return purchaseDto;
+    }
+
+
+    private List<ProductDto> getProductDtos(Purchase purchase) {
         List<ProductDto> productDtos = new ArrayList<>();
         for(Product product: purchase.getProducts()) {
             if (product instanceof Seat) {
@@ -41,8 +57,7 @@ public abstract class PurchaseMapper {
 
 
         }
-        purchaseDto.setProducts(productDtos);
-        return purchaseDto;
+        return productDtos;
     }
 
     public Purchase purchaseDtoToPurchase(PurchaseDto purchaseDto){
@@ -53,8 +68,29 @@ public abstract class PurchaseMapper {
         purchase.setDatePurchase(purchaseDto.getDatePurchase());
         purchase.setCreditCardTransactions(CreditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
         purchase.setBooking(dtoToBooking(purchaseDto.getBooking()));
+        List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
+        purchase.setProducts(products);
+        return purchase;
+
+    }
+
+    public Purchase purchaseTransactionsDtoToPurchase(PurchaseTransactionsDto purchaseDto){
+
+        Purchase purchase = new Purchase();
+        purchase.setId(purchaseDto.getId());
+        purchase.setPurchaseStatus(purchaseDto.getPurchaseStatus());
+        purchase.setDatePurchase(purchaseDto.getDatePurchase());
+        purchase.setBooking(dtoToBooking(purchaseDto.getBooking()));
+        List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
+        purchase.setProducts(products);
+        return purchase;
+
+    }
+
+
+    private List<Product> getProductsFromDtos(List<ProductDto> productDtos) {
         List<Product> products = new ArrayList<>();
-        for(ProductDto productDto: purchaseDto.getProducts()) {
+        for(ProductDto productDto: productDtos) {
             if (productDto instanceof ProductSeatDto) {
                 Seat seat = new Seat();
                 seat.setId(productDto.getId());
@@ -76,9 +112,7 @@ public abstract class PurchaseMapper {
 
 
         }
-        purchase.setProducts(products);
-        return purchase;
-
+        return products;
     }
 
     public abstract Iterable<PurchaseDto> toDtos(Iterable<Purchase> purchases);

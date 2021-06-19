@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.controller.dto;
 
-import it.freni.bookingbrakes.domain.CreditCardTransaction;
+import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
 import lombok.Data;
 
 import java.util.List;

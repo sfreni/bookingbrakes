@@ -80,10 +80,7 @@ public class BookingService {
       //      log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
         //    throw new NotObjectFound(CUSTOMER_NOT_FOUND);
       //  }
-        if (bookingDtoIn.getSeats().isEmpty()) {
-            log.log(Level.SEVERE, SEATS_NOT_FOUND);
-            throw new NotObjectFound(SEATS_NOT_FOUND);
-        }
+
 
         Optional<Trip> trip = tripService.findById(bookingDtoIn.getTrip().getId());
         if (trip.isEmpty()) {

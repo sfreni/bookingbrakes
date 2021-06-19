@@ -1,12 +1,8 @@
 package it.freni.bookingbrakes.controller.dto;
 
-import it.freni.bookingbrakes.domain.CreditCardTransaction;
+import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import java.util.List;
 
 @Data
