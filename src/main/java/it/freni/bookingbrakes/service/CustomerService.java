@@ -18,6 +18,7 @@ public class CustomerService {
 
     public static final String OBJECT_NOT_FOUND = "Object not found";
     public static final String ID_ALREADY_EXISTS = "Id already exists";
+    public static final String CUSTOMER_NOT_DELETE = "You can't delete this customer because it has bookings";
     private final CustomerRepository repository;
     private final CustomerMapper mapper;
 
@@ -26,8 +27,8 @@ public class CustomerService {
         this.mapper = mapper;
     }
 
-    public Iterable<CustomerDto> findAll() {
-        return mapper.toDtos(repository.findAll());
+    public Iterable<Customer> findAll() {
+        return repository.findAll();
     }
 
     public Optional<Customer> findById(Long id) {
@@ -59,6 +60,12 @@ public class CustomerService {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
+
+        if (!findById(id).get().getBookings().isEmpty()) {
+            log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
+            throw new NotObjectFound( CUSTOMER_NOT_DELETE);
+        }
+
         repository.deleteById(id);
     }
 

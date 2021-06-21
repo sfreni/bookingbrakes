@@ -1,6 +1,7 @@
-package it.freni.bookingbrakes.controller.dto.purchase;
+package it.freni.bookingbrakes.controller.dto.customer;
 
 import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.purchase.TripDto;
 import it.freni.bookingbrakes.domain.BookingStatus;
 import lombok.Data;
 

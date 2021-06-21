@@ -1,23 +1,20 @@
 package it.freni.bookingbrakes.controller;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardDto;
-import it.freni.bookingbrakes.controller.dto.CreditCardDtoList;
-import it.freni.bookingbrakes.controller.dto.CreditCardDtoSingle;
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDtoList;
 import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.Customer;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
-import it.freni.bookingbrakes.repository.CreditCardRepository;
 import it.freni.bookingbrakes.service.CreditCardService;
+import it.freni.bookingbrakes.service.CreditCardTransactionService;
 import it.freni.bookingbrakes.service.CustomerService;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -30,12 +27,14 @@ public class CreditCardController {
     private final CustomerMapper customerMapper;
     private final CreditCardService creditCardService;
     private final CreditCardMapper creditCardMapper;
+    private final CreditCardTransactionService creditCardTransactionService;
 
-    public CreditCardController(CustomerService customerService, CustomerMapper customerMapper, CreditCardService creditCardRepository, CreditCardMapper creditCardMapper) {
+    public CreditCardController(CustomerService customerService, CustomerMapper customerMapper, CreditCardService creditCardRepository, CreditCardMapper creditCardMapper, CreditCardTransactionService creditCardTransactionService) {
         this.customerService = customerService;
         this.customerMapper = customerMapper;
         this.creditCardService = creditCardRepository;
         this.creditCardMapper = creditCardMapper;
+        this.creditCardTransactionService = creditCardTransactionService;
     }
 
     @GetMapping("/customers/{id}")
@@ -72,13 +71,20 @@ public class CreditCardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CreditCardDto> putCreditCard(@PathVariable("id") Long id,@RequestBody CreditCardDto creditCardDto) {
+        creditCardService.checkCreditCardId(id);
+        creditCardService.checkCreditCardCustomer(id,creditCardDto);
+        creditCardService.verifyCreditCardTransactionsEmpty(creditCardTransactionService.findAllBy(creditCardMapper.dtoToCreditCard(creditCardDto)).isEmpty());
         return ResponseEntity.status(HttpStatus.OK)
-                .body(creditCardService.replaceCreditCard(id, creditCardMapper.dtoToCreditCard(creditCardDto)));
+                .body(creditCardService.replaceCreditCard(creditCardMapper.dtoToCreditCard(creditCardDto)));
+
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(code=HttpStatus.NO_CONTENT)
     public void deleteCreditCard(@PathVariable("id") Long id){
+        creditCardService.checkCreditCardId(id);
+        CreditCard creditCard =creditCardService.findById(id).get();
+        creditCardService.verifyCreditCardTransactionsEmpty(creditCardTransactionService.findAllBy(creditCard).isEmpty());
         creditCardService.deleteCreditCardById(id);
     }
 

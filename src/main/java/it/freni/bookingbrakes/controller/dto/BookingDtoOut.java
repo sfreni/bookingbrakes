@@ -1,5 +1,6 @@
 package it.freni.bookingbrakes.controller.dto;
 
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDto;
 import it.freni.bookingbrakes.domain.BookingStatus;
 import lombok.Data;
 

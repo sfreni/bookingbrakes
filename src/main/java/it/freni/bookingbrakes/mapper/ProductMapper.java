@@ -42,7 +42,7 @@ public abstract class ProductMapper {
 
         if (productDto instanceof ProductSeatDto) {
             Seat product = new Seat();
-            product.setId(product.getId());
+            product.setId(productDto.getId());
             product.setNrSeat(((ProductSeatDto) productDto).getNrSeat());
             product.setPriceAmount(productDto.getPriceAmount());
             product.setFirstNamePassenger(((ProductSeatDto) productDto).getFirstNamePassenger());
@@ -52,7 +52,7 @@ public abstract class ProductMapper {
         }
         if (productDto instanceof ProductAdditionalServiceDto) {
             AdditionalService product = new AdditionalService();
-            product.setId(product.getId());
+            product.setId(productDto.getId());
             product.setPriceAmount(productDto.getPriceAmount());
             product.setAdditionalServiceType(((ProductAdditionalServiceDto) productDto).getAdditionalServiceType());
             return product;

@@ -1,18 +1,18 @@
-package it.freni.bookingbrakes.controller.dto;
+package it.freni.bookingbrakes.controller.dto.creditcard;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.CustomerWithIdDto;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class CreditCardDtoSingle {
+public class CreditCardDto {
     private Long id;
     private String numberCard;
     private String issuingNetwork;
     private String firstName;
     private String lastName;
     private String dateExpiration;
+    private CustomerWithIdDto customer;
     private List<CreditCardTransactionDto> creditCardTransactions;
-
 }

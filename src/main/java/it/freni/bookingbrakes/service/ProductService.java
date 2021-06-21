@@ -1,21 +1,16 @@
 package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.purchase.ProductAdditionalServiceDto;
-import it.freni.bookingbrakes.controller.dto.purchase.ProductDto;
-import it.freni.bookingbrakes.controller.dto.purchase.ProductSeatDto;
 import it.freni.bookingbrakes.controller.dto.purchase.PurchaseDto;
 import it.freni.bookingbrakes.domain.AdditionalServiceType;
-import it.freni.bookingbrakes.domain.CreditCardTransactionStatus;
 import it.freni.bookingbrakes.domain.Product;
 import it.freni.bookingbrakes.domain.Purchase;
-import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.mapper.ProductMapper;
 import it.freni.bookingbrakes.repository.ProductRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.logging.Level;
 
 @Service
 @Log
@@ -35,7 +30,7 @@ public class ProductService {
         return  productRepository.saveAll(products);
     }
 
-    public void  checkDtoBeforeSaving(PurchaseDto purchaseDto){
+    public void  checkAdditionalServiceTypeBeforeSaving(PurchaseDto purchaseDto){
 
    /*     for (ProductDto productDto : purchaseDto.getProducts()) {
             if (productDto instanceof ProductAdditionalServiceDto) {
@@ -58,4 +53,7 @@ public class ProductService {
     }
 
 
+    public void deleteAllProductsByPurchase(Purchase purchase) {
+        productRepository.deleteProductByPurchase(purchase);
+    }
 }

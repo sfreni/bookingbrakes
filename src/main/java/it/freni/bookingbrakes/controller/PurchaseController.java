@@ -1,12 +1,13 @@
 package it.freni.bookingbrakes.controller;
 
-import it.freni.bookingbrakes.controller.dto.purchase.PurchaseCreditCardTransactionDto;
 import it.freni.bookingbrakes.controller.dto.purchase.PurchaseDto;
-import it.freni.bookingbrakes.domain.CreditCardTransaction;
 import it.freni.bookingbrakes.domain.Product;
 import it.freni.bookingbrakes.domain.Purchase;
 import it.freni.bookingbrakes.domain.PurchaseStatus;
-import it.freni.bookingbrakes.mapper.*;
+import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
+import it.freni.bookingbrakes.mapper.ProductMapper;
+import it.freni.bookingbrakes.mapper.PurchaseMapper;
+import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.service.*;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,39 +78,64 @@ public class PurchaseController {
     @PostMapping
     public ResponseEntity<PurchaseDto> postPurchase(@RequestBody PurchaseDto purchaseDto) {
         purchaseService.checkDtoBeforeSaving(purchaseDto);
-        productService.checkDtoBeforeSaving(purchaseDto);
+        productService.checkAdditionalServiceTypeBeforeSaving(purchaseDto);
         purchaseDto.setPurchaseStatus(PurchaseStatus.NOT_COMPLETE);
         Purchase purchase =purchaseService.savePurchase(purchaseDto);
         List<Product> products = productMapper.DtosToProducts(purchaseDto.getProducts());
         for (Product product : products) {
+            product.setId(null);
             product.setPurchase(purchase);
         }
 
         purchase.setBooking(bookingService.findById(purchase.getBooking().getId()).get());
         purchase.setProducts(productService.saveProducts(products));
 
-/*        List<CreditCardTransaction> creditCardTransactionList  = creditCardTransactionMapper.purchaseCreditCardDtoToCreditCardTransactionList(purchaseDto.getCreditCardTransactions());
-        for (CreditCardTransaction creditCardTransaction : creditCardTransactionList) {
-            creditCardTransaction.setPurchase(purchase);
-        }
-
-        creditCardTransactionService.checkDtoBeforeSaving(creditCardTransactionList);
-        purchase.setCreditCardTransactions(creditCardTransactionService.saveCreditCardTransactionList(creditCardTransactionList));
-      */  return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(purchaseMapper.toDto(purchase));
     }
-//
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<BookingDtoOut> putBooking(@PathVariable("id") Long Id, @RequestBody  BookingDtoIn bookingDtoIn) {
-//        return ResponseEntity.status(HttpStatus.OK)
-//                .body(bookingService.replaceBooking(Id, bookingDtoIn));
-//    }
-//
-//
-//    @DeleteMapping("/{id}")
-//    @ResponseStatus(code=HttpStatus.NO_CONTENT)
-//    public void deleteSeat(@PathVariable("id") Long id){
-//        bookingService.deleteBookingById(id);
-//    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PurchaseDto> putPurchase(@PathVariable("id") Long Id, @RequestBody PurchaseDto purchaseDto) {
+
+        purchaseDto.setId(Id);
+        purchaseService.checkDtoBeforeUpdating(purchaseDto);
+        productService.checkAdditionalServiceTypeBeforeSaving(purchaseDto);
+
+        List<Product> products = productMapper.DtosToProducts(purchaseDto.getProducts());
+
+
+        Purchase purchase=purchaseMapper.purchaseDtoToPurchase(purchaseDto);
+
+        for (Product product : products) {
+            product.setId(null);
+            product.setPurchase(purchase);
+        }
+        productService.deleteAllProductsByPurchase(purchaseService.findById(Id).get());
+        purchase.setBooking(bookingService.findById(purchaseDto.getBooking().getId()).get());
+        purchase.setProducts(productService.saveProducts(products));
+        purchase.setPurchaseStatus(purchaseService.updatePurchaseStatus(purchaseService.findById(Id).get()));
+        purchase.setDatePurchase(new Date(System.currentTimeMillis()));
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(purchaseMapper.toDto(purchaseService.updatePurchase(purchase)));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deletePurchase(@PathVariable("id") Long id){
+        Optional<Purchase> purchase = purchaseService.findById(id);
+        if(purchase.isPresent() && purchase.get().getCreditCardTransactions().isEmpty()) {
+            productService.deleteAllProductsByPurchase(purchaseService.findById(id).get());
+            purchaseService.deletePurchase(id);
+            return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+        }
+
+        if(purchase.isPresent() && !purchase.get().getCreditCardTransactions().isEmpty()) {
+            purchaseService.errorDeletePurchaseWithTransaction();
+        }
+
+    return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+
+    }
 }

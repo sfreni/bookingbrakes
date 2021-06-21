@@ -1,10 +1,9 @@
 package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
-import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
-import it.freni.bookingbrakes.service.CreditCardService;
 import it.freni.bookingbrakes.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +24,8 @@ public class CustomerController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<CustomerDto>> getAllCustomer(){
-        Iterable<CustomerDto> dtos = service.findAll();
+    public ResponseEntity<Iterable<CustomerControllerDto>> getAllCustomer(){
+        Iterable<CustomerControllerDto> dtos = customerMapper.toCustomerControllerDtos(service.findAll());
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(dtos);
@@ -34,11 +33,11 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDto> getCustomer(@PathVariable("id") Long id){
+    public ResponseEntity<CustomerControllerDto> getCustomer(@PathVariable("id") Long id){
         Optional<Customer> customer = service.findById(id);
         if(customer.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(customerMapper.toDto(customer.get()));
+                    .body(customerMapper.toCustomerControllerDto(customer.get()));
         }
         return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
     }

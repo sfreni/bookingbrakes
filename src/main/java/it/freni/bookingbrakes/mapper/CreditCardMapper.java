@@ -1,7 +1,10 @@
 package it.freni.bookingbrakes.mapper;
 
-import it.freni.bookingbrakes.controller.dto.*;
-import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardNoTransactionsDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDtoList;
+import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDtoSingle;
+import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardNoTransactionsDto;
 import it.freni.bookingbrakes.domain.CreditCard;
 import org.mapstruct.Mapper;
 
@@ -19,7 +22,7 @@ public abstract class CreditCardMapper {
                 List<CreditCardDtoSingle>   creditCardDtoSingles = todtos(creditCards);
                 CreditCardDtoList creditCardDtoList = new CreditCardDtoList();
                 creditCardDtoList.setCreditCardDtoList(creditCardDtoSingles);
-                creditCardDtoList.setCustomerCreditCardDto(customerDto);
+                creditCardDtoList.setCustomer(customerDto);
                 return creditCardDtoList;
         }
 

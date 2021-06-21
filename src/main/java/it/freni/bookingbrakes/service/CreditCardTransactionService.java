@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardTransactionDto;
 import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
@@ -115,7 +115,7 @@ public class CreditCardTransactionService {
 
         }
 
-    public void checkDtoBeforeSaving(List<CreditCardTransaction> creditCardTransactions) {
+        public void checkDtoBeforeSaving(List<CreditCardTransaction> creditCardTransactions) {
         for(CreditCardTransaction creditCardTransaction : creditCardTransactions) {
             if (creditCardTransaction.getId() != null) {
                 creditCardTransaction.setId(null);
@@ -140,6 +140,8 @@ public class CreditCardTransactionService {
         }
         creditCardTransactionRepository.deleteById(id);
     }
+
+
 
 
 

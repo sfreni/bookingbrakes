@@ -1,7 +1,6 @@
 package it.freni.bookingbrakes.controller.dto;
 
 import it.freni.bookingbrakes.domain.BookingStatus;
-import it.freni.bookingbrakes.domain.Trip;
 import lombok.Data;
 
 import java.util.Date;

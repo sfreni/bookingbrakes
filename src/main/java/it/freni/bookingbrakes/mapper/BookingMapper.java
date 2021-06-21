@@ -1,6 +1,7 @@
 package it.freni.bookingbrakes.mapper;
 
 import it.freni.bookingbrakes.controller.dto.*;
+import it.freni.bookingbrakes.controller.dto.CustomerDto;
 import it.freni.bookingbrakes.domain.Booking;
 import it.freni.bookingbrakes.domain.Trip;
 import org.mapstruct.Mapper;

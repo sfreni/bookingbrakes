@@ -1,10 +1,6 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
-import it.freni.bookingbrakes.domain.Customer;
-import it.freni.bookingbrakes.domain.Purchase;
 import it.freni.bookingbrakes.domain.Seat;
-import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.repository.SeatRepository;

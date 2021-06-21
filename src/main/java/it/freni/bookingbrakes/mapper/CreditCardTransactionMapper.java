@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.mapper;
 
-import it.freni.bookingbrakes.controller.dto.CreditCardTransaction.CreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardTransactionDto;
 import it.freni.bookingbrakes.controller.dto.purchase.PurchaseCreditCardTransactionDto;
 import it.freni.bookingbrakes.domain.CreditCardTransaction;
 import org.mapstruct.Mapper;
