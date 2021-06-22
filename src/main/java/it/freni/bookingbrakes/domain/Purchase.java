@@ -17,11 +17,14 @@ public class Purchase  {
      @OneToMany(mappedBy = "purchase")
     private List<CreditCardTransaction> creditCardTransactions;
     private Date datePurchase;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer")
+    private Customer customer;
 
     @Enumerated(EnumType.STRING)
     private PurchaseStatus purchaseStatus;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @JoinColumn(name = "trip_id")
+    private Trip trip;
 
 }

@@ -23,7 +23,7 @@ public class Trip {
     @OneToOne
     private Airport destination;
     @OneToMany(mappedBy = "trip")
-    List<Booking> bookings ;
+    List<Purchase> purchases ;
 
 
 }

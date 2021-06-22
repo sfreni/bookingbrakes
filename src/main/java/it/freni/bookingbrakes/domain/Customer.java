@@ -18,7 +18,7 @@ public class Customer {
     private String city;
     private Date birthDay;
     @OneToMany(mappedBy = "customer")
-    private List<Booking> bookings;
+    private List<Purchase> purchases;
     @OneToMany(mappedBy = "customer")
     private List<CreditCard> creditCard;
 }

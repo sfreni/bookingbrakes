@@ -1,9 +1,7 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.TripDto;
-import it.freni.bookingbrakes.controller.dto.TripDtoOut;
-import it.freni.bookingbrakes.domain.Booking;
-import it.freni.bookingbrakes.domain.Seat;
+import it.freni.bookingbrakes.controller.dto.trip.TripDto;
+import it.freni.bookingbrakes.controller.dto.trip.TripDtoOut;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
@@ -12,7 +10,6 @@ import it.freni.bookingbrakes.repository.TripRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -63,7 +60,6 @@ public class TripService {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
-        trip.setBookings(null);
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
@@ -92,11 +88,11 @@ public class TripService {
         }
 
         if(!tripRepository.findById(trip.getId()).get()
-                                                 .getBookings()
+                                                 .getPurchases()
                                                  .isEmpty()) {
 
-            trip.setBookings(tripRepository.findById(trip.getId()).get()
-                    .getBookings());
+            trip.setPurchases(tripRepository.findById(trip.getId()).get()
+                    .getPurchases());
             }
         trip.setId(id);
         return tripMapper.toDtoOut(tripRepository.save(trip));

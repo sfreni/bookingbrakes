@@ -1,5 +1,8 @@
-package it.freni.bookingbrakes.controller.dto;
+package it.freni.bookingbrakes.controller.dto.trip;
 
+import it.freni.bookingbrakes.controller.dto.AirplaneDto;
+import it.freni.bookingbrakes.controller.dto.AirportDto;
+import it.freni.bookingbrakes.domain.Purchase;
 import it.freni.bookingbrakes.domain.TripStatus;
 import lombok.Data;
 
@@ -14,6 +17,6 @@ public class TripDtoOut {
     private AirplaneDto airplane;
     private AirportDto departure;
     private AirportDto destination;
-    private List<BookingTripDto> bookings;
+    private List<Purchase> purchases;
     private TripStatus tripStatus;
 }

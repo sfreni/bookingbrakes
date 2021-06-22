@@ -10,12 +10,12 @@ import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
 import it.freni.bookingbrakes.mapper.ProductMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
+import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.repository.PurchaseRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -28,8 +28,12 @@ public class PurchaseService {
     private static final String PRODUCTS_NOT_FOUND = "Products Not Found";
     private static final String CREDITCARD_TRANSACTIONS_NOT_FOUND = "Credit Card Transaction not found";
     private static final String PURCHASE_STATUS_NOT_FOUND = "Purchase status not found";
-    private static final String BOOKING_NOT_FOUND = "Booking Not Found";
+    private static final String TRIP_NOT_FOUND = "Trip Not Found";
+    private static final String TRIP_MISMATCH = "Trip Mismatch";
+    private static final String CUSTOMER_MISMATCH = "Customer Mismatch";
+
     public static final String SEAT_ALREADY_BOOKED = "Seat already Booked";
+
     public static final String SEAT_DUPLICATION = "Seats are duplicated";
     public static final String ERROR_REFUND ="The amount of refund is higher then amount of puchase";
     private static final String TRANSACTION_PRICE_AMOUNT_ERROR ="Payment is lower then total purchase" ;
@@ -40,15 +44,17 @@ public class PurchaseService {
     private final ProductMapper productMapper;
     private final CreditCardTransactionMapper creditCardTransactionMapper;
     private final ProductService productService;
-    private final BookingService bookingService;
+    private final TripService tripService;
+    private final TripMapper tripMapper;
 
-    public PurchaseService(PurchaseRepository repository, PurchaseMapper purchaseMapper, ProductMapper productMapper, CreditCardTransactionMapper creditCardTransactionMapper, ProductService productService, BookingService bookingService) {
+    public PurchaseService(PurchaseRepository repository, PurchaseMapper purchaseMapper, ProductMapper productMapper, CreditCardTransactionMapper creditCardTransactionMapper, ProductService productService, TripService tripService, TripMapper tripMapper) {
         this.repository = repository;
         this.purchaseMapper = purchaseMapper;
         this.productMapper = productMapper;
         this.creditCardTransactionMapper = creditCardTransactionMapper;
         this.productService = productService;
-        this.bookingService = bookingService;
+        this.tripService = tripService;
+        this.tripMapper = tripMapper;
     }
 
     public Iterable<Purchase> findAll() {
@@ -82,17 +88,15 @@ public class PurchaseService {
         }
 
 
-        if (purchaseDto.getBooking() == null || bookingService.findById(purchaseDto.getBooking().getId()).isEmpty()) {
-            log.log(Level.SEVERE, BOOKING_NOT_FOUND);
-            throw new NotObjectFound(BOOKING_NOT_FOUND);
+        if (purchaseDto.getTrip() == null || tripService.findById(purchaseDto.getTrip().getId()).isEmpty()) {
+            log.log(Level.SEVERE, TRIP_NOT_FOUND);
+            throw new NotObjectFound(TRIP_NOT_FOUND);
         }
 
-        List<Booking> bookings = bookingService.findByBooking(bookingService.findById(purchaseDto.getBooking().getId()).get().getTrip());
 
         for (ProductDto productDto : purchaseDto.getProducts()) {
             if (productDto instanceof ProductSeatDto) {
-                for (Booking booking : bookings) {
-                    for (Purchase purchase : booking.getPurchases()) {
+                    for (Purchase purchase : tripService.findById(purchaseDto.getTrip().getId()).get().getPurchases()) {
                         for (Product product : purchase.getProducts()) {
                             if (product instanceof Seat) {
                                 if (((Seat) product).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat())) {
@@ -105,7 +109,7 @@ public class PurchaseService {
 
                 }
             }
-        }
+
 
         for (ProductDto productDto : purchaseDto.getProducts()) {
             int contEqual =0;
@@ -135,24 +139,42 @@ public class PurchaseService {
         }
 
 
+
+
+
         if (purchaseDto.getProducts().isEmpty()) {
             log.log(Level.SEVERE, PRODUCTS_NOT_FOUND);
             throw new NotObjectFound(PRODUCTS_NOT_FOUND);
         }
 
 
-        if (purchaseDto.getBooking() == null || bookingService.findById(purchaseDto.getBooking().getId()).isEmpty()) {
-            log.log(Level.SEVERE, BOOKING_NOT_FOUND);
-            throw new NotObjectFound(BOOKING_NOT_FOUND);
+        if (purchaseDto.getTrip() == null
+                || tripService.findById(purchaseDto.getTrip().getId()).isEmpty()) {
+            log.log(Level.SEVERE, TRIP_NOT_FOUND);
+            throw new NotObjectFound(TRIP_NOT_FOUND);
         }
 
-        List<Booking> bookings = bookingService.findByBooking(bookingService.findById(purchaseDto.getBooking().getId()).get().getTrip());
+
+        if (repository.findById(purchaseDto.getId()).get().getTrip().getId()
+                !=purchaseDto.getTrip().getId()) {
+            log.log(Level.SEVERE, TRIP_MISMATCH);
+            throw new NotObjectFound(TRIP_MISMATCH);
+        }
+
+
+        if (repository.findById(purchaseDto.getId()).get().getCustomer().getId()
+                !=purchaseDto.getCustomer().getId()) {
+            log.log(Level.SEVERE, CUSTOMER_MISMATCH);
+            throw new NotObjectFound(CUSTOMER_MISMATCH);
+        }
+
+
+
 
         for (ProductDto productDto : purchaseDto.getProducts()) {
             if (productDto instanceof ProductSeatDto) {
-                for (Booking booking : bookings) {
-                    for (Purchase purchase : booking.getPurchases()) {
-                        for (Product product : purchase.getProducts()) {
+                for (Purchase purchase : tripService.findById(purchaseDto.getTrip().getId()).get().getPurchases()) {
+                    for (Product product : purchase.getProducts()) {
                             if (product instanceof Seat) {
                                 if (((Seat) product).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat())) {
                                     if(purchaseDto.getId()!=purchase.getId()) {
@@ -166,7 +188,7 @@ public class PurchaseService {
 
                 }
             }
-        }
+
 
         for (ProductDto productDto : purchaseDto.getProducts()) {
             int contEqual =0;

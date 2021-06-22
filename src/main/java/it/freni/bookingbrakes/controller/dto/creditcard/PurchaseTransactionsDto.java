@@ -10,5 +10,5 @@ public class PurchaseTransactionsDto {
     private Long id;
     private Date datePurchase;
     private PurchaseStatus purchaseStatus;
-    private BookingDto booking;
+    private TripDto trip;
 }

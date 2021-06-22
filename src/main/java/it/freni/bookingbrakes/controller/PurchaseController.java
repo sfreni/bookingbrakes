@@ -7,7 +7,6 @@ import it.freni.bookingbrakes.domain.PurchaseStatus;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
 import it.freni.bookingbrakes.mapper.ProductMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
-import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.service.*;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -24,30 +23,22 @@ import java.util.Optional;
 @Log
 @Transactional
 public class PurchaseController {
-    public final SeatService seatService;
-    public final AdditionalServiceService customerService;
+
     public final PurchaseService purchaseService;
-    public final SeatMapper seatMapper;
-    public final AdditionalServiceService additionalServiceMapper;
     public final PurchaseMapper purchaseMapper;
     public final ProductMapper productMapper;
-    public final BookingService bookingService;
     public final ProductService productService;
     public final CreditCardTransactionService creditCardTransactionService;
-    public final CreditCardTransactionMapper creditCardTransactionMapper;
-
-    public PurchaseController(SeatService seatService, AdditionalServiceService customerService, PurchaseService purchaseService, SeatMapper seatMapper, AdditionalServiceService additionalServiceMapper, PurchaseMapper purchaseMapper, ProductMapper productMapper, BookingService bookingService, ProductService productService, CreditCardTransactionService creditCardTransactionService, CreditCardTransactionMapper creditCardTransactionMapper) {
-        this.seatService = seatService;
-        this.customerService = customerService;
+    public final CustomerService customerService;
+    public final TripService tripService;
+    public PurchaseController(PurchaseService purchaseService, PurchaseMapper purchaseMapper, ProductMapper productMapper, ProductService productService, CreditCardTransactionService creditCardTransactionService, CreditCardTransactionMapper creditCardTransactionMapper, CustomerService customerService, TripService tripService) {
         this.purchaseService = purchaseService;
-        this.seatMapper = seatMapper;
-        this.additionalServiceMapper = additionalServiceMapper;
         this.purchaseMapper = purchaseMapper;
         this.productMapper = productMapper;
-        this.bookingService = bookingService;
         this.productService = productService;
         this.creditCardTransactionService = creditCardTransactionService;
-        this.creditCardTransactionMapper = creditCardTransactionMapper;
+        this.customerService = customerService;
+        this.tripService = tripService;
     }
 
     @GetMapping
@@ -87,9 +78,10 @@ public class PurchaseController {
             product.setPurchase(purchase);
         }
 
-        purchase.setBooking(bookingService.findById(purchase.getBooking().getId()).get());
         purchase.setProducts(productService.saveProducts(products));
-
+        purchase.setCustomer(customerService.findById(purchase.getCustomer().getId()).get());
+        purchase.setTrip(tripService.findById(purchase.getTrip().getId()).get());
+        //        purchase.setCustomer(customerService.findById(purchase.getCustomer().getId()).get());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(purchaseMapper.toDto(purchase));
     }
@@ -112,7 +104,6 @@ public class PurchaseController {
             product.setPurchase(purchase);
         }
         productService.deleteAllProductsByPurchase(purchaseService.findById(Id).get());
-        purchase.setBooking(bookingService.findById(purchaseDto.getBooking().getId()).get());
         purchase.setProducts(productService.saveProducts(products));
         purchase.setPurchaseStatus(purchaseService.updatePurchaseStatus(purchaseService.findById(Id).get()));
         purchase.setDatePurchase(new Date(System.currentTimeMillis()));
