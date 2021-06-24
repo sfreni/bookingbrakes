@@ -1,9 +1,7 @@
 package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.trip.TripDto;
-import it.freni.bookingbrakes.controller.dto.trip.TripDtoOut;
 import it.freni.bookingbrakes.domain.Trip;
-import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.repository.TripRepository;
@@ -20,8 +18,7 @@ public class TripService {
     public static final String AIRPLANE_NOT_FOUND = "Airplane Not Found";
     public static final String DESTINATION_AIRPORT_NOT_FOUND = "Destination Airport Not Found";
     public static final String DEPARTURE_AIRPORT_NOT_FOUND = "Departure Airport Not Found";
-    public static final String ID_ALREADY_EXISTS = "Id already exists";
-    public static final String METHOD_NOT_ALLOWED_BECAUSE_SEATS_ALREADY_BOOKED = "Method not allowed because seats already booked";
+    private static final String DELETE_FAILED_PURCHASE = "Can't delete this trip because it has purchases";
     private final TripRepository tripRepository;
     private final AirportService airportService;
     private final AirplaneService airplaneService;
@@ -44,10 +41,7 @@ public class TripService {
 
 
     public TripDto saveTrip(Trip trip) {
-        if (trip.getId() != null && findById(trip.getId()).isPresent()) {
-            log.log(Level.SEVERE, ID_ALREADY_EXISTS);
-            throw new IdAlreadyExists( ID_ALREADY_EXISTS);
-        }
+
         if (airplaneService.findById(trip.getAirplane().getId()).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
             throw new NotObjectFound( AIRPLANE_NOT_FOUND);
@@ -60,12 +54,16 @@ public class TripService {
             log.log(Level.SEVERE, DESTINATION_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
+        trip.setId(null);
+        trip.setAirplane(airplaneService.findById(trip.getAirplane().getId()).get());
+        trip.setDestination(airportService.findById(trip.getDestination().getId()).get());
+        trip.setDeparture(airportService.findById(trip.getDeparture().getId()).get());
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
 
 
-    public TripDtoOut replaceTrip(Long id, Trip trip) {
+    public TripDto replaceTrip(Long id, Trip trip) {
 
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
@@ -86,7 +84,7 @@ public class TripService {
             log.log(Level.SEVERE, DEPARTURE_AIRPORT_NOT_FOUND);
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
-
+        trip.setId(id);
         if(!tripRepository.findById(trip.getId()).get()
                                                  .getPurchases()
                                                  .isEmpty()) {
@@ -94,8 +92,8 @@ public class TripService {
             trip.setPurchases(tripRepository.findById(trip.getId()).get()
                     .getPurchases());
             }
-        trip.setId(id);
-        return tripMapper.toDtoOut(tripRepository.save(trip));
+
+        return tripMapper.toDto(tripRepository.save(trip));
     }
 
 
@@ -104,6 +102,11 @@ public class TripService {
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound( TRIP_NOT_FOUND);
+        }
+        if(!findById(id).get().getPurchases().isEmpty()){
+            log.log(Level.SEVERE, DELETE_FAILED_PURCHASE);
+            throw new NotObjectFound( DELETE_FAILED_PURCHASE);
+
         }
         tripRepository.deleteById(id);
     }

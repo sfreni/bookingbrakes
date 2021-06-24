@@ -2,6 +2,7 @@ package it.freni.bookingbrakes.mapper;
 
 import it.freni.bookingbrakes.controller.dto.creditcardtransaction.PurchaseTransactionsDto;
 import it.freni.bookingbrakes.controller.dto.purchase.*;
+import it.freni.bookingbrakes.controller.dto.trip.PurchaseWithoutTripDto;
 import it.freni.bookingbrakes.domain.*;
 import org.mapstruct.Mapper;
 
@@ -31,6 +32,18 @@ public abstract class PurchaseMapper {
         purchaseDto.setProducts(getProductDtos(purchase));
         return purchaseDto;
     }
+
+    public PurchaseWithoutTripDto purchaseWithoutTripDto(Purchase purchase){
+        PurchaseWithoutTripDto purchaseDto = new PurchaseWithoutTripDto();
+        purchaseDto.setId(purchase.getId());
+        purchaseDto.setPurchaseStatus(purchase.getPurchaseStatus());
+        purchaseDto.setDatePurchase(purchase.getDatePurchase());
+        purchaseDto.setCreditCardTransactions(toDtoCreditCardTransaction(purchase.getCreditCardTransactions()));
+        purchaseDto.setProducts(getProductDtos(purchase));
+        purchaseDto.setCustomer(customerPurchaseToDto(purchase.getCustomer()));
+        return purchaseDto;
+    }
+
 
 
     private List<ProductDto> getProductDtos(Purchase purchase) {
@@ -75,6 +88,23 @@ public abstract class PurchaseMapper {
         return purchase;
 
     }
+
+    public Purchase purchaseWithoutTripDtoToPurchase(PurchaseWithoutTripDto purchaseDto){
+
+        Purchase purchase = new Purchase();
+        purchase.setId(purchaseDto.getId());
+        purchase.setPurchaseStatus(purchaseDto.getPurchaseStatus());
+        purchase.setDatePurchase(purchaseDto.getDatePurchase());
+        purchase.setCreditCardTransactions(CreditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
+
+        List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
+        purchase.setProducts(products);
+        purchase.setCustomer(customerPurchaseDtoToCustomer(purchaseDto.getCustomer()));
+
+        return purchase;
+
+    }
+
 
     public Purchase purchaseTransactionsDtoToPurchase(PurchaseTransactionsDto purchaseDto){
 
@@ -123,5 +153,7 @@ public abstract class PurchaseMapper {
     public abstract TripDto tripDto(Trip trip);
     public abstract CustomerPurchaseDto customerPurchaseToDto(Customer customer);
     public abstract Customer customerPurchaseDtoToCustomer(CustomerPurchaseDto customerPurchaseDto);
+    public abstract List<PurchaseDto> toDtosList(List<Purchase> purchases);
+    public abstract List<Purchase> dtosListToPurchases(List<PurchaseDto> purchases);
 
 }

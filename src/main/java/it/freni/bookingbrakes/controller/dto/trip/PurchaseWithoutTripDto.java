@@ -10,12 +10,11 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class PurchaseDto {
+public class PurchaseWithoutTripDto {
     private Long id;
     private List<ProductDto> products;
     private List<PurchaseCreditCardTransactionDto> creditCardTransactions;
     private Date datePurchase;
     private PurchaseStatus purchaseStatus;
     private CustomerPurchaseDto customer;
-
 }

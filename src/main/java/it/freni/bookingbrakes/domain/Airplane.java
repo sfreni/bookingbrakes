@@ -11,7 +11,7 @@ public class Airplane {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     @Enumerated(EnumType.STRING)
-    private TypeAirplanes typeAirplanes;
+    private AirplaneType airplaneType;
     private String name;
     private Integer numberSeats;
     private  Boolean avaibleFlight;

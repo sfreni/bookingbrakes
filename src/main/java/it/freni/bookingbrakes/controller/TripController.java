@@ -1,7 +1,6 @@
 package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.trip.TripDto;
-import it.freni.bookingbrakes.controller.dto.trip.TripDtoOut;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.mapper.TripMapper;
@@ -43,11 +42,11 @@ public class TripController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<TripDtoOut> getTripById(@PathVariable("id") Long id) {
+    public ResponseEntity<TripDto> getTripById(@PathVariable("id") Long id) {
         Optional<Trip> trip = tripService.findById(id);
         if (trip.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(tripMapper.toDtoOut(trip.get()));
+                    .body(tripMapper.toDto(trip.get()));
         }
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
@@ -59,7 +58,7 @@ public class TripController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TripDtoOut> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
+    public ResponseEntity<TripDto> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(tripService.replaceTrip(Id,tripMapper.dtoToTrip(tripDto)));
     }
