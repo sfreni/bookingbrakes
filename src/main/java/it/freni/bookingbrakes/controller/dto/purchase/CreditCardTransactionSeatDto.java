@@ -1,4 +1,4 @@
-package it.freni.bookingbrakes.controller.dto;
+package it.freni.bookingbrakes.controller.dto.purchase;
 
 import it.freni.bookingbrakes.domain.CreditCardTransactionStatus;
 import lombok.Data;

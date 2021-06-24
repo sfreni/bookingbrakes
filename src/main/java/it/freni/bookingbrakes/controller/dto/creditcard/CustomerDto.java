@@ -1,11 +1,11 @@
-package it.freni.bookingbrakes.controller.dto;
+package it.freni.bookingbrakes.controller.dto.creditcard;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class CustomerWithIdDto {
+public class CustomerDto {
     private Long id;
     private String firstName;
     private String lastName;

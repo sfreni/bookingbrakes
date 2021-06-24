@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.controller;
 
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
 import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
 import it.freni.bookingbrakes.mapper.CustomerMapper;

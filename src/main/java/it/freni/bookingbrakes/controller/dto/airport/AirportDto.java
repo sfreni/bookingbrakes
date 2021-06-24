@@ -1,4 +1,4 @@
-package it.freni.bookingbrakes.controller.dto;
+package it.freni.bookingbrakes.controller.dto.airport;
 
 import lombok.Data;
 

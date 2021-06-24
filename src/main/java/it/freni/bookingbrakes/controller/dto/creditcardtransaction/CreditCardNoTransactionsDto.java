@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.controller.dto.creditcardtransaction;
 
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
 import lombok.Data;
 
 @Data

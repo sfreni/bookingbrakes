@@ -3,7 +3,7 @@ package it.freni.bookingbrakes.mapper;
 import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDto;
 import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDtoList;
 import it.freni.bookingbrakes.controller.dto.creditcard.CreditCardDtoSingle;
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
 import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardNoTransactionsDto;
 import it.freni.bookingbrakes.domain.CreditCard;
 import org.mapstruct.Mapper;

@@ -1,6 +1,5 @@
 package it.freni.bookingbrakes.controller.dto.creditcard;
 
-import it.freni.bookingbrakes.controller.dto.CustomerWithIdDto;
 import lombok.Data;
 
 import java.util.List;

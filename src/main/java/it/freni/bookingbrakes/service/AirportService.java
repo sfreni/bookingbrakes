@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.AirportDto;
+import it.freni.bookingbrakes.controller.dto.airport.AirportDto;
 import it.freni.bookingbrakes.domain.Airport;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.AirportMapper;

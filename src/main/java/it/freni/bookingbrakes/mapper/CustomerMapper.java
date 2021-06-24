@@ -1,7 +1,7 @@
 package it.freni.bookingbrakes.mapper;
 
-import it.freni.bookingbrakes.controller.dto.CustomerDto;
-import it.freni.bookingbrakes.controller.dto.CustomerWithIdDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.creditcard.CustomerWithIdDto;
 import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
 import org.mapstruct.Mapper;

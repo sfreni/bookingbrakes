@@ -2,7 +2,6 @@ package it.freni.bookingbrakes.controller;
 
 import it.freni.bookingbrakes.controller.dto.trip.TripDto;
 import it.freni.bookingbrakes.domain.Trip;
-import it.freni.bookingbrakes.mapper.SeatMapper;
 import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.service.AirplaneService;
 import it.freni.bookingbrakes.service.AirportService;
@@ -23,14 +22,12 @@ public class TripController {
     private final AirportService airportService;
     private final AirplaneService airplaneService;
     private final TripMapper tripMapper;
-    private final SeatMapper  seatMapper;
 
-    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, TripMapper tripMapper, SeatMapper seatMapper) {
+    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, TripMapper tripMapper) {
         this.tripService = tripService;
         this.airportService = airportService;
         this.airplaneService = airplaneService;
         this.tripMapper = tripMapper;
-        this.seatMapper = seatMapper;
     }
 
     @GetMapping
