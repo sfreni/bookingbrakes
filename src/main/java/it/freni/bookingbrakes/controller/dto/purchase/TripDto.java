@@ -1,6 +1,6 @@
 package it.freni.bookingbrakes.controller.dto.purchase;
 
-import it.freni.bookingbrakes.controller.dto.AirplaneDto;
+import it.freni.bookingbrakes.controller.dto.airplane.AirplaneDto;
 import it.freni.bookingbrakes.controller.dto.AirportDto;
 import it.freni.bookingbrakes.domain.TripStatus;
 import lombok.Data;

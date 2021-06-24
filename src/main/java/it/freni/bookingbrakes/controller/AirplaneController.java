@@ -1,9 +1,10 @@
 package it.freni.bookingbrakes.controller;
 
-import it.freni.bookingbrakes.controller.dto.AirplaneDto;
+import it.freni.bookingbrakes.controller.dto.airplane.AirplaneDto;
 import it.freni.bookingbrakes.domain.Airplane;
 import it.freni.bookingbrakes.mapper.AirplaneMapper;
 import it.freni.bookingbrakes.service.AirplaneService;
+import it.freni.bookingbrakes.service.TripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,13 @@ import java.util.Optional;
 @RequestMapping("/airplanes")
 public class AirplaneController {
     private final AirplaneService airplaneService;
-    private  AirplaneMapper airplaneMapper;
+    private final AirplaneMapper airplaneMapper;
+private final TripService tripService;
 
-    public AirplaneController(AirplaneService airplaneService, AirplaneMapper airplaneMapper) {
+    public AirplaneController(AirplaneService airplaneService, AirplaneMapper airplaneMapper, TripService tripService) {
         this.airplaneService = airplaneService;
         this.airplaneMapper = airplaneMapper;
+        this.tripService = tripService;
     }
 
     @GetMapping
@@ -35,13 +38,14 @@ public class AirplaneController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(airplaneMapper.toDto(dto.get()));
         }
-        return new ResponseEntity<>(new AirplaneDto(),HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(null ,HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
     public ResponseEntity<AirplaneDto> postAirplane(@RequestBody AirplaneDto airplaneDto)  {
+        System.out.println(airplaneDto.toString());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(airplaneService.saveAirplane(airplaneMapper.dtoToAirplane(airplaneDto)));
+                .body(airplaneMapper.toDto(airplaneService.saveAirplane(airplaneMapper.dtoToAirplane(airplaneDto))));
     }
     @PutMapping("/{id}")
     public ResponseEntity<AirplaneDto> putAirplane(@PathVariable("id")Long id, @RequestBody AirplaneDto airplaneDto) {
@@ -50,9 +54,18 @@ public class AirplaneController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(code=HttpStatus.NO_CONTENT)
-    public void deleteAirplane(@PathVariable("id") Long id) {
-        airplaneService.deleteAirplaneById(id);
+    public ResponseEntity<HttpStatus> deleteAirplane(@PathVariable("id") Long id) {
+        Optional<Airplane> airplane = airplaneService.findById(id);
+        if (airplane.isPresent()) {
+            if(tripService.findTripByAirplane(id)){
+                airplaneService.deleteAirplaneById(id);
+                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+            }
+            airplaneService.errorTripPresent();
+
+        }
+        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+
     }
 
 }

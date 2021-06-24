@@ -31,7 +31,7 @@ public class TripService {
         this.tripMapper = tripMapper;
     }
 
-    public Iterable<TripDto> findAll(){
+    public Iterable<TripDto> findAll() {
         return tripMapper.toDtos(tripRepository.findAll());
     }
 
@@ -44,7 +44,7 @@ public class TripService {
 
         if (airplaneService.findById(trip.getAirplane().getId()).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
-            throw new NotObjectFound( AIRPLANE_NOT_FOUND);
+            throw new NotObjectFound(AIRPLANE_NOT_FOUND);
         }
         if (airportService.findById(trip.getDeparture().getId()).isEmpty()) {
             log.log(Level.SEVERE, DEPARTURE_AIRPORT_NOT_FOUND);
@@ -62,17 +62,16 @@ public class TripService {
     }
 
 
-
     public TripDto replaceTrip(Long id, Trip trip) {
 
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
-            throw new NotObjectFound( TRIP_NOT_FOUND);
+            throw new NotObjectFound(TRIP_NOT_FOUND);
         }
 
         if (airplaneService.findById(trip.getAirplane().getId()).isEmpty()) {
             log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
-            throw new NotObjectFound( AIRPLANE_NOT_FOUND);
+            throw new NotObjectFound(AIRPLANE_NOT_FOUND);
         }
 
         if (airportService.findById(trip.getDestination().getId()).isEmpty()) {
@@ -85,31 +84,46 @@ public class TripService {
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
         trip.setId(id);
-        if(!tripRepository.findById(trip.getId()).get()
-                                                 .getPurchases()
-                                                 .isEmpty()) {
+        if (!tripRepository.findById(trip.getId()).get()
+                .getPurchases()
+                .isEmpty()) {
 
             trip.setPurchases(tripRepository.findById(trip.getId()).get()
                     .getPurchases());
-            }
+        }
 
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
 
-
     public void deleteTripById(Long id) {
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
-            throw new NotObjectFound( TRIP_NOT_FOUND);
+            throw new NotObjectFound(TRIP_NOT_FOUND);
         }
-        if(!findById(id).get().getPurchases().isEmpty()){
+        if (!findById(id).get().getPurchases().isEmpty()) {
             log.log(Level.SEVERE, DELETE_FAILED_PURCHASE);
-            throw new NotObjectFound( DELETE_FAILED_PURCHASE);
+            throw new NotObjectFound(DELETE_FAILED_PURCHASE);
 
         }
         tripRepository.deleteById(id);
     }
 
+    public Boolean findTripByAirplane(Long id) {
+
+        if(tripRepository.findTripByAirplane_id(id).get().isEmpty()) {
+            return true;
+        }
+        return false;
 
     }
+
+    public Boolean findTripByAirport(Long id) {
+
+        if(tripRepository.findTripByDeparture_Id(id).get().isEmpty() &&
+                tripRepository.findTripByDestination_Id(id).get().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+}

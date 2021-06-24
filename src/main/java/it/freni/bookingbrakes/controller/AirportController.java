@@ -4,6 +4,7 @@ import it.freni.bookingbrakes.controller.dto.AirportDto;
 import it.freni.bookingbrakes.domain.Airport;
 import it.freni.bookingbrakes.mapper.AirportMapper;
 import it.freni.bookingbrakes.service.AirportService;
+import it.freni.bookingbrakes.service.TripService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,11 +15,13 @@ import java.util.Optional;
 @RequestMapping("/airports")
 public class AirportController {
     private final AirportService airportService;
-    private AirportMapper airportMapper;
+    private final AirportMapper airportMapper;
+    private final TripService tripService;
 
-    public AirportController(AirportService airportService, AirportMapper airportMapper) {
+    public AirportController(AirportService airportService, AirportMapper airportMapper, TripService tripService) {
         this.airportService = airportService;
         this.airportMapper = airportMapper;
+        this.tripService = tripService;
     }
 
     @GetMapping
@@ -52,10 +55,18 @@ public class AirportController {
                 .body(airportService.replaceAirport(id, airportMapper.dtoToAirport(airportDto)));
     }
     @DeleteMapping("/{id}")
-    @ResponseStatus(code=HttpStatus.NO_CONTENT)
-    public void deleteAirport(@PathVariable("id") Long id) {
-        airportService.deleteAirportById(id);
-    }
+    public ResponseEntity<HttpStatus> deleteAirport(@PathVariable("id") Long id) {
+        Optional<Airport> airport = airportService.findById(id);
+        if (airport.isPresent()) {
+            if(tripService.findTripByAirport(id)){
+                airportService.deleteAirportById(id);
+                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+            }
+             airportService.errorTripPresent();
 
+        }
+        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+
+    }
 
 }
