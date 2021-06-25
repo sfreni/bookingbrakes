@@ -39,7 +39,7 @@ public class AirportController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(airportMapper.toDto(airport.get()));
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -60,12 +60,12 @@ public class AirportController {
         if (airport.isPresent()) {
             if(tripService.findTripByAirport(id)){
                 airportService.deleteAirportById(id);
-                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
              airportService.errorTripPresent();
 
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 

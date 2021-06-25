@@ -19,6 +19,7 @@ import java.util.logging.Level;
 @Log
 public class CreditCardService {
 
+    public static final String CUSTOMER_NOT_FOUND = "Customer not found";
     public static final String CREDITCARD_NOT_FOUND = "CreditCard not found";
     public static final String CUSTOMER_NOT_CONSISTENCY = "There's no customer consistency with this Credit Card, no modify it's been applied";
     public static final String ID_ALREADY_EXISTS = "Id already exists";
@@ -46,10 +47,10 @@ public class CreditCardService {
 
     public CreditCardDto saveCreditCard(CreditCardDto creditCardDto) {
 
-
-        if (creditCardDto.getCustomer().getId() == null || customerService.findById(creditCardDto.getCustomer().getId()).isEmpty()) {
-            log.log(Level.SEVERE, ID_ALREADY_EXISTS);
-            throw new IdAlreadyExists( ID_ALREADY_EXISTS);
+        Optional<Customer> customer = customerService.findById(creditCardDto.getCustomer().getId());
+        if (creditCardDto.getCustomer().getId() == null || customer.isEmpty()) {
+            log.log(Level.SEVERE, CUSTOMER_NOT_FOUND);
+            throw new IdAlreadyExists( CUSTOMER_NOT_FOUND);
         }
 
         if(creditCardDto.getId()!= null && creditCardRepository.findById(creditCardDto.getId()).isPresent()){
@@ -57,8 +58,7 @@ public class CreditCardService {
             throw new IdAlreadyExists( ID_ALREADY_EXISTS);
         }
 
-
-        creditCardDto.setCustomer(customerMapper.toDtoWithId(customerService.findById(creditCardDto.getCustomer().getId()).get()));
+            creditCardDto.setCustomer(customerMapper.toDtoWithId(customer.get()));
 
         return creditCardMapper.toDto(creditCardRepository.save(creditCardMapper.dtoToCreditCard(creditCardDto)));
     }
@@ -70,8 +70,8 @@ public class CreditCardService {
     }
 
     public void checkCreditCardCustomer(Long id, CreditCardDto creditCardDto) {
-
-        if (findById(id).get().getCustomer().getId() != creditCardDto.getCustomer().getId()) {
+            Optional<CreditCard> creditCard = findById(id);
+        if (creditCard.isPresent() && !creditCard.get().getCustomer().getId().equals(creditCardDto.getCustomer().getId())) {
             log.log(Level.SEVERE, CUSTOMER_NOT_CONSISTENCY);
             throw new NotObjectFound( CUSTOMER_NOT_CONSISTENCY);
         }
@@ -85,7 +85,7 @@ public class CreditCardService {
         }
     }
 
-    public void verifyCreditCardTransactionsEmpty(Boolean isCreditCardTransactionsListEmpty) {
+    public void verifyCreditCardTransactionsEmpty(boolean isCreditCardTransactionsListEmpty) {
         if (!isCreditCardTransactionsListEmpty) {
             log.log(Level.SEVERE, CREDIT_CARD_TRANSACTION_IS_NOT_EMPTY);
             throw new NotObjectFound( CREDIT_CARD_TRANSACTION_IS_NOT_EMPTY);

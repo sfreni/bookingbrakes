@@ -79,7 +79,7 @@ public abstract class PurchaseMapper {
         purchase.setId(purchaseDto.getId());
         purchase.setPurchaseStatus(purchaseDto.getPurchaseStatus());
         purchase.setDatePurchase(purchaseDto.getDatePurchase());
-        purchase.setCreditCardTransactions(CreditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
+        purchase.setCreditCardTransactions(creditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
         purchase.setTrip(dtoToTrip(purchaseDto.getTrip()));
         List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
         purchase.setProducts(products);
@@ -95,7 +95,7 @@ public abstract class PurchaseMapper {
         purchase.setId(purchaseDto.getId());
         purchase.setPurchaseStatus(purchaseDto.getPurchaseStatus());
         purchase.setDatePurchase(purchaseDto.getDatePurchase());
-        purchase.setCreditCardTransactions(CreditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
+        purchase.setCreditCardTransactions(creditCardTransactionToDto(purchaseDto.getCreditCardTransactions()));
 
         List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
         purchase.setProducts(products);
@@ -148,7 +148,7 @@ public abstract class PurchaseMapper {
 
     public abstract Iterable<PurchaseDto> toDtos(Iterable<Purchase> purchases);
     public abstract List<PurchaseCreditCardTransactionDto> toDtoCreditCardTransaction(List<CreditCardTransaction> creditCardTransaction);
-    public abstract List<CreditCardTransaction> CreditCardTransactionToDto(List<PurchaseCreditCardTransactionDto> creditCardTransactionDtos);
+    public abstract List<CreditCardTransaction> creditCardTransactionToDto(List<PurchaseCreditCardTransactionDto> creditCardTransactionDtos);
     public abstract Trip dtoToTrip(TripDto tripDto);
     public abstract TripDto tripDto(Trip trip);
     public abstract CustomerPurchaseDto customerPurchaseToDto(Customer customer);

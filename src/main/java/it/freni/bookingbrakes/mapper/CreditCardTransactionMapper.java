@@ -8,13 +8,11 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = { PurchaseMapper.class })
-public abstract class CreditCardTransactionMapper{
+public interface  CreditCardTransactionMapper{
 
 
-    public abstract CreditCardTransaction dtoToCreditCardTransaction(CreditCardTransactionDto creditCardTransactionDto);
-    public abstract CreditCardTransactionDto toDto(CreditCardTransaction CreditCardTransaction);
-    public abstract List<CreditCardTransaction> purchaseCreditCardDtoToCreditCardTransactionList(List<PurchaseCreditCardTransactionDto> purchaseCreditCardTransactionDtoList);
-    public abstract List<PurchaseCreditCardTransactionDto> toPurchaseCreditCardTransactionListDto(List<CreditCardTransaction> creditCardTransactions);
-    public abstract PurchaseCreditCardTransactionDto toPurchaseCreditCardTransactionDto(CreditCardTransaction creditCardTransaction);
-    public abstract List<CreditCardTransactionDto> toDtosList(List<CreditCardTransaction> creditCardTransactions );
+     CreditCardTransaction dtoToCreditCardTransaction(CreditCardTransactionDto creditCardTransactionDto);
+     CreditCardTransactionDto toDto(CreditCardTransaction creditCardTransaction);
+     PurchaseCreditCardTransactionDto toPurchaseCreditCardTransactionDto(CreditCardTransaction creditCardTransaction);
+     List<CreditCardTransactionDto> toDtosList(List<CreditCardTransaction> creditCardTransactions );
 }

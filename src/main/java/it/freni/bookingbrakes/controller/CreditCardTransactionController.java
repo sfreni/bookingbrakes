@@ -46,7 +46,7 @@ public class CreditCardTransactionController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(creditCardTransactionMapper.toDto(creditCardTransactionServiceById.get()));
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 

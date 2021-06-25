@@ -14,8 +14,8 @@ import java.util.logging.Level;
 @Service
 @Log
 public class AirportService {
-    private final String AIRPORT_NOT_FOUND = "Airport not found";
-    private final String DELETE_NOT_POSSIBILE_WITH_TRIP = "You can't delete an Airport if it's got trips";
+    private static final String AIRPORT_NOT_FOUND = "Airport not found";
+    private static final String DELETE_NOT_POSSIBILE_WITH_TRIP = "You can't delete an Airport if it's got trips";
     private final AirportRepository airportRepository;
     private AirportMapper airportMapper;
 
@@ -30,6 +30,15 @@ public class AirportService {
 
     public Optional<Airport> findById(Long id) {
         return airportRepository.findById(id);
+    }
+
+    public Airport findByIdWithoutOptional(Long id) {
+        Optional<Airport> airport = airportRepository.findById(id);
+        if(airport.isPresent()){
+            return airport.get();
+        }
+        log.log(Level.SEVERE, AIRPORT_NOT_FOUND);
+        throw new NotObjectFound(AIRPORT_NOT_FOUND);
     }
 
     public AirportDto saveAirport(Airport airport) {

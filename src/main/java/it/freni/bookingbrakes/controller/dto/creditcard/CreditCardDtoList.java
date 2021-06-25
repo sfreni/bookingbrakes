@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class CreditCardDtoList {
     private CustomerDto customer;
-    private List<CreditCardDtoSingle> creditCardDtoList;
+    private List<CreditCardDtoSingle> creditCardDtoSingles;
 }

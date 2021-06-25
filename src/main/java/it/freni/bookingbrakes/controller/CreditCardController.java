@@ -58,7 +58,7 @@ public class CreditCardController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(creditCardMapper.toDto(creditCard.get()));
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
@@ -83,9 +83,11 @@ public class CreditCardController {
     @ResponseStatus(code=HttpStatus.NO_CONTENT)
     public void deleteCreditCard(@PathVariable("id") Long id){
         creditCardService.checkCreditCardId(id);
-        CreditCard creditCard =creditCardService.findById(id).get();
-        creditCardService.verifyCreditCardTransactionsEmpty(creditCardTransactionService.findAllBy(creditCard).isEmpty());
-        creditCardService.deleteCreditCardById(id);
+        Optional<CreditCard> creditCard = creditCardService.findById(id);
+        if(creditCard.isPresent()) {
+            creditCardService.verifyCreditCardTransactionsEmpty(creditCardTransactionService.findAllBy(creditCard.get()).isEmpty());
+            creditCardService.deleteCreditCardById(id);
+        }
     }
 
 }

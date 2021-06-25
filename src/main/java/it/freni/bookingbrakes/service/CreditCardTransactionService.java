@@ -1,9 +1,10 @@
 package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardTransactionDto;
-import it.freni.bookingbrakes.domain.*;
+import it.freni.bookingbrakes.domain.CreditCard;
+import it.freni.bookingbrakes.domain.CreditCardTransaction;
+import it.freni.bookingbrakes.domain.Purchase;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
-import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
@@ -21,9 +22,7 @@ public class CreditCardTransactionService {
 
     public static final String CREDITCARD_NOT_FOUND = "CreditCard not found or mismatch";
     public static final String CREDITCARD_TRANSACTION_NOT_FOUND = "Transaction Not Found";
-    public static final String CUSTOMER_NOT_CONSISTENCY = "Customer can't be modified";
     public static final String PURCHASE_NOT_FOUND = "Purchase not found or mismatch";
-    public static final String ID_ALREADY_EXISTS = "Id already exists";
     private final CreditCardService creditCardService;
     private final PurchaseService purchaseService;
     private final CreditCardMapper creditCardMapper;
@@ -60,85 +59,22 @@ public class CreditCardTransactionService {
             creditCardTransactionDto.setId(null);
         }
 
-        if(creditCardTransactionDto.getCreditcard().getId()== null || creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).isEmpty()){
+        Optional<CreditCard> creditCard = creditCardService.findById(creditCardTransactionDto.getCreditcard().getId());
+        Optional<Purchase> purchase =purchaseService.findById(creditCardTransactionDto.getPurchase().getId());
+        if(creditCardTransactionDto.getCreditcard().getId()== null || creditCard.isEmpty()){
             log.log(Level.SEVERE, CREDITCARD_NOT_FOUND);
             throw new IdAlreadyExists( CREDITCARD_NOT_FOUND);
         }
 
-        if(creditCardTransactionDto.getCreditcard().getId()== null || purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).isEmpty()){
+        if(creditCardTransactionDto.getPurchase().getId()== null || purchase.isEmpty()){
             log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
             throw new IdAlreadyExists( PURCHASE_NOT_FOUND);
         }
 
-
-
-
-        creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).get()));
-        creditCardTransactionDto.setPurchase(purchaseMapper.toPurchaseTransactionsDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
+        creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCard.get()));
+        creditCardTransactionDto.setPurchase(purchaseMapper.toPurchaseTransactionsDto(purchase.get()));
 
         return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
-    }
-
-
-    public CreditCardTransactionDto replaceCreditCardTransaction(Long id, CreditCardTransactionDto creditCardTransactionDto) {
-
-        if (id == null || creditCardTransactionRepository.findById(id).isEmpty() ) {
-            log.log(Level.SEVERE, CREDITCARD_TRANSACTION_NOT_FOUND);
-            throw new IdAlreadyExists( CREDITCARD_TRANSACTION_NOT_FOUND);
-        }
-
-        if(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).isEmpty()
-        ||
-                creditCardTransactionDto.getCreditcard().getId() != creditCardTransactionRepository.findById(id).get().getCreditcard().getId())
-        {
-            log.log(Level.SEVERE, CREDITCARD_NOT_FOUND);
-            throw new IdAlreadyExists( CREDITCARD_NOT_FOUND);
-        }
-
-
-        if(creditCardService.findById(creditCardTransactionDto.getPurchase().getId()).isEmpty()
-                ||
-                creditCardTransactionDto.getPurchase().getId() != creditCardTransactionRepository.findById(id).get().getPurchase().getId())
-        {    log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
-            throw new IdAlreadyExists( PURCHASE_NOT_FOUND);
-        }
-        creditCardTransactionDto.setId(id);
-        creditCardTransactionDto.setCreditcard(creditCardMapper.toDtoCreditCardNoTransaction(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId()).get()));
-        creditCardTransactionDto.setPurchase(purchaseMapper.toPurchaseTransactionsDto(purchaseService.findById(creditCardTransactionDto.getPurchase().getId()).get()));
-        return creditCardTransactionMapper.toDto(creditCardTransactionRepository.save(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)));
-    }
-
-      public List<CreditCardTransaction> saveCreditCardTransactionList(List<CreditCardTransaction> creditCardTransactions) {
-
-          return creditCardTransactionRepository.saveAll(creditCardTransactions);
-
-
-        }
-
-        public void checkDtoBeforeSaving(List<CreditCardTransaction> creditCardTransactions) {
-        for(CreditCardTransaction creditCardTransaction : creditCardTransactions) {
-            if (creditCardTransaction.getId() != null) {
-                creditCardTransaction.setId(null);
-            }
-
-            if (creditCardTransaction.getCreditcard() == null ||
-            creditCardTransaction.getCreditcard().getId() == null ||
-            creditCardService.findById(creditCardTransaction.getCreditcard().getId()).isEmpty())
-            {
-                log.log(Level.SEVERE, CREDITCARD_NOT_FOUND);
-                throw new IdAlreadyExists(CREDITCARD_NOT_FOUND);
-            }
-
-
-        }
-    }
-
-    public void deleteCreditCardTransactionById(Long id) {
-        if (id == null || findById(id).isEmpty()) {
-            log.log(Level.SEVERE, CREDITCARD_TRANSACTION_NOT_FOUND);
-            throw new NotObjectFound( CREDITCARD_TRANSACTION_NOT_FOUND);
-        }
-        creditCardTransactionRepository.deleteById(id);
     }
 
 

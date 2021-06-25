@@ -38,7 +38,7 @@ public abstract class ProductMapper {
         return null;
     }
 
-    public Product DtotoProduct(ProductDto productDto){
+    public Product dtotoProduct(ProductDto productDto){
 
         if (productDto instanceof ProductSeatDto) {
             Seat product = new Seat();
@@ -60,6 +60,6 @@ public abstract class ProductMapper {
 
         return null;
     }
-        public abstract List<Product> DtosToProducts(List<ProductDto> productDtos);
+        public abstract List<Product> dtosToProducts(List<ProductDto> productDtos);
     public abstract List<ProductDto> toDtos(List<Product> products);
  }

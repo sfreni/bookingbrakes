@@ -2,11 +2,7 @@ package it.freni.bookingbrakes.controller.dto.purchase;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import it.freni.bookingbrakes.domain.Purchase;
 import lombok.Data;
-
-import javax.persistence.*;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({

@@ -39,6 +39,14 @@ public class TripService {
         return tripRepository.findById(id);
     }
 
+    public Trip findByIdWithoutOptional(Long id) {
+        Optional<Trip> trip = tripRepository.findById(id);
+        if(trip.isPresent()){
+            return trip.get();
+        }
+        log.log(Level.SEVERE, TRIP_NOT_FOUND);
+        throw new NotObjectFound( TRIP_NOT_FOUND);
+    }
 
     public TripDto saveTrip(Trip trip) {
 
@@ -55,9 +63,9 @@ public class TripService {
             throw new NotObjectFound(DESTINATION_AIRPORT_NOT_FOUND);
         }
         trip.setId(null);
-        trip.setAirplane(airplaneService.findById(trip.getAirplane().getId()).get());
-        trip.setDestination(airportService.findById(trip.getDestination().getId()).get());
-        trip.setDeparture(airportService.findById(trip.getDeparture().getId()).get());
+        trip.setAirplane(airplaneService.findByIdWithoutOptional(trip.getAirplane().getId()));
+        trip.setDestination(airportService.findByIdWithoutOptional(trip.getDestination().getId()));
+        trip.setDeparture(airportService.findByIdWithoutOptional(trip.getDeparture().getId()));
         return tripMapper.toDto(tripRepository.save(trip));
     }
 
@@ -84,11 +92,11 @@ public class TripService {
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
         trip.setId(id);
-        if (!tripRepository.findById(trip.getId()).get()
+        if (!findByIdWithoutOptional(trip.getId())
                 .getPurchases()
                 .isEmpty()) {
 
-            trip.setPurchases(tripRepository.findById(trip.getId()).get()
+            trip.setPurchases(findByIdWithoutOptional(trip.getId())
                     .getPurchases());
         }
 
@@ -101,7 +109,7 @@ public class TripService {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
-        if (!findById(id).get().getPurchases().isEmpty()) {
+        if (!findByIdWithoutOptional(id).getPurchases().isEmpty()) {
             log.log(Level.SEVERE, DELETE_FAILED_PURCHASE);
             throw new NotObjectFound(DELETE_FAILED_PURCHASE);
 
@@ -109,21 +117,15 @@ public class TripService {
         tripRepository.deleteById(id);
     }
 
-    public Boolean findTripByAirplane(Long id) {
+    public boolean findTripByAirplane(Long id) {
 
-        if(tripRepository.findTripByAirplane_id(id).get().isEmpty()) {
-            return true;
-        }
-        return false;
+        return tripRepository.findTripByAirplane_id(id).get().isEmpty();
 
     }
 
-    public Boolean findTripByAirport(Long id) {
+    public boolean findTripByAirport(Long id) {
 
-        if(tripRepository.findTripByDeparture_Id(id).get().isEmpty() &&
-                tripRepository.findTripByDestination_Id(id).get().isEmpty()) {
-            return true;
-        }
-        return false;
+        return tripRepository.findTripByDeparture_Id(id).get().isEmpty() &&
+                tripRepository.findTripByDestination_Id(id).get().isEmpty();
     }
 }

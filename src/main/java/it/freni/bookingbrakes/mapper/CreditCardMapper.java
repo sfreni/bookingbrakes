@@ -13,17 +13,18 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = { PurchaseMapper.class })
 public abstract class CreditCardMapper {
 
+        public CreditCardDtoList toDtosList(List<CreditCard> creditCards , CustomerDto customerDto){
+                List<CreditCardDtoSingle>   creditCardDtoSingles = todtos(creditCards);
+                CreditCardDtoList creditCardDtoList = new CreditCardDtoList();
+                creditCardDtoList.setCreditCardDtoSingles(creditCardDtoSingles);
+                creditCardDtoList.setCustomer(customerDto);
+                return creditCardDtoList;
+        }
+
         public abstract CreditCardDto toDto(CreditCard creditCard);
         public abstract List<CreditCardDtoSingle> todtos(List<CreditCard> creditCards);
         public abstract CreditCard dtoToCreditCard(CreditCardDto creditCardDto);
         public abstract CreditCardNoTransactionsDto toDtoCreditCardNoTransaction(CreditCard creditCard);
 
-        public CreditCardDtoList toDtosList(List<CreditCard> creditCards , CustomerDto customerDto){
-                List<CreditCardDtoSingle>   creditCardDtoSingles = todtos(creditCards);
-                CreditCardDtoList creditCardDtoList = new CreditCardDtoList();
-                creditCardDtoList.setCreditCardDtoList(creditCardDtoSingles);
-                creditCardDtoList.setCustomer(customerDto);
-                return creditCardDtoList;
-        }
 
 }

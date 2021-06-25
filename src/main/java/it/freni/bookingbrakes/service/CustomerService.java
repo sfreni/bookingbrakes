@@ -35,6 +35,15 @@ public class CustomerService {
         return repository.findById(id);
     }
 
+    public Customer findByIdWithoutOptional(Long id) {
+        Optional<Customer> customer = repository.findById(id);
+        if(customer.isPresent()){
+            return customer.get();
+        }
+        log.log(Level.SEVERE, OBJECT_NOT_FOUND);
+        throw new NotObjectFound( OBJECT_NOT_FOUND);
+    }
+
     public CustomerDto saveCustomer(Customer customer) {
 
 
@@ -56,12 +65,13 @@ public class CustomerService {
     }
 
     public void deleteCustomerById(Long id) {
-        if (id == null || findById(id).isEmpty()) {
+        Optional<Customer> customer=findById(id);
+        if (id == null || customer.isEmpty()) {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
 
-        if (!findById(id).get().getPurchases().isEmpty()) {
+        if (!customer.get().getPurchases().isEmpty()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
             throw new NotObjectFound( CUSTOMER_NOT_DELETE);
         }

@@ -38,12 +38,11 @@ private final TripService tripService;
             return ResponseEntity.status(HttpStatus.OK)
                     .body(airplaneMapper.toDto(dto.get()));
         }
-        return new ResponseEntity<>(null ,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
     public ResponseEntity<AirplaneDto> postAirplane(@RequestBody AirplaneDto airplaneDto)  {
-        System.out.println(airplaneDto.toString());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(airplaneMapper.toDto(airplaneService.saveAirplane(airplaneMapper.dtoToAirplane(airplaneDto))));
     }
@@ -59,12 +58,12 @@ private final TripService tripService;
         if (airplane.isPresent()) {
             if(tripService.findTripByAirplane(id)){
                 airplaneService.deleteAirplaneById(id);
-                return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
             airplaneService.errorTripPresent();
 
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
     }
 

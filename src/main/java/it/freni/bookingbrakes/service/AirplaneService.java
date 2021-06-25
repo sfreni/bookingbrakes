@@ -14,8 +14,8 @@ import java.util.logging.Level;
 @Log
 @Service
 public class AirplaneService {
-    private final String DELETE_NOT_POSSIBILE_WITH_TRIP = "You can't delete an Airplane if it's got trips";
-    private final String AIRPLANE_NOT_FOUND_MESSAGE = "Airplane not found";
+    private static final String DELETE_NOT_POSSIBILE_WITH_TRIP = "You can't delete an Airplane if it's got trips";
+    private static final String AIRPLANE_NOT_FOUND = "Airplane not found";
     private final AirplaneRepository airplaneRepository;
     private final AirplaneMapper mapper;
 
@@ -32,6 +32,15 @@ public class AirplaneService {
         return airplaneRepository.findById(id);
     }
 
+    public Airplane findByIdWithoutOptional(Long id) {
+        Optional<Airplane> airplane = airplaneRepository.findById(id);
+        if(airplane.isPresent()){
+            return airplane.get();
+        }
+        log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
+        throw new NotObjectFound(AIRPLANE_NOT_FOUND);
+    }
+
     public Airplane saveAirplane(Airplane airplane) {
         airplane.setId(null);
         return airplaneRepository.save(airplane);
@@ -39,8 +48,8 @@ public class AirplaneService {
 
     public AirplaneDto replaceAirplane(Long id, Airplane airplane) {
         if (id == null || findById(id).isEmpty()) {
-            log.log(Level.SEVERE, AIRPLANE_NOT_FOUND_MESSAGE);
-            throw new NotObjectFound(AIRPLANE_NOT_FOUND_MESSAGE);
+            log.log(Level.SEVERE, AIRPLANE_NOT_FOUND);
+            throw new NotObjectFound(AIRPLANE_NOT_FOUND);
         }
         airplane.setId(id);
         return mapper.toDto(airplaneRepository.save(airplane));

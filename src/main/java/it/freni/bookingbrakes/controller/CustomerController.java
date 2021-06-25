@@ -39,7 +39,7 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(customerMapper.toCustomerControllerDto(customer.get()));
         }
-        return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping

@@ -3,8 +3,6 @@ package it.freni.bookingbrakes.controller;
 import it.freni.bookingbrakes.controller.dto.trip.TripDto;
 import it.freni.bookingbrakes.domain.Trip;
 import it.freni.bookingbrakes.mapper.TripMapper;
-import it.freni.bookingbrakes.service.AirplaneService;
-import it.freni.bookingbrakes.service.AirportService;
 import it.freni.bookingbrakes.service.TripService;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
@@ -19,14 +17,10 @@ import java.util.Optional;
 public class TripController {
 
     private final TripService tripService;
-    private final AirportService airportService;
-    private final AirplaneService airplaneService;
     private final TripMapper tripMapper;
 
-    public TripController(TripService tripService, AirportService airportService, AirplaneService airplaneService, TripMapper tripMapper) {
+    public TripController(TripService tripService, TripMapper tripMapper) {
         this.tripService = tripService;
-        this.airportService = airportService;
-        this.airplaneService = airplaneService;
         this.tripMapper = tripMapper;
     }
 
@@ -45,7 +39,7 @@ public class TripController {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(tripMapper.toDto(trip.get()));
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>( HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
@@ -55,9 +49,9 @@ public class TripController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TripDto> putTrip(@PathVariable("id") Long Id, @RequestBody TripDto tripDto) {
+    public ResponseEntity<TripDto> putTrip(@PathVariable("id") Long id, @RequestBody TripDto tripDto) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(tripService.replaceTrip(Id,tripMapper.dtoToTrip(tripDto)));
+                .body(tripService.replaceTrip(id,tripMapper.dtoToTrip(tripDto)));
     }
 
 

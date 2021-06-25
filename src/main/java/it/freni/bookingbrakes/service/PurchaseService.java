@@ -8,9 +8,7 @@ import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
-import it.freni.bookingbrakes.mapper.ProductMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
-import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.repository.PurchaseRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
@@ -23,11 +21,7 @@ import java.util.logging.Level;
 @Log
 public class PurchaseService {
 
-    public static final String OBJECT_NOT_FOUND = "Object not found";
-    public static final String ID_ALREADY_EXISTS = "Id already exists";
-    private static final String PRODUCTS_NOT_FOUND = "Products Not Found";
-    private static final String CREDITCARD_TRANSACTIONS_NOT_FOUND = "Credit Card Transaction not found";
-    private static final String PURCHASE_STATUS_NOT_FOUND = "Purchase status not found";
+     private static final String PRODUCTS_NOT_FOUND = "Products Not Found";
     private static final String TRIP_NOT_FOUND = "Trip Not Found";
     private static final String TRIP_MISMATCH = "Trip Mismatch";
     private static final String CUSTOMER_MISMATCH = "Customer Mismatch";
@@ -36,25 +30,18 @@ public class PurchaseService {
 
     public static final String SEAT_DUPLICATION = "Seats are duplicated";
     public static final String ERROR_REFUND ="The amount of refund is higher then amount of puchase";
-    private static final String TRANSACTION_PRICE_AMOUNT_ERROR ="Payment is lower then total purchase" ;
     private static final String PURCHASE_NOT_FOUND = "Purchase is not found";
     public static final String PURCHASE_WITH_TRANSACTIONS = "You can't delete this purchase because it's got transactions";
     private final PurchaseRepository repository;
     private final PurchaseMapper purchaseMapper;
-    private final ProductMapper productMapper;
     private final CreditCardTransactionMapper creditCardTransactionMapper;
-    private final ProductService productService;
     private final TripService tripService;
-    private final TripMapper tripMapper;
 
-    public PurchaseService(PurchaseRepository repository, PurchaseMapper purchaseMapper, ProductMapper productMapper, CreditCardTransactionMapper creditCardTransactionMapper, ProductService productService, TripService tripService, TripMapper tripMapper) {
+    public PurchaseService(PurchaseRepository repository, PurchaseMapper purchaseMapper, CreditCardTransactionMapper creditCardTransactionMapper, TripService tripService) {
         this.repository = repository;
         this.purchaseMapper = purchaseMapper;
-        this.productMapper = productMapper;
         this.creditCardTransactionMapper = creditCardTransactionMapper;
-        this.productService = productService;
         this.tripService = tripService;
-        this.tripMapper = tripMapper;
     }
 
     public Iterable<Purchase> findAll() {
@@ -64,7 +51,14 @@ public class PurchaseService {
     public Optional<Purchase> findById(Long id) {
         return repository.findById(id);
     }
-
+    public Purchase findByIdWithoutOptional(Long id) {
+        Optional<Purchase> purchase = repository.findById(id);
+        if(purchase.isPresent()){
+            return purchase.get();
+        }
+        log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
+        throw new NotObjectFound(PURCHASE_NOT_FOUND);
+    }
     public Purchase savePurchase(PurchaseDto purchaseDto) {
 
         purchaseDto.setId(null);
@@ -81,7 +75,7 @@ public class PurchaseService {
     }
 
 
-    public PurchaseDto checkDtoBeforeSaving(PurchaseDto purchaseDto) {
+    public void checkDtoBeforeSaving(PurchaseDto purchaseDto) {
         if (purchaseDto.getProducts().isEmpty()) {
             log.log(Level.SEVERE, PRODUCTS_NOT_FOUND);
             throw new NotObjectFound(PRODUCTS_NOT_FOUND);
@@ -94,46 +88,51 @@ public class PurchaseService {
         }
 
 
-        for (ProductDto productDto : purchaseDto.getProducts()) {
-            if (productDto instanceof ProductSeatDto) {
-                    for (Purchase purchase : tripService.findById(purchaseDto.getTrip().getId()).get().getPurchases()) {
-                        for (Product product : purchase.getProducts()) {
-                            if (product instanceof Seat) {
-                                if (((Seat) product).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat())) {
-                                    log.log(Level.SEVERE, SEAT_ALREADY_BOOKED);
-                                    throw new IdAlreadyExists(SEAT_ALREADY_BOOKED);
-                                }
-                            }
-                        }
-                    }
+        verifySeatAlreadyBooked(purchaseDto);
 
+
+        verifySeatDuplication(purchaseDto);
+    }
+
+    private void verifySeatDuplication(PurchaseDto purchaseDto) {
+        for (ProductDto productDto : purchaseDto.getProducts()) {
+            int contEqual = 0;
+            if (productDto instanceof ProductSeatDto) {
+                checkSeatDuplication(purchaseDto, (ProductSeatDto) productDto, contEqual);
+            }
+        }
+    }
+
+    private void checkSeatDuplication(PurchaseDto purchaseDto, ProductSeatDto productDto, int contEqual) {
+        for (ProductDto productDtoExamined : purchaseDto.getProducts()) {
+            if (productDtoExamined instanceof ProductSeatDto
+                    && (((ProductSeatDto) productDtoExamined).getNrSeat().equals(productDto.getNrSeat()))) {
+                if (contEqual == 1) {
+                    log.log(Level.SEVERE, SEAT_DUPLICATION);
+                    throw new IdAlreadyExists(SEAT_DUPLICATION);
+                }
+                contEqual++;
+            }
+        }
+    }
+
+    private void verifySeatAlreadyBooked(PurchaseDto purchaseDto) {
+        purchaseDto.getProducts().stream().filter(productDto -> productDto instanceof ProductSeatDto).forEach(productDto -> {
+            for (Purchase purchase : tripService.findByIdWithoutOptional(purchaseDto.getTrip().getId()).getPurchases()) {
+                for (Product product : purchase.getProducts()) {
+                    if (product instanceof Seat && (((Seat) product).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat()))) {
+                        log.log(Level.SEVERE, SEAT_ALREADY_BOOKED);
+                        throw new IdAlreadyExists(SEAT_ALREADY_BOOKED);
+                    }
                 }
             }
-
-
-        for (ProductDto productDto : purchaseDto.getProducts()) {
-            int contEqual =0;
-            if (productDto instanceof ProductSeatDto) {
-                for (ProductDto productDtoExamined : purchaseDto.getProducts()) {
-                    if (productDtoExamined instanceof ProductSeatDto) {
-                                if ((((ProductSeatDto) productDtoExamined).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat()))) {
-                                    if(contEqual==1){
-                                    log.log(Level.SEVERE, SEAT_DUPLICATION);
-                                    throw new IdAlreadyExists(SEAT_DUPLICATION);
-                                }
-                                    contEqual++;
-                                }
-                        }
-                    }
-                }
-            }
-        return purchaseDto;
+        });
     }
 
 
-    public PurchaseDto checkDtoBeforeUpdating(PurchaseDto purchaseDto) {
-
-        if ( purchaseDto.getId()==null || findById(purchaseDto.getId()).isEmpty()) {
+    public Purchase checkDtoBeforeUpdating(PurchaseDto purchaseDto) {
+            Optional<Purchase> purchaseDb = findById(purchaseDto.getId());
+        if ( purchaseDto.getId()==null || purchaseDb.isEmpty()) {
             log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
             throw new NotObjectFound( PURCHASE_NOT_FOUND);
         }
@@ -155,64 +154,44 @@ public class PurchaseService {
         }
 
 
-        if (repository.findById(purchaseDto.getId()).get().getTrip().getId()
-                !=purchaseDto.getTrip().getId()) {
+        if (!purchaseDb.get().getTrip().getId().equals(purchaseDto.getTrip().getId())) {
             log.log(Level.SEVERE, TRIP_MISMATCH);
             throw new NotObjectFound(TRIP_MISMATCH);
         }
 
 
-        if (repository.findById(purchaseDto.getId()).get().getCustomer().getId()
-                !=purchaseDto.getCustomer().getId()) {
+        if (!purchaseDb.get().getCustomer().getId().equals(purchaseDto.getCustomer().getId())) {
             log.log(Level.SEVERE, CUSTOMER_MISMATCH);
             throw new NotObjectFound(CUSTOMER_MISMATCH);
         }
 
 
+        verifySeatBookedOnUpadte(purchaseDto);
 
 
-        for (ProductDto productDto : purchaseDto.getProducts()) {
-            if (productDto instanceof ProductSeatDto) {
-                for (Purchase purchase : tripService.findById(purchaseDto.getTrip().getId()).get().getPurchases()) {
-                    for (Product product : purchase.getProducts()) {
-                            if (product instanceof Seat) {
-                                if (((Seat) product).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat())) {
-                                    if(purchaseDto.getId()!=purchase.getId()) {
-                                        log.log(Level.SEVERE, SEAT_ALREADY_BOOKED);
-                                        throw new IdAlreadyExists(SEAT_ALREADY_BOOKED);
-                                    }
-                                }
-                            }
-                        }
-                    }
+        verifySeatDuplication(purchaseDto);
 
-                }
-            }
-
-
-        for (ProductDto productDto : purchaseDto.getProducts()) {
-            int contEqual =0;
-            if (productDto instanceof ProductSeatDto) {
-                for (ProductDto productDtoExamined : purchaseDto.getProducts()) {
-                    if (productDtoExamined instanceof ProductSeatDto) {
-                        if ((((ProductSeatDto) productDtoExamined).getNrSeat().equals(((ProductSeatDto) productDto).getNrSeat()))) {
-                            if(contEqual==1){
-                                log.log(Level.SEVERE, SEAT_DUPLICATION);
-                                throw new IdAlreadyExists(SEAT_DUPLICATION);
-                            }
-                            contEqual++;
-                        }
-                    }
-                }
-            }
+        return purchaseDb.get();
         }
-        return purchaseDto;
+
+    private void verifySeatBookedOnUpadte(PurchaseDto purchaseDto) {
+        purchaseDto.getProducts().stream().filter(productDto -> productDto instanceof ProductSeatDto).forEach(productDto -> {
+            for (Purchase purchase : tripService.findByIdWithoutOptional(purchaseDto.getTrip().getId()).getPurchases()) {
+                for (Product product : purchase.getProducts()) {
+                    if (product instanceof Seat && (((Seat) product).getNrSeat()
+                            .equals(((ProductSeatDto) productDto).getNrSeat()))
+                            && (!purchaseDto.getId().equals(purchase.getId()))) {
+                        log.log(Level.SEVERE, SEAT_ALREADY_BOOKED);
+                        throw new IdAlreadyExists(SEAT_ALREADY_BOOKED);
+                    }
+                }
+            }
+        });
     }
 
 
-
     public void updatePurchaseTransactions(CreditCardTransactionDto creditCardTransactionDto) {
-        Purchase purchase = repository.findById(creditCardTransactionDto.getPurchase().getId()).get();
+        Purchase purchase = findByIdWithoutOptional(creditCardTransactionDto.getPurchase().getId());
        purchase.getCreditCardTransactions().add(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto));
         double totalPurchase = 0;
         for (Product product : purchase.getProducts()) {
@@ -234,7 +213,7 @@ public class PurchaseService {
 
 
     public void updateRefusedPurchaseTransactions(CreditCardTransactionDto creditCardTransactionDto) {
-        Purchase purchase = repository.findById(creditCardTransactionDto.getPurchase().getId()).get();
+        Purchase purchase = findByIdWithoutOptional(creditCardTransactionDto.getPurchase().getId());
         purchase.getCreditCardTransactions().add(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto));
         double totalPaid = 0;
         for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
@@ -286,10 +265,10 @@ public class PurchaseService {
     }
 
     public void errorDeletePurchaseWithTransaction() {
-        {
+
             log.log(Level.SEVERE, PURCHASE_WITH_TRANSACTIONS);
             throw new IdAlreadyExists(PURCHASE_WITH_TRANSACTIONS);
-        }
+
     }
 
 }
