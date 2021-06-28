@@ -53,18 +53,14 @@ public class CreditCardService {
             throw new IdAlreadyExists( CUSTOMER_NOT_FOUND);
         }
 
-        if(creditCardDto.getId()!= null && creditCardRepository.findById(creditCardDto.getId()).isPresent()){
-            log.log(Level.SEVERE, ID_ALREADY_EXISTS);
-            throw new IdAlreadyExists( ID_ALREADY_EXISTS);
-        }
+        creditCardDto.setId(null);
 
-            creditCardDto.setCustomer(customerMapper.toDtoWithId(customer.get()));
+        creditCardDto.setCustomer(customerMapper.toDtoWithId(customer.get()));
 
         return creditCardMapper.toDto(creditCardRepository.save(creditCardMapper.dtoToCreditCard(creditCardDto)));
     }
 
     public CreditCardDto replaceCreditCard(CreditCard creditCard) {
-
 
         return creditCardMapper.toDto(creditCardRepository.save(creditCard));
     }

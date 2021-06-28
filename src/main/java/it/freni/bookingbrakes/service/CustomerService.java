@@ -1,8 +1,7 @@
 package it.freni.bookingbrakes.service;
 
-import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
+import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
-import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
 import it.freni.bookingbrakes.repository.CustomerRepository;
@@ -44,24 +43,20 @@ public class CustomerService {
         throw new NotObjectFound( OBJECT_NOT_FOUND);
     }
 
-    public CustomerDto saveCustomer(Customer customer) {
+    public CustomerControllerDto saveCustomer(Customer customer) {
 
 
-            if (customer.getId() != null && findById(customer.getId()).isPresent()) {
-                log.log(Level.SEVERE, ID_ALREADY_EXISTS);
-                throw new IdAlreadyExists( ID_ALREADY_EXISTS);
-            }
-
-        return mapper.toDto(repository.save(customer));
+        customer.setId(null);
+        return mapper.toCustomerControllerDto(repository.save(customer));
     }
 
-    public CustomerDto replaceCustomer(Long id, Customer customer) {
+    public CustomerControllerDto replaceCustomer(Long id, Customer customer) {
         if (id == null || findById(id).isEmpty()) {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
         customer.setId(id);
-        return mapper.toDto(repository.save(customer));
+        return mapper.toCustomerControllerDto(repository.save(customer));
     }
 
     public void deleteCustomerById(Long id) {
@@ -75,6 +70,7 @@ public class CustomerService {
             log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
             throw new NotObjectFound( CUSTOMER_NOT_DELETE);
         }
+        repository.deleteById(id);
 
     }
 

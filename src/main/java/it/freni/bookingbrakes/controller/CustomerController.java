@@ -43,14 +43,14 @@ public class CustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerDto> postCustomer(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<CustomerControllerDto> postCustomer(@RequestBody CustomerDto customerDto) {
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(service.saveCustomer(customerMapper.dtoToCustomer(customerDto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CustomerDto> putCustomer(@PathVariable("id") Long id,@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<CustomerControllerDto> putCustomer(@PathVariable("id") Long id,@RequestBody CustomerDto customerDto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(service.replaceCustomer(id, customerMapper.dtoToCustomer(customerDto)));
     }

@@ -81,13 +81,13 @@ class AirplaneServiceTest {
     }
     @Test
     void getAllAirplane() {
-        airplaneRepository.save(airplane);
+//        airplaneRepository.save(airplane);
 
         when(airplaneRepository.findAll()).thenReturn(airplaneList);
         List<Airplane> airplanes = airplaneRepository.findAll();
 
         assertEquals(airplanes,airplaneList);
-        verify(airplaneRepository, times(1)).save(any());
+  //      verify(airplaneRepository, times(1)).save(any());
         verify(airplaneRepository, times(1)).findAll();
 
     }
