@@ -2,12 +2,14 @@ package it.freni.bookingbrakes.service;
 
 import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
+import it.freni.bookingbrakes.domain.Purchase;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CustomerMapper;
 import it.freni.bookingbrakes.repository.CustomerRepository;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -65,8 +67,8 @@ public class CustomerService {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
-
-        if (!customer.get().getPurchases().isEmpty()) {
+        Optional<List<Purchase>> purchasesLocal=Optional.ofNullable(customer.get().getPurchases());
+        if (purchasesLocal.isPresent()) {
             log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
             throw new NotObjectFound( CUSTOMER_NOT_DELETE);
         }

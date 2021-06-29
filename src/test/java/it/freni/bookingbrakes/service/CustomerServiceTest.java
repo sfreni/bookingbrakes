@@ -147,13 +147,13 @@ class CustomerServiceTest {
     void deleteCustomer() {
 
 //        doNothing().when(customerRepository).deleteById(anyLong());
-    //    customer.setPurchases(null);
         when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(customer));
-        assertThrows(NotObjectFound.class,() ->customerService.deleteCustomerById(1L));
       //  customer.setPurchases(null);
-//        customerService.deleteCustomerById(1L);
+        //z   when(customer.getPurchases().isEmpty()).thenReturn(true);
+        assertThrows(NotObjectFound.class,() ->customerService.deleteCustomerById(1L));
+     //   customerService.deleteCustomerById(1L);
         verify(customerRepository, times(1)).findById(any());
-    //    verify(customerRepository, times(1)).deleteById(anyLong());
+       // verify(customerRepository, times(1)).deleteById(anyLong());
     }
 
 

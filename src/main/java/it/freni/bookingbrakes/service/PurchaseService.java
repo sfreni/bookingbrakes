@@ -166,7 +166,7 @@ public class PurchaseService {
         }
 
 
-        verifySeatBookedOnUpadte(purchaseDto);
+        verifySeatBookedOnUpdate(purchaseDto);
 
 
         verifySeatDuplication(purchaseDto);
@@ -174,7 +174,7 @@ public class PurchaseService {
         return purchaseDb.get();
         }
 
-    private void verifySeatBookedOnUpadte(PurchaseDto purchaseDto) {
+    private void verifySeatBookedOnUpdate(PurchaseDto purchaseDto) {
         purchaseDto.getProducts().stream().filter(productDto -> productDto instanceof ProductSeatDto).forEach(productDto -> {
             for (Purchase purchase : tripService.findByIdWithoutOptional(purchaseDto.getTrip().getId()).getPurchases()) {
                 for (Product product : purchase.getProducts()) {

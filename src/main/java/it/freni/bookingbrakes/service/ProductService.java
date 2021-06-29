@@ -24,10 +24,6 @@ public class ProductService {
     }
 
 
-
-
-
-
     public void deleteAllProductsByPurchase(Purchase purchase) {
         productRepository.deleteProductByPurchase(purchase);
     }
