@@ -40,6 +40,7 @@ class AirportServiceTest {
     private Airport airport;
     private List<Airport> airportList;
     private AirportDto airportDto;
+    private List<AirportDto> airportDtoList;
     @BeforeEach
     void setUp() {
 
@@ -64,7 +65,8 @@ class AirportServiceTest {
         airportDto.setShortName("CDG");
         airportDto.setStateProvince("Paris");
         airportDto.setStreetAddress("Roissy-en-France");
-
+        airportDtoList = new ArrayList<>();
+        airportDtoList.add(airportDto);
     }
 
     @Test
@@ -84,16 +86,15 @@ class AirportServiceTest {
         verify(airportRepository, times(2)).findById(any());
     }
     @Test
-    void getAllAirport() {
-        airportRepository.save(airport);
-
+    void getAllAirports() {
         when(airportRepository.findAll()).thenReturn(airportList);
-        List<Airport> airports = airportRepository.findAll();
+        when(mapper.toDtos(airportList)).thenReturn(airportDtoList);
+        when(mapper.dtosToAirports(airportDtoList)).thenReturn(airportList);
 
-        assertEquals(airports,airportList);
-        verify(airportRepository, times(1)).save(any());
+        List<Airport> airports = (List<Airport>) mapper.dtosToAirports(airportService.getAllAirports());
+
+        assertEquals(airportList,airports);
         verify(airportRepository, times(1)).findAll();
-
     }
 
     @Test
@@ -143,6 +144,10 @@ class AirportServiceTest {
         verify(airportRepository, times(1)).deleteById(anyLong());
         verify(tripService, times(1)).findTripByAirplane(anyLong());
 
+    }
+    @Test
+    void dummyTest() {
+        assertThrows(NotObjectFound.class,() ->airportService.errorTripPresent());
     }
 
 }

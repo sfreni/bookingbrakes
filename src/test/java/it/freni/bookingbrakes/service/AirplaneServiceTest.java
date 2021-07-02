@@ -41,6 +41,7 @@ class AirplaneServiceTest {
     private Airplane airplane;
     private List<Airplane> airplaneList;
     private AirplaneDto airplaneDto;
+    private List<AirplaneDto> airplaneDtoList;
 
     @BeforeEach
     public void setUp() {
@@ -60,7 +61,8 @@ class AirplaneServiceTest {
         airplaneDto.setAvaibleFlight(true);
         airplaneDto.setName("StefanoFreni");
         airplaneDto.setNumberSeats(150);
-
+        airplaneDtoList = new ArrayList<>();
+        airplaneDtoList.add(airplaneDto);
     }
 
     @Test
@@ -81,13 +83,13 @@ class AirplaneServiceTest {
     }
     @Test
     void getAllAirplane() {
-//        airplaneRepository.save(airplane);
-
         when(airplaneRepository.findAll()).thenReturn(airplaneList);
-        List<Airplane> airplanes = airplaneRepository.findAll();
+        when(mapper.toDtos(airplaneList)).thenReturn(airplaneDtoList);
+        when(mapper.dtoToAiplanes(airplaneDtoList)).thenReturn(airplaneList);
 
-        assertEquals(airplanes,airplaneList);
-  //      verify(airplaneRepository, times(1)).save(any());
+        List<Airplane> airplanes = (List<Airplane>) mapper.dtoToAiplanes(airplaneService.findAll());
+
+        assertEquals(airplaneList,airplanes);
         verify(airplaneRepository, times(1)).findAll();
 
     }
@@ -136,6 +138,11 @@ class AirplaneServiceTest {
         verify(airplaneRepository, times(1)).deleteById(anyLong());
         verify(tripService, times(1)).findTripByAirplane(anyLong());
 
+    }
+
+    @Test
+    void dummyTest() {
+        assertThrows(NotObjectFound.class,() ->airplaneService.errorTripPresent());
     }
 
 }

@@ -59,6 +59,10 @@ public class PurchaseService {
         log.log(Level.SEVERE, PURCHASE_NOT_FOUND);
         throw new NotObjectFound(PURCHASE_NOT_FOUND);
     }
+
+
+
+
     public Purchase savePurchase(PurchaseDto purchaseDto) {
 
         purchaseDto.setId(null);

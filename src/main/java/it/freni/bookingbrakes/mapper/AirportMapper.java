@@ -9,4 +9,6 @@ public interface AirportMapper {
         AirportDto toDto(Airport airport);
         Iterable<AirportDto> toDtos(Iterable<Airport> airports);
         Airport dtoToAirport(AirportDto airportDto);
+        Iterable<Airport> dtosToAirports(Iterable<AirportDto> airportsDto);
+
 }

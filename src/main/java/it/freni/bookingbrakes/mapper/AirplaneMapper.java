@@ -10,6 +10,7 @@ public interface AirplaneMapper {
     AirplaneDto toDto(Airplane airplane);
 
     Iterable<AirplaneDto> toDtos(Iterable<Airplane> airplanes);
+    Iterable<Airplane> dtoToAiplanes(Iterable<AirplaneDto> airplanesDto);
     Airplane dtoToAirplane(AirplaneDto airplaneDto);
 
 }
