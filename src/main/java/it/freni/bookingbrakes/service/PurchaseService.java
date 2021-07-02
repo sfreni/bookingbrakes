@@ -192,7 +192,7 @@ public class PurchaseService {
 
     public void updatePurchaseTransactions(CreditCardTransactionDto creditCardTransactionDto) {
         Purchase purchase = findByIdWithoutOptional(creditCardTransactionDto.getPurchase().getId());
-       purchase.getCreditCardTransactions().add(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto));
+        purchase.getCreditCardTransactions().add(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto));
         double totalPurchase = 0;
         for (Product product : purchase.getProducts()) {
             totalPurchase += product.getPriceAmount();
@@ -221,10 +221,10 @@ public class PurchaseService {
                 totalPaid += creditCardTransactionAmount.getTotalePriceAmount();
             }
         }
-        double totalRefused = 0;
+        double totalRefund = 0;
         for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
             if (creditCardTransactionAmount.getTransactionStatus().equals(CreditCardTransactionStatus.REFUND)) {
-                totalRefused += creditCardTransactionAmount.getTotalePriceAmount();
+                totalRefund += creditCardTransactionAmount.getTotalePriceAmount();
             }
         }
         double totalPurchase = 0;
@@ -232,11 +232,11 @@ public class PurchaseService {
             totalPurchase += product.getPriceAmount();
         }
 
-        if (totalPaid < totalRefused) {
+        if (totalPaid < totalRefund) {
             log.log(Level.SEVERE, ERROR_REFUND);
             throw new IdAlreadyExists(ERROR_REFUND);
         }
-        if (totalPurchase > (totalPaid - totalRefused)) {
+        if (totalPurchase > (totalPaid - totalRefund)) {
 
             purchase.setPurchaseStatus(PurchaseStatus.NOT_COMPLETE);
             creditCardTransactionDto.getPurchase().setPurchaseStatus(purchase.getPurchaseStatus());

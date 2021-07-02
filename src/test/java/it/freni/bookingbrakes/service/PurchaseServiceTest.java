@@ -1,8 +1,12 @@
 package it.freni.bookingbrakes.service;
 
+import it.freni.bookingbrakes.controller.dto.creditcardtransaction.CreditCardTransactionDto;
+import it.freni.bookingbrakes.controller.dto.creditcardtransaction.PurchaseTransactionsDto;
 import it.freni.bookingbrakes.controller.dto.purchase.*;
 import it.freni.bookingbrakes.domain.*;
 import it.freni.bookingbrakes.error.IdAlreadyExists;
+import it.freni.bookingbrakes.mapper.CreditCardTransactionMapper;
+import it.freni.bookingbrakes.mapper.CreditCardTransactionMapperImpl;
 import it.freni.bookingbrakes.mapper.PurchaseMapper;
 import it.freni.bookingbrakes.mapper.PurchaseMapperImpl;
 import it.freni.bookingbrakes.repository.ProductRepository;
@@ -33,11 +37,13 @@ class PurchaseServiceTest {
 
     @Mock
     private PurchaseMapper purchaseMapper = new PurchaseMapperImpl();
+
+    @Mock
+    private CreditCardTransactionMapper creditCardTransactionMapper = new CreditCardTransactionMapperImpl();
     @Mock
     private TripService tripService;
 
-    @Mock
-    private ProductService productService;
+
     @Mock
     private ProductRepository productRepository;
 
@@ -45,10 +51,15 @@ class PurchaseServiceTest {
     @InjectMocks
     private PurchaseService purchaseService;
 
+    @Autowired
+    @InjectMocks
+    private ProductService productService;
+
     private Purchase purchase;
     private List<Purchase> purchaseList;
     private List<PurchaseDto> purchaseDtoList;
     private PurchaseDto purchaseDto;
+    private PurchaseTransactionsDto purchaseTransactionsDto;
 
     private Trip trip;
     private TripDto tripDto;
@@ -59,6 +70,8 @@ class PurchaseServiceTest {
     private List<CreditCardTransaction> creditCardTransactionList;
     private PurchaseCreditCardTransactionDto purchaseCreditCardTransactionDto;
     private List<PurchaseCreditCardTransactionDto> purchaseCreditCardTransactionDtoList;
+
+    private CreditCardTransactionDto creditCardTransactionDto;
 
     private Seat seat;
     private ProductSeatDto productSeatDto;
@@ -85,13 +98,17 @@ class PurchaseServiceTest {
         trip.setId(1L);
         purchase.setTrip(trip);
         creditCardTransaction.setId(1L);
+        creditCardTransaction.setTransactionStatus(CreditCardTransactionStatus.PAID);
+        creditCardTransaction.setTotalePriceAmount(100D);
         creditCardTransactionList.add(creditCardTransaction);
         purchase.setCreditCardTransactions(creditCardTransactionList);
+        productList= new ArrayList<>();
         seat.setId(1L);
         seat.setNrSeat("1A");
-        productList= new ArrayList<>();
-        productList.add(seat);
+        seat.setPriceAmount(100D);
         additionalService.setId(1L);
+        additionalService.setPriceAmount(100D);
+        productList.add(seat);
         productList.add(additionalService);
         purchase.setProducts(productList);
         customer.setId(1L);
@@ -121,13 +138,18 @@ class PurchaseServiceTest {
         productSeatDto.setId(1L);
         productSeatDto.setNrSeat("1A");
 
+
         productDtoList= new ArrayList<>();
         productDtoList.add(productSeatDto);
         productAdditionalServiceDto.setId(1L);
         productDtoList.add(productAdditionalServiceDto);
         purchaseDto.setProducts(productDtoList);
         customerPurchaseDto.setId(1L);
-
+        creditCardTransactionDto = new CreditCardTransactionDto();
+        creditCardTransactionDto.setId(1L);
+        purchaseTransactionsDto= new PurchaseTransactionsDto();
+        purchaseTransactionsDto.setId(1L);
+        creditCardTransactionDto.setPurchase(purchaseTransactionsDto);
         purchaseDto.setCustomer(customerPurchaseDto);
         purchaseDtoList.add(purchaseDto);
 
@@ -138,6 +160,14 @@ class PurchaseServiceTest {
 
         when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
         assertThat(purchaseService.findById(purchase.getId())).get().isEqualTo(purchase);
+        verify(purchaseRepository, times(1)).findById(any());
+    }
+
+    @Test
+    void findByIdWithoutOptional() {
+
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
+        assertThat(purchaseService.findByIdWithoutOptional(purchase.getId())).isEqualTo(purchase);
         verify(purchaseRepository, times(1)).findById(any());
     }
 
@@ -153,6 +183,7 @@ class PurchaseServiceTest {
     @Test
     void savePurchase() {
         when(purchaseRepository.save(purchase)).thenReturn(purchase);
+        when(productRepository.saveAll(productList)).thenReturn(productList);
         when(purchaseMapper.purchaseDtoToPurchase(purchaseDto)).thenReturn(purchase);
         when(tripService.findById(purchaseDto.getTrip().getId())).thenReturn(Optional.ofNullable(trip));
         when(tripService.findByIdWithoutOptional(purchaseDto.getTrip().getId())).thenReturn(trip);
@@ -164,10 +195,12 @@ class PurchaseServiceTest {
         productDtoList.add(productSeatDto2);
         assertThrows(IdAlreadyExists.class,() ->purchaseService.checkDtoBeforeSaving(purchaseDto));
         Purchase purchase2= purchaseService.savePurchase(purchaseDto);
+        List<Product> productList2 = productService.saveProducts(productList);
         assertEquals(purchase,purchase2);
+        assertEquals(productList,productList2);
         verify(purchaseRepository, times(1)).save(purchase);
         verify(purchaseMapper, times(1)).purchaseDtoToPurchase(purchaseDto);
-
+        verify(productRepository, times(1)).saveAll(productList);
     }
 
     @Test
@@ -193,7 +226,51 @@ class PurchaseServiceTest {
     }
 
     @Test
-    void deleteCustomer() {
+    void updatePurchaseTransactions() {
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
+        when(purchaseRepository.save(purchase)).thenReturn(purchase);
+        when(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)).thenReturn(creditCardTransaction);
+        doNothing().when(productRepository).deleteProductByPurchase(purchase);
+
+        purchaseService.updatePurchaseTransactions(creditCardTransactionDto);
+        purchaseService.updatePurchase(purchase);
+       // purchase.getTrip().setPurchases(null);
+        productService.deleteAllProductsByPurchase(purchase);
+        assertEquals("COMPLETE",purchase.getPurchaseStatus().name());
+        verify(purchaseRepository, times(2)).save(purchase);
+        verify(productRepository, times(1)).deleteProductByPurchase(purchase);
+    }
+    @Test
+    void updateRefusedPurchaseTransactions() {
+        purchase.setPurchaseStatus(PurchaseStatus.COMPLETE);
+        CreditCardTransaction creditCardTransaction2 = new CreditCardTransaction();
+        creditCardTransaction2.setId(1L);
+        creditCardTransaction2.setTransactionStatus(CreditCardTransactionStatus.REFUND);
+        creditCardTransaction2.setTotalePriceAmount(100D);
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
+        when(purchaseRepository.save(purchase)).thenReturn(purchase);
+        when(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)).thenReturn(creditCardTransaction2);
+        purchaseService.updateRefusedPurchaseTransactions(creditCardTransactionDto);
+        assertEquals("NOT_COMPLETE",purchase.getPurchaseStatus().name());
+        verify(purchaseRepository, times(1)).save(purchase);
+
+    }
+
+    @Test
+    void updateRefusedPurchaseTransactionsErrorRefund() {
+        purchase.setPurchaseStatus(PurchaseStatus.COMPLETE);
+        CreditCardTransaction creditCardTransaction2 = new CreditCardTransaction();
+        creditCardTransaction2.setId(1L);
+        creditCardTransaction2.setTransactionStatus(CreditCardTransactionStatus.REFUND);
+        creditCardTransaction2.setTotalePriceAmount(300D);
+        when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
+        when(creditCardTransactionMapper.dtoToCreditCardTransaction(creditCardTransactionDto)).thenReturn(creditCardTransaction2);
+        assertThrows(IdAlreadyExists.class,() ->purchaseService.updateRefusedPurchaseTransactions(creditCardTransactionDto));
+    }
+
+
+    @Test
+    void deletePurchase() {
         when(purchaseRepository.findById(1L)).thenReturn(Optional.ofNullable(purchase));
 //        doNothing().when(productRepository).deleteProductByPurchase(purchase);
         doNothing().when(purchaseRepository).deleteById(1L);
@@ -211,10 +288,17 @@ class PurchaseServiceTest {
             purchaseService.deletePurchase(1L);
             verify(purchaseRepository, times(1)).deleteById(purchase.getId());
         }
-
-
-
     }
 
+    @Test
+    void updatePurchaseStatus() {
 
+       PurchaseStatus status = purchaseService.updatePurchaseStatus(purchase);
+        assertEquals("NOT_COMPLETE",status.name());
+
+    }
+    @Test
+    void dummyTest() {
+        assertThrows(IdAlreadyExists.class,() ->purchaseService.errorDeletePurchaseWithTransaction());
+    }
 }

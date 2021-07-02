@@ -5,6 +5,7 @@ import it.freni.bookingbrakes.controller.dto.airport.AirportDto;
 import it.freni.bookingbrakes.controller.dto.trip.PurchaseWithoutTripDto;
 import it.freni.bookingbrakes.controller.dto.trip.TripDto;
 import it.freni.bookingbrakes.domain.*;
+import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.TripMapper;
 import it.freni.bookingbrakes.mapper.TripMapperImpl;
 import it.freni.bookingbrakes.repository.TripRepository;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +34,11 @@ class TripServiceTest {
 
     @Mock
     private TripMapper tripMapper = new TripMapperImpl();
+
+    @Mock
+    private AirplaneService airplaneService;
+    @Mock
+    private AirportService airportService;
 
     @Autowired
     @InjectMocks
@@ -63,6 +70,7 @@ class TripServiceTest {
           destination =new Airport();
           purchase = new Purchase();
         purchases= new ArrayList<>();
+        tripList=new ArrayList<>();
         trip.setId(1L);
         trip.setTripStatus(TripStatus.AVAILABLE);
         trip.setStartDateFlight(new SimpleDateFormat("yyyy-MM-dd").parse("2021-06-28"));
@@ -76,7 +84,7 @@ class TripServiceTest {
         trip.setDeparture(departure);
         trip.setDestination(destination);
         trip.setPurchases(purchases);
-
+        tripList.add(trip);
         tripDto= new TripDto();
         tripListDto = new ArrayList<>();
         airplaneDto= new AirplaneDto();
@@ -118,6 +126,88 @@ class TripServiceTest {
         List<TripDto> tripsDto = (List<TripDto>) tripService.findAll();
         assertEquals(tripsDto,tripListDto);
         verify(tripRepository, times(1)).findAll();
+
+    }
+
+    @Test
+    public void findByIdWithoutOptional() {
+        when(tripRepository.findById(1L)).thenReturn(Optional.ofNullable(trip));
+        assertThat(tripService.findByIdWithoutOptional(trip.getId())).isEqualTo(trip);
+        assertThrows(NotObjectFound.class,() ->tripService.findByIdWithoutOptional(2L));
+        verify(tripRepository, times(2)).findById(any());
+
+    }
+
+@Test
+    public void saveTrip() {
+        when(tripRepository.save(trip)).thenReturn(trip);
+        when(tripMapper.toDto(trip)).thenReturn(tripDto);
+        when(airplaneService.findById(trip.getAirplane().getId())).thenReturn(Optional.ofNullable(airplane));
+        when(airportService.findById(trip.getDeparture().getId())).thenReturn(Optional.ofNullable(departure));
+        when(airportService.findById(trip.getDestination().getId())).thenReturn(Optional.ofNullable(destination));
+    TripDto tripDto2= tripService.saveTrip(trip);
+    assertEquals(tripDto,tripDto2);
+
+
+        verify(tripRepository, times(1)).save(trip);
+        verify(tripMapper, times(1)).toDto(trip);
+    }
+
+    @Test
+    public void saveTripWithError() {
+        when(airplaneService.findById(trip.getAirplane().getId())).thenReturn(Optional.ofNullable(airplane));
+        when(airportService.findById(trip.getDeparture().getId())).thenReturn(Optional.ofNullable(departure));
+        when(airportService.findById(trip.getDestination().getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->tripService.saveTrip(trip));
+        when(airportService.findById(trip.getDeparture().getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->tripService.saveTrip(trip));
+
+    }
+
+
+    @Test
+    public void replaceTrip() {
+        when(tripRepository.findById(1L)).thenReturn(Optional.ofNullable(trip));
+        when(tripRepository.save(trip)).thenReturn(trip);
+        when(tripMapper.toDto(trip)).thenReturn(tripDto);
+        when(airplaneService.findById(trip.getAirplane().getId())).thenReturn(Optional.ofNullable(airplane));
+        when(airportService.findById(trip.getDeparture().getId())).thenReturn(Optional.ofNullable(departure));
+        when(airportService.findById(trip.getDestination().getId())).thenReturn(Optional.ofNullable(destination));
+        TripDto tripDto2= tripService.replaceTrip(trip.getId(),trip);
+        assertEquals(tripDto,tripDto2);
+        verify(tripRepository, times(1)).save(trip);
+        verify(tripRepository, times(1)).findById(trip.getId());
+        verify(tripMapper, times(1)).toDto(trip);
+    }
+
+    @Test
+    void deleteCustomer() {
+
+        when(tripRepository.findById(1L)).thenReturn(Optional.ofNullable(trip));
+        doNothing().when(tripRepository).deleteById(1L);
+        assertThrows(NotObjectFound.class,() ->tripService.deleteTripById(1L));
+        trip.setPurchases(null);
+        tripRepository.deleteById(1L);
+        verify(tripRepository, times(2)).findById(trip.getId());
+        verify(tripRepository, times(1)).deleteById(trip.getId());
+
+
+    }
+    @Test
+    void findTripByAirplane() {
+        when(tripRepository.findTripByAirplane_id(trip.getId())).thenReturn(Optional.ofNullable(tripList));
+        tripService.findTripByAirplane(trip.getId());
+        verify(tripRepository, times(1)).findTripByAirplane_id(trip.getId());
+
+    }
+
+    @Test
+    void findTripByAirport() {
+//        when(tripRepository.findTripByDeparture_Id((trip.getId()))).thenReturn(Optional.ofNullable(tripList));
+        when(tripRepository.findTripByDestination_Id((trip.getId()))).thenReturn(Optional.ofNullable(tripList));
+        tripService.findTripByAirport(trip.getId());
+      //  verify(tripRepository, times(1)).findTripByDeparture_Id(trip.getId());
+        verify(tripRepository, times(1)).findTripByDestination_Id(trip.getId());
 
     }
 

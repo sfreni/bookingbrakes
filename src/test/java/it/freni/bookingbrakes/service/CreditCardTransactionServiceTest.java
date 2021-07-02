@@ -102,7 +102,7 @@ class CreditCardTransactionServiceTest {
     void findAllBy() {
 
         when(creditCardTransactionRepository.findByCreditcard(creditCard)).thenReturn(creditCardTransactionList);
-        List<CreditCardTransaction> creditCardTransactions = creditCardTransactionRepository.findByCreditcard(creditCard);
+        List<CreditCardTransaction> creditCardTransactions = creditCardTransactionService.findAllBy(creditCard);
         assertEquals(creditCardTransactions,creditCardTransactionList);
         verify(creditCardTransactionRepository, times(1)).findByCreditcard(creditCard);
     }

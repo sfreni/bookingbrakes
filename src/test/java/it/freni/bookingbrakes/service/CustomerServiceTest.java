@@ -115,6 +115,14 @@ class CustomerServiceTest {
     }
 
     @Test
+    void findByIdWithoutOptional() {
+
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(customer));
+        assertThat(customerService.findByIdWithoutOptional(customer.getId())).isEqualTo(customer);
+        verify(customerRepository, times(1)).findById(any());
+    }
+
+    @Test
     void findAllCustomers() {
         when(customerRepository.findAll()).thenReturn(customerList);
         List<Customer> customers2 = (List<Customer>) customerService.findAll();
@@ -154,6 +162,16 @@ class CustomerServiceTest {
      //   customerService.deleteCustomerById(1L);
         verify(customerRepository, times(1)).findById(any());
        // verify(customerRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void deleteCustomerByIdWithNoErrors() {
+
+        doNothing().when(customerRepository).deleteById(anyLong());
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(customer));
+        customer.setPurchases(null);
+        customerService.deleteCustomerById(1L);
+        verify(customerRepository, times(1)).deleteById(anyLong());
     }
 
 

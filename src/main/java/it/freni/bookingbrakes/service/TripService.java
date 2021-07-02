@@ -71,8 +71,8 @@ public class TripService {
 
 
     public TripDto replaceTrip(Long id, Trip trip) {
-
-        if (id == null || findById(id).isEmpty()) {
+        Optional<Trip> tripDb=  findById(id);
+        if (id == null || tripDb.isEmpty()) {
             log.log(Level.SEVERE, TRIP_NOT_FOUND);
             throw new NotObjectFound(TRIP_NOT_FOUND);
         }
@@ -92,11 +92,11 @@ public class TripService {
             throw new NotObjectFound(DEPARTURE_AIRPORT_NOT_FOUND);
         }
         trip.setId(id);
-        if (!findByIdWithoutOptional(trip.getId())
+        if (!tripDb.get()
                 .getPurchases()
                 .isEmpty()) {
 
-            trip.setPurchases(findByIdWithoutOptional(trip.getId())
+            trip.setPurchases(tripDb.get()
                     .getPurchases());
         }
 
@@ -125,7 +125,8 @@ public class TripService {
 
     public boolean findTripByAirport(Long id) {
 
-        return tripRepository.findTripByDeparture_Id(id).get().isEmpty() &&
-                tripRepository.findTripByDestination_Id(id).get().isEmpty();
+        return tripRepository.findTripByDestination_Id(id).get().isEmpty() &&
+                tripRepository.findTripByDeparture_Id(id).get().isEmpty()
+                ;
     }
 }
