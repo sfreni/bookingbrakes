@@ -125,7 +125,7 @@ public class TripService {
 
     public boolean findTripByAirport(Long id) {
 
-        return tripRepository.findTripByDestination_Id(id).get().isEmpty() &&
+        return  tripRepository.findTripByDestination_Id(id).get().isEmpty() &&
                 tripRepository.findTripByDeparture_Id(id).get().isEmpty()
                 ;
     }

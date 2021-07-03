@@ -7,6 +7,7 @@ import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.CreditCardTransaction;
 import it.freni.bookingbrakes.domain.Customer;
 import it.freni.bookingbrakes.domain.IssuingNetwork;
+import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.error.NotObjectFound;
 import it.freni.bookingbrakes.mapper.CreditCardMapper;
 import it.freni.bookingbrakes.mapper.CreditCardMapperImpl;
@@ -126,11 +127,12 @@ class CreditCardServiceTest {
         when(customerMapper.toDtoWithId(customer)).thenReturn(customerDto);
         when(creditCardMapper.dtoToCreditCard(creditCardDto)).thenReturn(creditCard);
         when(creditCardMapper.toDto(creditCard)).thenReturn(creditCardDto);
-
         CreditCardDto creditCardDto2= creditCardService.saveCreditCard(creditCardDto);
         assertEquals(creditCardDto,creditCardDto2);
         verify(creditCardRepository, times(1)).save(creditCard);
         verify(customerService, times(1)).findById(creditCardDto.getCustomer().getId());
+        when(customerService.findById(creditCardDto.getCustomer().getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(IdAlreadyExists.class,() ->creditCardService.saveCreditCard(creditCardDto));
 
     }
 
@@ -155,7 +157,6 @@ class CreditCardServiceTest {
         doNothing().when(creditCardRepository).deleteById(anyLong());
         when(creditCardRepository.findById(creditCard.getId())).thenReturn(Optional.ofNullable(creditCard));
         when(creditCardTransactionService.findAllBy(creditCardMapper.dtoToCreditCard(creditCardDto))).thenReturn(creditCardTransactionList);
-
         creditCardService.checkCreditCardId(creditCard.getId());
         assertThrows(NotObjectFound.class,() ->creditCardService.verifyCreditCardTransactionsEmpty(creditCardTransactionService.findAllBy(creditCardMapper.dtoToCreditCard(creditCardDto)).isEmpty()));
         creditCardService.deleteCreditCardById(creditCard.getId());
@@ -163,6 +164,23 @@ class CreditCardServiceTest {
         verify(creditCardRepository, times(2)).findById(any());
         verify(creditCardTransactionService, times(1)).findAllBy(any());
         verify(creditCardTransactionService, times(1)).findAllBy(creditCardMapper.dtoToCreditCard(creditCardDto));
+        when(creditCardRepository.findById(creditCard.getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->creditCardService.deleteCreditCardById(creditCard.getId()));
 
     }
+
+    @Test
+    void checkCreditCardCustomer() {
+        when(creditCardRepository.findById(creditCard.getId())).thenReturn(Optional.ofNullable(creditCard));
+        creditCardDto.getCustomer().setId(2L);
+        assertThrows(NotObjectFound.class,() ->creditCardService.checkCreditCardCustomer(creditCard.getId(),creditCardDto));
+    }
+
+    @Test
+    void checkCreditCardId() {
+        when(creditCardRepository.findById(creditCard.getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->creditCardService.checkCreditCardId(creditCard.getId()));
+    }
+
+
 }

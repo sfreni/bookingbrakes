@@ -105,7 +105,6 @@ class AirplaneServiceTest {
 
     @Test
     void replaceAirplane() {
-      //  airplaneRepository.save(airplane);
         when(airplaneRepository.findById(airplane.getId())).thenReturn(Optional.ofNullable(airplane));
         when(airplaneRepository.save(airplane)).thenReturn(airplane);
         when(mapper.toDto(airplane)).thenReturn(airplaneDto);
@@ -117,6 +116,16 @@ class AirplaneServiceTest {
         verify(airplaneRepository, times(1)).save(airplane);
         verify(mapper, times(1)).toDto(airplane);
         verify(mapper, times(1)).dtoToAirplane(airplaneDto);
+
+
+    }
+
+    @Test
+    void replaceAirportWithError() {
+        //  airplaneRepository.save(airplane);
+        when(airplaneRepository.findById(airplane.getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->airplaneService.replaceAirplane(1L, airplane));
+
 
 
     }

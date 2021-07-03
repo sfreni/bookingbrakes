@@ -126,6 +126,15 @@ class AirportServiceTest {
 
 
     }
+    @Test
+    void replaceAirportWithError() {
+        //  airplaneRepository.save(airplane);
+        when(airportRepository.findById(airport.getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->airportService.replaceAirport(1L, airport));
+
+
+
+    }
 
     @Test
     void deleteAirport() {
@@ -145,9 +154,9 @@ class AirportServiceTest {
         verify(tripService, times(1)).findTripByAirplane(anyLong());
 
     }
-    @Test
-    void dummyTest() {
-        assertThrows(NotObjectFound.class,() ->airportService.errorTripPresent());
-    }
+        @Test
+        void dummyTest() {
+            assertThrows(NotObjectFound.class,() ->airportService.errorTripPresent());
+        }
 
 }

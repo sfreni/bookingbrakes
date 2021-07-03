@@ -120,6 +120,10 @@ class CustomerServiceTest {
         when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(customer));
         assertThat(customerService.findByIdWithoutOptional(customer.getId())).isEqualTo(customer);
         verify(customerRepository, times(1)).findById(any());
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->customerService.findByIdWithoutOptional(customer.getId()));
+
+
     }
 
     @Test
@@ -149,6 +153,12 @@ class CustomerServiceTest {
         CustomerControllerDto customer2= customerService.replaceCustomer(customer.getId(),customer);
         assertEquals(customer2,customerDto);
         verify(customerRepository, times(1)).save(customer);
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->customerService.replaceCustomer(customer.getId(),customer));
+
+
+
+
     }
 
     @Test
@@ -162,6 +172,10 @@ class CustomerServiceTest {
      //   customerService.deleteCustomerById(1L);
         verify(customerRepository, times(1)).findById(any());
        // verify(customerRepository, times(1)).deleteById(anyLong());
+        when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(null));
+        assertThrows(NotObjectFound.class,() ->customerService.deleteCustomerById(1L));
+
+
     }
 
     @Test
@@ -172,6 +186,7 @@ class CustomerServiceTest {
         customer.setPurchases(null);
         customerService.deleteCustomerById(1L);
         verify(customerRepository, times(1)).deleteById(anyLong());
+
     }
 
 

@@ -7,6 +7,7 @@ import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.CreditCardTransaction;
 import it.freni.bookingbrakes.domain.CreditCardTransactionStatus;
 import it.freni.bookingbrakes.domain.Purchase;
+import it.freni.bookingbrakes.error.IdAlreadyExists;
 import it.freni.bookingbrakes.mapper.*;
 import it.freni.bookingbrakes.repository.CreditCardTransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -129,6 +131,10 @@ class CreditCardTransactionServiceTest {
         verify(creditCardTransactionRepository, times(1)).save(creditCardTransaction);
         verify(creditCardService, times(1)).findById(creditCardTransactionDto.getCreditcard().getId());
         verify(purchaseService, times(1)).findById(creditCardTransactionDto.getPurchase().getId());
+        when(purchaseService.findById(creditCardTransactionDto.getPurchase().getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(IdAlreadyExists.class,() ->creditCardTransactionService.saveCreditCardTransaction(creditCardTransactionDto));
+        when(creditCardService.findById(creditCardTransactionDto.getCreditcard().getId())).thenReturn(Optional.ofNullable(null));
+        assertThrows(IdAlreadyExists.class,() ->creditCardTransactionService.saveCreditCardTransaction(creditCardTransactionDto));
 
     }
 }
