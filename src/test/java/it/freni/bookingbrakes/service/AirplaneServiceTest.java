@@ -88,7 +88,6 @@ class AirplaneServiceTest {
         when(mapper.dtoToAiplanes(airplaneDtoList)).thenReturn(airplaneList);
 
         List<Airplane> airplanes = (List<Airplane>) mapper.dtoToAiplanes(airplaneService.findAll());
-
         assertEquals(airplaneList,airplanes);
         verify(airplaneRepository, times(1)).findAll();
 
