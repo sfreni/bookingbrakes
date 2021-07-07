@@ -19,7 +19,7 @@
   let modifyRecord = parseInt(params.get("mod"))
   let deleteRecord = parseInt(params.get("del"))
 
-  html += '<table id="airplaneTable" class="table">'
+  html += '<table id="airplaneTable" class=" table table-hover table-striped">'
   + '<thead>'
   + '<tr>'
   + '<th  class=\'text-center\ bg-primary text-white\' align=\'center\' style=\'width:20%\'  scope="col">Name</th>'
@@ -146,22 +146,12 @@
   function generateJson() {
 
 
-  var name = document.getElementById('name').value;
 
-  if ((name == "") || (name == "undefined")) {
-  alert("Devi indicare il nome dell'aereo ");
-  document.getElementById('name').focus();
-  return false;
-}
 
-  var numberOfSeats = document.getElementById('numberOfSeats').value;
-
-  if ((numberOfSeats == "") || (numberOfSeats == "undefined")) {
-  alert("Devi inserire la qta dei Seats");
-  document.getElementById('qtadestination').focus();
-  return false;
-}
-
+    let checkValues = checkInputValues();
+    if (!checkValues) {
+      return false;
+    }
 
   var nameJson = document.getElementById("name").value;
   var numberOfSeatsJson = document.getElementById("numberOfSeats").value;
@@ -198,21 +188,11 @@
   function generatePutJson(id) {
 
 
-  var name = document.getElementById('name').value;
 
-  if ((name == "") || (name == "undefined")) {
-  alert("Devi indicare il nome dell'aereo ");
-  document.getElementById('name').focus();
-  return false;
-}
-
-  var numberOfSeats = document.getElementById('numberOfSeats').value;
-
-  if ((numberOfSeats == "") || (numberOfSeats == "undefined")) {
-  alert("Devi inserire la qta dei Seats");
-  document.getElementById('qtadestination').focus();
-  return false;
-}
+    let checkValues = checkInputValues();
+    if (!checkValues) {
+      return false;
+    }
 
 
   var nameJson = document.getElementById("name").value;
@@ -246,7 +226,28 @@
   console.log(status);
 };
 
+///
+  function checkInputValues() {
 
+    var name = document.getElementById('name').value;
+
+  if ((name == "") || (name == "undefined")) {
+    alert("Please insert the name ");
+    document.getElementById('name').focus();
+    return false;
+  }
+
+  var numberOfSeats = document.getElementById('numberOfSeats').value;
+
+  if ((numberOfSeats == "") || (numberOfSeats == "undefined")) {
+    alert("Please insert number of seats");
+    document.getElementById('numberOfSeats').focus();
+    return false;
+  }
+
+  return true;
+  }
+  ///
   function modifyRow(id, row) {
 // Get a reference to the table
   let name = document.getElementById('name');
