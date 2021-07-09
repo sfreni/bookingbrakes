@@ -54,7 +54,6 @@
 })
   .fail(function () {
   alert('Error : Failed to reach API Url or check your connection');
-  $(button).prop('disabled', false);
 })
 
 });

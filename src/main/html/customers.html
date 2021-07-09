@@ -5,7 +5,7 @@
 <head>
   <script src="https://kit.fontawesome.com/c625ff51b8.js" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-  <script src="js/airports.js"></script>
+  <script src="js/customers.js"></script>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="css/main.css">
@@ -13,7 +13,7 @@
   <meta charset="UTF-8">
   <div w3-include-html="menu.html"></div>
   <title>Booking Brakes</title>
-  <h2 align="center">Airports List</h2>
+  <h2 align="center">Customers List</h2>
 </head>
 <script>
   w3IncludeHTML();
@@ -25,10 +25,18 @@
   <button class='btnServgreen' type='button' onclick="addRow()"><i class='fa fa-pencil'></i> New(+)</button>
 </p>
 
+<div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"  id="myModal" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+
 <div class="tables">
 
   <div>
-    <div class="tables-airports" align="center">
+    <div class="tables-customers" align="center">
       <h2>Loading.....</h2>
     </div>
   </div>

@@ -68,8 +68,9 @@ public class CustomerService {
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
         Optional<List<Purchase>> purchasesLocal=Optional.ofNullable(customer.get().getPurchases());
-        if (purchasesLocal.isPresent()) {
-            log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
+
+            if (purchasesLocal.get().size()>0) {
+                log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
             throw new NotObjectFound( CUSTOMER_NOT_DELETE);
         }
         repository.deleteById(id);
