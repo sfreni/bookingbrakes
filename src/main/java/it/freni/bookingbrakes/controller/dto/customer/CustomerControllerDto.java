@@ -13,7 +13,7 @@ public class CustomerControllerDto {
     private String streetAddress;
     private String city;
     private Date birthDay;
-    private List<PurchaseDto> purchases;
+    private List<PurchaseCustomerDto> purchases;
     private List<CreditCardDto> creditCard;
 
 }

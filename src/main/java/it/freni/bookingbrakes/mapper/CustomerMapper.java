@@ -6,7 +6,7 @@ import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
 import it.freni.bookingbrakes.domain.Customer;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { PurchaseMapper.class })
 public interface CustomerMapper {
 
     CustomerDto toDto(Customer customer);

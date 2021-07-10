@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.logging.Level;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/creditcards")
 @Log

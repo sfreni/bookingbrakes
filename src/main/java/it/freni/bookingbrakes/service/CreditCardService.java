@@ -23,7 +23,7 @@ public class CreditCardService {
     public static final String CREDITCARD_NOT_FOUND = "CreditCard not found";
     public static final String CUSTOMER_NOT_CONSISTENCY = "There's no customer consistency with this Credit Card, no modify it's been applied";
     public static final String ID_ALREADY_EXISTS = "Id already exists";
-    public static final String CREDIT_CARD_TRANSACTION_IS_NOT_EMPTY ="Credit Card has transactions, you can't change it";
+    public static final String CREDIT_CARD_TRANSACTION_IS_NOT_EMPTY ="Credit Card has transactions, you can't do actions ";
     private final CustomerService customerService;
     private final CustomerMapper customerMapper;
     private final CreditCardRepository creditCardRepository;

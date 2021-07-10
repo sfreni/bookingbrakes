@@ -1,6 +1,7 @@
 package it.freni.bookingbrakes.mapper;
 
 import it.freni.bookingbrakes.controller.dto.creditcardtransaction.PurchaseTransactionsDto;
+import it.freni.bookingbrakes.controller.dto.customer.PurchaseCustomerDto;
 import it.freni.bookingbrakes.controller.dto.purchase.*;
 import it.freni.bookingbrakes.controller.dto.trip.PurchaseWithoutTripDto;
 import it.freni.bookingbrakes.domain.*;
@@ -24,6 +25,8 @@ public abstract class PurchaseMapper {
         return purchaseDto;
     }
 
+
+
     public PurchaseTransactionsDto toPurchaseTransactionsDto(Purchase purchase){
         PurchaseTransactionsDto purchaseDto = new PurchaseTransactionsDto();
         purchaseDto.setId(purchase.getId());
@@ -43,6 +46,17 @@ public abstract class PurchaseMapper {
         purchaseDto.setCustomer(customerPurchaseToDto(purchase.getCustomer()));
         return purchaseDto;
     }
+
+    public PurchaseCustomerDto purchaseCustomerDto(Purchase purchase){
+        PurchaseCustomerDto purchaseDto = new PurchaseCustomerDto();
+        purchaseDto.setId(purchase.getId());
+        purchaseDto.setPurchaseStatus(purchase.getPurchaseStatus());
+        purchaseDto.setDatePurchase(purchase.getDatePurchase());
+        purchaseDto.setProducts(getProductDtos(purchase));
+        purchaseDto.setTrip(tripDto(purchase.getTrip()));
+        return purchaseDto;
+    }
+
 
 
 
@@ -114,6 +128,18 @@ public abstract class PurchaseMapper {
         purchase.setDatePurchase(purchaseDto.getDatePurchase());
         List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
         purchase.setProducts(products);
+        return purchase;
+
+    }
+    public Purchase purchaseCustomerDtoToPurchaseCustomer(PurchaseCustomerDto purchaseDto){
+
+        Purchase purchase = new Purchase();
+        purchase.setId(purchaseDto.getId());
+        purchase.setPurchaseStatus(purchaseDto.getPurchaseStatus());
+        purchase.setDatePurchase(purchaseDto.getDatePurchase());
+        List<Product> products = getProductsFromDtos(purchaseDto.getProducts());
+        purchase.setProducts(products);
+        purchase.setTrip(dtoToTrip(purchaseDto.getTrip()));
         return purchase;
 
     }

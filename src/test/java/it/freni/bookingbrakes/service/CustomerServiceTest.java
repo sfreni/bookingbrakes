@@ -3,7 +3,7 @@ package it.freni.bookingbrakes.service;
 import it.freni.bookingbrakes.controller.dto.creditcard.CustomerDto;
 import it.freni.bookingbrakes.controller.dto.customer.CreditCardDto;
 import it.freni.bookingbrakes.controller.dto.customer.CustomerControllerDto;
-import it.freni.bookingbrakes.controller.dto.customer.PurchaseDto;
+import it.freni.bookingbrakes.controller.dto.customer.PurchaseCustomerDto;
 import it.freni.bookingbrakes.domain.CreditCard;
 import it.freni.bookingbrakes.domain.Customer;
 import it.freni.bookingbrakes.domain.Purchase;
@@ -62,8 +62,8 @@ class CustomerServiceTest {
 
     private Purchase purchase;
     private List<Purchase> purchases;
-    private List<PurchaseDto> purchaseDtoList;
-    private PurchaseDto purchaseDto;
+    private List<PurchaseCustomerDto> purchaseDtoList;
+    private PurchaseCustomerDto purchaseDto;
 
 
     @BeforeEach
@@ -91,7 +91,7 @@ class CustomerServiceTest {
         creditCardDto = new CreditCardDto();
         creditCardDtoList = new ArrayList<>();
 
-        purchaseDto = new PurchaseDto();
+        purchaseDto = new PurchaseCustomerDto();
         purchaseDtoList = new ArrayList<>();
 
 
