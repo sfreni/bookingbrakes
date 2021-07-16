@@ -37,15 +37,21 @@ function loadTable() {
           for (var i = 0; i < result.length; i++) {
             html += '<tr align=\'center\'  >'
               + '<td  > ' + result[i].departure.name + '</td>'
-              + '<td  >' + result[i].destination.name + '</td>'
-              + '<td   >' + result[i].startDateFlight.substr(0, 16) + '</td>'
-              + '<td   >' + result[i].endDateFlight.substr(0, 16) + '</td>'
+              + '<td  >' + result[i].destination.name + '</td>';
+            let startDateFlightValue= result[i].startDateFlight;
+            startDateFlightValue= startDateFlightValue.substr(8,2)+"/"+startDateFlightValue.substr(5,2)+"/"+startDateFlightValue.substr(0,4)+" "+startDateFlightValue.substr(11,5);
+
+            let endDateFlightValue= result[i].endDateFlight;
+            endDateFlightValue= endDateFlightValue.substr(8,2)+"/"+endDateFlightValue.substr(5,2)+"/"+endDateFlightValue.substr(0,4)+" "+endDateFlightValue.substr(11,5);
+
+            html +=  '<td   >' + startDateFlightValue + '</td>'
+            html +=  '<td   >' + endDateFlightValue + '</td>'
               + '<td   >' + result[i].airplane.name + '</td>'
               + '<td   >' + result[i].tripStatus + '</td>'
               + '<td   >'
               + '<div class="pointer">'
-              + '<i class="fa fa-pencil" aria-hidden="true" onclick="modifyRow(' + result[i].id + ',' + (i + 1) + ')" title="Modify Customer"></i>&nbsp;'
-              + '<i  class="fa fa-trash" aria-hidden="true" onclick="deleteRow(' + result[i].id + ')" title="Delete Customer"></i>&nbsp;'
+              + '<i class="fa fa-pencil" aria-hidden="true" onclick="editTrip(' + (i + 1) + ',' + result[i].id + ',true)" title="Modify Trip"></i>&nbsp;'
+              + '<i  class="fa fa-trash" aria-hidden="true" onclick="deleteRow(' + result[i].id + ')" title="Delete Trip"></i>&nbsp;'
               + '<i class="fa fa-shopping-bag" aria-hidden="true" onclick="listPurchase(' + i + ')" title="List Purchase" ></i>&nbsp;'
 
               + '</div></td>'
@@ -70,19 +76,20 @@ function loadTable() {
 
 
 function listPurchase(id) {
+  let html;
   if (window.jsonValues[id].purchases[0] != undefined) {
-    let html = '<br><p><h2 align="center">Purchases</h2></p>' +
-      '<h4 align="center">Customer:<b>' + window.jsonValues[id].firstName + ' ' + window.jsonValues[id].lastName + '</b></h4>' +
+    html = '<br><p><h2 align="center">Purchases</h2></p>' +
+      '<h4 align="center">Departure:<b>' + window.jsonValues[id].departure.name + '</b>, Destination:<b>' + window.jsonValues[id].destination.name + '</b></h4>'
+      let dateDeparture= window.jsonValues[id].startDateFlight.substr(8,2)+"/"+window.jsonValues[id].startDateFlight.substr(5,2)+"/"+window.jsonValues[id].startDateFlight.substr(0,4)+" "+window.jsonValues[id].startDateFlight.substr(11,5);
+     let dateArrivale= window.jsonValues[id].endDateFlight.substr(8,2)+"/"+window.jsonValues[id].endDateFlight.substr(5,2)+"/"+window.jsonValues[id].endDateFlight.substr(0,4)+" "+window.jsonValues[id].endDateFlight.substr(11,5);
+    html += '<h4 align="center">Departure Time:<b>' + dateDeparture + '</b>, Arrival Time:<b>' + dateArrivale + '</b></h4>' +
       '<br><table id="purchasesTable" class="table table-hover table-striped">' +
       '<thead>'
       + '<tr>'
       + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">N.</th>'
       + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">Date</th>'
       + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Status</th>'
-      + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Date Flight</th>'
-      + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Departure</th>'
-      + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Destination</th>'
-      + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Status Flight</th>'
+      + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Customer</th>'
       + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Amount</th>'
       + '</tr>'
       + '</thead>'
@@ -94,16 +101,16 @@ function listPurchase(id) {
     for (var i = 0; i < window.jsonValues[id].purchases.length; i++) {
       html += '<tr align=\'center\'  >'
         + '<td  > ' + (i + 1) + '</td>'
-        + '<td  > ' + window.jsonValues[id].purchases[i].datePurchase + '</td>'
+      let datePurchase= window.jsonValues[id].purchases[i].datePurchase.substr(8,2)+"/"+window.jsonValues[id].purchases[i].datePurchase.substr(5,2)+"/"+window.jsonValues[id].purchases[i].datePurchase.substr(0,4)+" "+window.jsonValues[id].purchases[i].datePurchase.substr(11,5);
+
+
+      html += '<td  > ' + datePurchase + '</td>'
       if (window.jsonValues[id].purchases[i].purchaseStatus == "COMPLETE") {
         html += '<td  ><i  class="fa fa-check" aria-hidden="true" title="Complete"></i></td>'
       } else {
         html += '<td  ><i  class="fa fa-times" aria-hidden="true" title="Not Complete"></i></td>'
       }
-      html += '<td   >' + window.jsonValues[id].purchases[i].trip.startDateFlight + '</td>'
-        + '<td   >' + window.jsonValues[id].purchases[i].trip.departure.name + '</td>'
-        + '<td   >' + window.jsonValues[id].purchases[i].trip.destination.name + '</td>'
-        + '<td   >' + window.jsonValues[id].purchases[i].trip.tripStatus + '</td>';
+      html += '<td>' + window.jsonValues[id].purchases[i].customer.firstName+ ' ' + window.jsonValues[id].purchases[i].customer.lastName+ '</td>'
       let totalAmount = 0;
       for (var j = 0; j < window.jsonValues[id].purchases[i].products.length; j++) {
         totalAmount += window.jsonValues[id].purchases[i].products[j].priceAmount;
@@ -115,18 +122,18 @@ function listPurchase(id) {
 
         + '</tr>';
     }
-    $('.modal-content').html(html);
-    $('#myModal').modal('show');
+
 
 
   } else {
-    let html = '<br><h2 align="center">Purchases</h2>' +
-      '<h4 align="center"><br>Customer:<b>' + window.jsonValues[id].firstName + ' ' + window.jsonValues[id].lastName + '</b></h4>' +
-      '<h4 align="center"><br><b>No Purchases</b></h4><br>'
-    $('.modal-content').html(html);
-    $('#myModal').modal('show');
+     html = '<br><h2 align="center">Purchases</h2>' +
+      '<h4 align="center"><br>Departure:<b>' + window.jsonValues[id].departure.name + '</b></h4>' +
+      '<h4 align="center"><br>Destination:<b>'+ window.jsonValues[id].destination.name + '</b></h4>' +
+      '<h4 align="center"><br><b>No Purchases</b></h4><br>';
   }
-
+  document.getElementById("modalSizeValue").className="modal-dialog modal-xl";
+  $('.modal-content').html(html);
+  $('#myModalNew').modal('show');
 
 }
 
@@ -184,18 +191,26 @@ function createEditWindow(){
     + '</select>'
     + '</div></div>'
     + '<br><div class="form-row d-flex justify-content-center">'
-    + '<button type="bt" class="btn btn-primary" onclick="generateJson()">Submit</button></form>'
+    + '<button type="bt" class="btn btn-primary" onclick="generateJson()" id="buttonSubmitValues" >Submit</button></form>'
     + '</div><br>'
 
   // $('.tables-trips').html(html);
-    $('.modal-content').html(html);
+  document.getElementById("modalSizeValue").className="modal-dialog modal-sx";
+
+  $('.modal-content').html(html);
     $('#myModalNew').modal('show');
 }
 
-function addTrip() {
+function editTrip(row, idModify, isModify) {
 
   createEditWindow();
 
+  loadingDataOnEdit(row,idModify,isModify);
+
+
+}
+
+function loadingDataOnEdit(row,idModify,isModify){
   getObjectDB("airports")
     .then(airports => {
       airports.sort(function (a, b) {
@@ -204,21 +219,39 @@ function addTrip() {
       let selectDeparture = document.getElementById('Departure');
       let selectDestination = document.getElementById('Destination');
 
+      let tableRef = document.getElementById("tripsTable");
+      var rowGetData = tableRef.rows;
+      var colGetData = rowGetData[row].cells;
+      let innerHtmlDepartureValue = colGetData[0].innerHTML;
+      let innerHtmlDestinationValue = colGetData[1].innerHTML;
+
+
       for (var i = 0; i < airports.length; i++) {
         let optDeparture = document.createElement('option');
         let optDestination = document.createElement('option');
         optDeparture.value=airports[i].id;
         optDeparture.innerHTML = airports[i].name;
+
         optDestination.value=airports[i].id;
         optDestination.innerHTML = airports[i].name;
 
         selectDeparture.appendChild(optDeparture);
+        if(isModify==true &&  airports[i].name.trim()==innerHtmlDepartureValue.trim()){
+          optDeparture.selected= true;
+
+        }
+
         selectDestination.appendChild(optDestination);
+
+        if(isModify==true &&  airports[i].name.trim()==innerHtmlDestinationValue.trim()){
+          optDestination.selected= true;
+
+        }
       }
 
     })
     .catch(err => {
-      console.error('An error ocurred', err);
+      console.error('An error occurred', err);
     });
 
   getObjectDB("airplanes")
@@ -226,6 +259,11 @@ function addTrip() {
       airplanes.sort(function (a, b) {
         return b.id - a.id;
       });
+      let tableRef = document.getElementById("tripsTable");
+      var rowGetData = tableRef.rows;
+      var colGetData = rowGetData[row].cells;
+      let innerHtmlAirplaneValue = colGetData[4].innerHTML;
+
       let selectAirplane = document.getElementById('Airplane');
 
       for (var i = 0; i < airplanes.length; i++) {
@@ -234,18 +272,32 @@ function addTrip() {
         optAirplane.innerHTML = airplanes[i].name;
 
         selectAirplane.appendChild(optAirplane);
+         if(isModify==true &&  airplanes[i].name.trim()==innerHtmlAirplaneValue.trim()){
+           optAirplane.selected= true;
+         }
+
       }
 
     })
     .catch(err => {
       console.error('An error ocurred', err);
     });
+  if(isModify==true) {
 
+    let tableRef = document.getElementById("tripsTable");
+    let rowGetData = tableRef.rows;
+    let colGetData = rowGetData[row].cells;
+    let innerHtmlTripStatusValue = colGetData[5].innerHTML;
+    document.getElementById('departureTime').value = colGetData[2].innerHTML;
+    document.getElementById('arrivalTime').value = colGetData[3].innerHTML;
+    document.getElementById('tripStatus').value = innerHtmlTripStatusValue;
+    document.getElementById('buttonSubmitValues').onclick = 'generatePutJson(idModify)';
+    document.getElementById('buttonSubmitValues').setAttribute('onclick','generatePutJson('+idModify+')')
+
+  }
 
 
 }
-
-
 function generateJson() {
 
 
@@ -267,17 +319,16 @@ function generateJson() {
   xhr.onreadystatechange = function () {
     var status = xhr.status;
     if (status === 201) {
+      $('#myModalNew').modal('hide');
       loadTable();
     } else {
       alert("Error on creating new Trips, Error: " + status)
     }
   }
-  console.log(obj);
 };
 
 
 function generatePutJson(id) {
-
 
   let checkValues = checkInputValues();
   if (!checkValues) {
@@ -286,8 +337,10 @@ function generatePutJson(id) {
 
   let obj = createJson();
 
+  obj.id=id;
+
   var xhr = new XMLHttpRequest();
-  var url = "http://localhost:8080/customers/" + id;
+  var url = "http://localhost:8080/trips/" + id;
 
   xhr.open("PUT", url, true);
   xhr.setRequestHeader("Content-Type", "application/json");
@@ -297,12 +350,12 @@ function generatePutJson(id) {
   xhr.onreadystatechange = function () {
     var status = xhr.status;
     if (status === 200) {
+      $('#myModalNew').modal('hide');
       loadTable();
     } else {
-      alert("Error on creating new Customer, Error: " + status)
+      alert("Error on creating new Trip, Error: " + status)
     }
   }
-  console.log(status);
 };
 
 function createJson() {
@@ -338,98 +391,6 @@ function createJson() {
 
 }
 
-function modifyRow(id, row) {
-// Get a reference to the table
-  let firstName = document.getElementById('firstName');
-  let tableRef = document.getElementById("customersTable");
-
-  if (typeof (firstName) == 'undefined' || firstName == null) {
-
-  } else {
-    var addRow = document.getElementById("addRow");
-
-    if (typeof (addRow) == 'undefined' || addRow == null) {
-      for (i = 0; i < tableRef.rows.length; i++) {
-        tableRef.rows[i].style.display = "";
-      }
-      var rowShow = document.getElementById("modifyRow");
-      rowShow.parentNode.removeChild(rowShow);
-    } else {
-      addRow.parentNode.removeChild(addRow);
-
-    }
-  }
-
-  let newRow = tableRef.insertRow(row);
-  newRow.id = "modifyRow";
-
-  let newCell = newRow.insertCell(0);
-  let inputValue = document.createElement("input");
-  inputValue.type = "text";
-  inputValue.name = "firstName"
-  inputValue.id = "firstName";
-  inputValue.style.width = "100%";
-  var rowCreate = tableRef.rows;
-  var colCreate = rowCreate[row + 1].cells;
-  inputValue.value = colCreate[0].innerHTML;
-  newCell.appendChild(inputValue);
-  newCell = newRow.insertCell(1);
-
-  inputValue = document.createElement("input");
-  inputValue.type = "text";
-  inputValue.name = "lastName"
-  inputValue.id = "lastName";
-  inputValue.style.width = "100%";
-
-  inputValue.value = colCreate[1].innerHTML;
-  newCell.appendChild(inputValue);
-
-  newCell = newRow.insertCell(2);
-
-
-  inputValue = document.createElement("input");
-  inputValue.type = "text";
-  inputValue.name = "streetAddress"
-  inputValue.id = "streetAddress";
-  inputValue.style.width = "100%";
-  inputValue.value = colCreate[2].innerHTML;
-
-  newCell.appendChild(inputValue);
-  newCell = newRow.insertCell(3);
-
-  inputValue = document.createElement("input");
-  inputValue.type = "text";
-  inputValue.name = "city"
-  inputValue.id = "city";
-  inputValue.style.width = "100%";
-  inputValue.value = colCreate[3].innerHTML;
-
-  newCell.appendChild(inputValue);
-  newCell = newRow.insertCell(4);
-
-  inputValue = document.createElement("input");
-  inputValue.type = "text";
-  inputValue.name = "birthDay"
-  inputValue.id = "birthDay";
-  inputValue.style.width = "100%";
-  inputValue.value = colCreate[4].innerHTML;
-
-  newCell.appendChild(inputValue);
-  newCell = newRow.insertCell(5);
-
-
-  let buttonSave = document.createElement("button");
-  buttonSave.textContent = "Save";
-  buttonSave.id = "createJson";
-  newCell.appendChild(buttonSave);
-
-
-  //
-  buttonSave.setAttribute("onclick", 'generatePutJson(' + id + ')');
-  tableRef.rows[row + 1].style.display = "none";
-
-}
-
 
 function checkInputValues() {
 
@@ -455,6 +416,13 @@ function checkInputValues() {
     document.getElementById('arrivalTime').focus();
     return false;
   }
+
+  if( document.getElementById("Departure").value == document.getElementById("Destination").value){
+    alert("Please don't set same value for Departure and Destination Airport")
+    return false;
+  }
+
+
   return true;
 }
 
@@ -463,7 +431,7 @@ function deleteRow(numRec) {
   if (!confirm("Are you sure?")) {
     return false;
   }
-  var url = "http://localhost:8080/customers/";
+  var url = "http://localhost:8080/trips/";
 
   fetch(url + numRec, {
     method: 'DELETE'

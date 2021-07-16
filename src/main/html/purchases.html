@@ -5,38 +5,40 @@
 <head>
   <script src="https://kit.fontawesome.com/c625ff51b8.js" crossorigin="anonymous"></script>
   <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- jQuery library -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-  <!-- Popper JS -->
+ <!-- Popper JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="js/bootstrap-datepicker.js"></script>
+  <link href="css/bootstrap-datepicker3.min.css" rel="stylesheet">
   <!-- Latest compiled JavaScript -->
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="css/main.css">
-  <script src="js/trips.js"></script>
+  <link rel="stylesheet" href="css/purchase.css">
+  <script src="js/purchases.js"></script>
   <meta charset="UTF-8">
   <div w3-include-html="menu.html"></div>
   <title>Booking Brakes</title>
-  <h2 align="center">Trips</h2>
+  <h2 align="center">Purchases</h2>
 </head>
+
 <script>
   w3IncludeHTML();
+
 </script>
 
 <body>
-
 <p align='center'>
-
-  <button class='btnServgreen' type='button' onclick="editTrip(0,0,'false')"><i class='fa fa-pencil'></i> New(+)</button>
+  <button class='btnServgreen' type='button' onclick="editPurchase(0,0,'false')"><i class='fa fa-pencil'></i> New(+)</button>
 </p>
 
 
 
 <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"  id="myModalNew" aria-hidden="true">
-  <div class="modal-dialog modal-sx" id="modalSizeValue">
+  <div class="modal-dialog modal-lg" id="modalSizeValue">
     <div class="modal-content">
       ...
     </div>
@@ -48,7 +50,7 @@
 <div class="tables">
 
   <div>
-    <div class="tables-trips">
+    <div class="tables-purchases">
       <h2 align="center">Loading.....</h2>
     </div>
   </div>
