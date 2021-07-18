@@ -169,7 +169,7 @@ function getObjectDB(ending) {
 
 function createEditWindow() {
   let html = '<br>'
-    + '<div class="container border">'
+    + '<div class="container">'
     + '<br><div class="form-row d-flex justify-content-center">'
     + '<div class="col">'
     + '<label for="depatureLabel">Departure</label>'
@@ -199,7 +199,7 @@ function createEditWindow() {
     // + '</div>'
 
 
-    +'<div class="form-row d-flex justify-content-center">'
+    + '<div class="form-row d-flex justify-content-center">'
     + '<div class="col" >'
 
     + ' <label for="exampleInputPassword1">Departure Time</label>'
@@ -209,7 +209,7 @@ function createEditWindow() {
     // + ' <input type="text" class="form-control form-control-sm" id="datepicker" placeholder="gg/mm/yyyy">'
     // + '<p>Date: <input type="text" id="date-from" class="hasDatepicker"></p>'
 
-  + '</div>'
+    + '</div>'
     //start
     // + '<div class="col-5" >'
     //
@@ -224,35 +224,35 @@ function createEditWindow() {
     // + '</div>'
 
     //end
- // html   += '<div class="col-5">'
- //    + ' <label for="exampleInputPassword1">Passengers</label>'
- //    + ' <input type="text" class="form-control form-control-sm" id="arrivalTime" placeholder="Passengers">'
- //    + '</div>'
- //    + '</div>'
- //    + '<br><div class="form-row d-flex justify-content-center">'
+    // html   += '<div class="col-5">'
+    //    + ' <label for="exampleInputPassword1">Passengers</label>'
+    //    + ' <input type="text" class="form-control form-control-sm" id="arrivalTime" placeholder="Passengers">'
+    //    + '</div>'
+    //    + '</div>'
+    //    + '<br><div class="form-row d-flex justify-content-center">'
 
-  // html   += '<div class="input-group;col-5">'
-  //   +'<input id="address" type="email" placeholder="Add your email address" class="form-control form-control-sm" /> <span class="input-group-btn">'
-  //   +'  <button class="btn btn-warning" type="button" id="addressSearch">Subscribe</button>'
-  //   +' </span>'
-  //   +' </div>'
-  //   + '</div>'
+    // html   += '<div class="input-group;col-5">'
+    //   +'<input id="address" type="email" placeholder="Add your email address" class="form-control form-control-sm" /> <span class="input-group-btn">'
+    //   +'  <button class="btn btn-warning" type="button" id="addressSearch">Subscribe</button>'
+    //   +' </span>'
+    //   +' </div>'
+    //   + '</div>'
 
-     + '<div class="col">'
+    + '<div class="col">'
     + ' <label for="exampleInputPassword1">Passengers</label>'
     + '<div class="input-group">'
 
 
     + '<input type="text" class="form-control" placeholder="Passengers" value="1" id="passengerValue"">'
-   + '<div class="input-group-append">'
-   + '<button class="btn btn-outline-secondary" onclick="more()" type="button">+</button>'
-   + '<button class="btn btn-outline-secondary" onclick="less()" type="button">-</button>'
-    + '</div>'
-   + '</div>'
+    + '<div class="input-group-append">'
+    + '<button class="btn btn-outline-secondary" onclick="more()" type="button">+</button>'
+    + '<button class="btn btn-outline-secondary" onclick="less()" type="button">-</button>'
     + '</div>'
     + '</div>'
-     + '<br><div class="form-row d-flex justify-content-center">'
-     + '<button type="bt" class="btn btn-primary" onclick="chooseTrip()" id="buttonSubmitValues" >Search</button></form>'
+    + '</div>'
+    + '</div>'
+    + '<br><div class="form-row d-flex justify-content-center">'
+    + '<button type="bt" class="btn btn-primary" onclick="chooseTrip()" id="buttonSubmitValues" >Search</button></form>'
     + '</div><br>'
 
   // $('.tables-trips').html(html);
@@ -262,36 +262,35 @@ function createEditWindow() {
   $('#myModalNew').modal('show');
 }
 
-function more(){
-  let intValue=parseInt(document.getElementById("passengerValue").value) + 1;
-    document.getElementById("passengerValue").value=intValue
+function more() {
+  let intValue = parseInt(document.getElementById("passengerValue").value) + 1;
+  document.getElementById("passengerValue").value = intValue
 }
 
-function less(){
-  let intValue=parseInt(document.getElementById("passengerValue").value) - 1 ;
-    if(intValue<= 1){
-      intValue=1;
+function less() {
+  let intValue = parseInt(document.getElementById("passengerValue").value) - 1;
+  if (intValue <= 1) {
+    intValue = 1;
   }
-  document.getElementById("passengerValue").value=intValue
+  document.getElementById("passengerValue").value = intValue
 
 }
 
 
-function chooseTrip(){
-  if(!checkFirstStepElements()){
+function chooseTrip() {
+  if (!checkFirstStepElements()) {
     return false
-  };
+  }
+  ;
   extractTrips();
 }
 
-function   checkFirstStepElements() {
+function checkFirstStepElements() {
 
   var departure = document.getElementById('DepartureList').value;
   var destination = document.getElementById('DestinationList').value;
-  let dateDeparture= document.getElementById('dateDeparture').value;
+  let dateDeparture = document.getElementById('dateDeparture').value;
   let date_regex = /^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([1][26]|[2468][048]|[3579][26])00))))$/g;
-
-
 
 
   if ((departure == "") || (departure == "undefined")) {
@@ -329,48 +328,48 @@ function extractTrips() {
         return b.id - a.id;
       });
 
-      html = '<table id="tripsTable" class="table table-hover table-striped">'
-        + '<thead>'
-        + '<tr>'
-        + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:15%\"  scope="col">Departure</th>'
-        + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Departure Time</th>'
-        + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Duration</th>'
-        + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Destination</th>'
-        + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Arrival Time</th>'
-          + '</tr>'
-        + '</thead>'
+      html = '<div class="container border" id="travelFlight"><br><p>&nbsp;<i class="fas fa-plane-departure"></i>&nbsp;<h7><b>' + document.getElementById('DepartureList').value + '</b>' +
+        ' To: <b>' + document.getElementById('DestinationList').value + '</b></p></h7><table id="tripsTable" class="table table-hover ">'
+
         + '<tbody>';
 
       for (var i = 0; i < trips.length; i++) {
-        html += '<tr align=\'center\'  >'
-          + '<td  > ' + trips[i].departure.city + '</td>'
-          + '<td  >' + trips[i].destination.city + '</td>';
-        const date1 = new Date(trips[i].startDateFlight);
-        const date2 = new Date(trips[i].endDateFlight);
-        const diffTime = Math.abs(date2 - date1);
-        const hours = Math.floor(diffTime / (1000 * 60*60));
-        const minutes = Math.floor((diffTime / (1000 * 60)) -(hours*60)) ;
-        let startDateFlightValue= trips[i].startDateFlight;
-        startDateFlightValue= startDateFlightValue.substr(8,2)+"/"+startDateFlightValue.substr(5,2)+"/"+startDateFlightValue.substr(0,4)+" "+startDateFlightValue.substr(11,5);
+        let startDateFlightValue = trips[i].startDateFlight;
+        startDateFlightValue = startDateFlightValue.substr(8, 2) + "/" + startDateFlightValue.substr(5, 2) + "/" + startDateFlightValue.substr(0, 4) + " " + startDateFlightValue.substr(11, 5);
 
-        let endDateFlightValue= trips[i].endDateFlight;
-        endDateFlightValue= endDateFlightValue.substr(8,2)+"/"+endDateFlightValue.substr(5,2)+"/"+endDateFlightValue.substr(0,4)+" "+endDateFlightValue.substr(11,5);
+        let endDateFlightValue = trips[i].endDateFlight;
+        endDateFlightValue = endDateFlightValue.substr(8, 2) + "/" + endDateFlightValue.substr(5, 2) + "/" + endDateFlightValue.substr(0, 4) + " " + endDateFlightValue.substr(11, 5);
+        if (startDateFlightValue.substr(0, 10) === document.getElementById('dateDeparture').value
+          && trips[i].departure.city === document.getElementById('DepartureList').value
+          && trips[i].destination.city === document.getElementById('DestinationList').value) {
 
-
-
-        html +=  '<td   >' + hours +' : '+minutes+'</td>'
-          +  '<td   >' + startDateFlightValue + '</td>'
-          + '<td   >' + endDateFlightValue + '</td>'
-          + '<td   >'
-          + '<div class="pointer">'
-
-          + '</div></td>'
-          + '</tr>';
+          html += '<tr align=\'center\' id="trip' + trips[i].id + '"  >'
+            + '<td   >' + startDateFlightValue.substr(0, 10) + '</td>'
+            + '<td  ><p> <b>' + trips[i].departure.city + "</b></p>" + startDateFlightValue.substr(11, 5) + '</td>'
+          const date1 = new Date(trips[i].startDateFlight);
+          const date2 = new Date(trips[i].endDateFlight);
+          const diffTime = Math.abs(date2 - date1);
+          const hours = Math.floor(diffTime / (1000 * 60 * 60));
+          const minutes = Math.floor((diffTime / (1000 * 60)) - (hours * 60));
 
 
+          html += '<td  class="align-middle" ><p style="margin : 0; padding-top:0;"><i class="fas fa-plane-departure"></i> ' + hours + 'h ' + minutes + 'm</p>Duration</td>'
+            + '<td  ><p><b> ' + trips[i].destination.city + "</b></p>" + endDateFlightValue.substr(11, 5) + '</td>'
+
+            + '<td   >Flight No. ' + trips[i].id
+            + '<div class="pointer">'
+            + '<i class="fas fa-chevron-circle-right" id="button'+trips[i].id+'" onclick="createSeatsFlight(' + trips[i].airplane.numberSeats + ',' + trips[i].id + ')" title="Book This"></i>'
+            + '</div></td>'
+            + '</tr>';
+
+        }
       }
-      html += '</tbody></table>';
+      html += '</tbody></table></div>';
       // console.log(html)
+      let elementToDelete = document.getElementById('travelFlight')
+      if (elementToDelete != undefined) elementToDelete.remove();
+      elementToDelete = document.getElementById('seatsFlight')
+      if (elementToDelete != undefined) elementToDelete.remove();
       $('#myModalNew').find('.modal-content').append(html);
     })
     .catch(err => {
@@ -378,6 +377,105 @@ function extractTrips() {
     });
 
 
+}
+
+function createSeatsFlight(nrSeats, idFlight) {
+  let tableRef = document.getElementById("tripsTable");
+  let countRows = $('#tripsTable tr').length
+  for (let i = 0; i < countRows; i++) {
+    let rowGetData = tableRef.rows[i];
+    if (rowGetData.id != "trip" + idFlight) {
+      rowGetData.remove();
+      countRows = $('#tripsTable tr').length;
+      i = 0;
+    }
+  }
+
+  let elementToDelete = document.getElementById('seatsFlight')
+  if (elementToDelete != undefined) elementToDelete.remove();
+
+  document.getElementById("button"+idFlight).setAttribute("onclick", null);
+
+  let html = '<br><div align="center" class="container" id="seatsFlight">'
+    +   '     <div class="form-row d-flex justify-content-center">'
+    + '<button type="bt" class="btn btn-primary" onclick="additionalService('+nrSeats+')" id="buttonSubmitAdditionalService" >&nbsp;Next&nbsp;</button>'
+    +   ' </div>'
+  +  '<br><h2 id="amountValue">Amount: € 0,00 </h2><table id="seatsTable">'
+  let nrSeatsRow = Math.floor(nrSeats / 6);
+
+  for (let i = 0; i <= nrSeatsRow; i++) {
+    // console.log(i % 6)
+    html += '<tr >';
+    let character = convertToNumberingScheme(i + 1);
+    for (let j = 1; j <= 6; j++) {
+      if (((i * 6) + j) <= nrSeats) {
+
+        if (j == 4) {
+          html += '  <td width="10%">' + i
+
+            + ' </td>'
+
+        }
+        html += '  <td width="10%">'
+          + '   <input type="checkbox" id="seat' + ((i * 6) + j) + '" onclick="checkPassengers(' + nrSeats + ',' + ((i * 6) + j) + ')"/>'
+          + '   <label for="seat' + ((i * 6) + j) + '" id="label'+ ((i * 6) + j)+'">' + character + '0' + j + '</label>'
+          + ' </td>'
+
+      }
+
+    }
+
+    html += '</tr >'
+
+  }
+  html += '</table></div>';
+  $('#myModalNew').find('.modal-content').append(html);
+
+}
+
+function additionalService(nrSeats){
+  if(checkPassengers(nrSeats, 0)==null){
+    alert("Please select seats equals passengers")
+  }
+}
+function checkPassengers(nrSeats, idCheckInput) {
+  let tableRef = document.getElementById("seatsTable");
+  let countRows = $('#seatsTable tr').length
+  let countChecked = 0;
+  let arraySeats=[];
+  for (let i = 1; i <= nrSeats; i++) {
+    if (document.getElementById("seat" + i).checked) {
+      arraySeats.push(document.getElementById("label" + i).innerText);
+      countChecked++;
+    }
+  }
+  console.log(arraySeats);
+  if (countChecked > document.getElementById("passengerValue").value) {
+    alert("You can't book more seats than passengers")
+    document.getElementById("seat" + idCheckInput).checked = false;
+    return false;
+  }
+
+    let amount=    Math.round(countChecked*150.00).toFixed(2);
+    document.getElementById("amountValue").innerHTML = "Amount: € "+ amount.replace(".",",");
+  if(countChecked == document.getElementById("passengerValue").value){
+    return arraySeats;
+  }
+    return (null);
+
+}
+
+function convertToNumberingScheme(number) {
+  var baseChar = ("A").charCodeAt(0),
+    letters = "";
+
+  do {
+    number -= 1;
+    letters = String.fromCharCode(baseChar + (number % 26)) + letters;
+    number = (number / 26) >> 0; // quick `floor`
+  } while (number > 0);
+
+  return letters;
 }
 
 function editPurchase(row, idModify, isModify) {
@@ -409,7 +507,7 @@ function loadingDataOnEdit(row, idModify, isModify) {
         let optDeparture = document.createElement('option');
         let optDestination = document.createElement('option');
         optDeparture.value = airports[i].city;
-        optDeparture.setAttribute("data-value",  airports[i].id);
+        optDeparture.setAttribute("data-value", airports[i].id);
 
         optDestination.value = airports[i].id;
         optDestination.label = airports[i].name;
@@ -459,9 +557,9 @@ function generateJson() {
     return false;
   }
 
-  let departureValue= $("#Departure option[value='" + $('#dataList').val() + "']").attr('data-value');
+  let departureValue = $("#Departure option[value='" + $('#dataList').val() + "']").attr('data-value');
 
- alert(departureValue);
+  alert(departureValue);
   let obj = createJson();
 
   var xhr = new XMLHttpRequest();
