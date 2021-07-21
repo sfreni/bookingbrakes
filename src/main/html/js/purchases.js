@@ -170,7 +170,31 @@ function getObjectDB(ending) {
 function createEditWindow() {
   let html = '<br>'
     + '<div class="container">'
+///
+
+
+
     + '<br><div class="form-row d-flex justify-content-center">'
+    + '<div class="col">'
+    + '<label for="customerLabel">Customer</label>'
+    + '<input class="form-control" list="Customer" id="CustomerList" placeholder="Type to search...">'
+    + '<datalist id="Customer">'
+    + '</datalist>'
+
+    //    + ' <select class="form-control form-control-sm" id="Departure">'
+    //
+    // + '</select>'
+    // + '<small id="emailHelp" class="form-text text-muted">Well never share your email with anyone else.</small>'
+    + '</div>'
+    + '<div class="col">'
+
+    + '</div>'
+    + '</div>'
+
+
+///
+
+    + '<div class="form-row d-flex justify-content-center">'
     + '<div class="col">'
     + '<label for="depatureLabel">Departure</label>'
     + '<input class="form-control" list="Departure" id="DepartureList" placeholder="Type to search...">'
@@ -243,16 +267,17 @@ function createEditWindow() {
     + '<div class="input-group">'
 
 
-    + '<input type="text" class="form-control" placeholder="Passengers" value="1" id="passengerValue"">'
+    + '<input type="text" class="form-control" placeholder="Passengers" value="1" id="passengerValue">'
     + '<div class="input-group-append">'
-    + '<button class="btn btn-outline-secondary" onclick="more()" type="button">+</button>'
-    + '<button class="btn btn-outline-secondary" onclick="less()" type="button">-</button>'
+    + '<button class="btn btn-outline-secondary" onclick="more('+"passengerValue"+')" type="button">+</button>'
+    + '<button class="btn btn-outline-secondary" onclick="less('+"passengerValue"+',1)" type="button">-</button>'
     + '</div>'
     + '</div>'
     + '</div>'
     + '</div>'
     + '<br><div class="form-row d-flex justify-content-center">'
     + '<button type="bt" class="btn btn-primary" onclick="chooseTrip()" id="buttonSubmitValues" >Search</button></form>'
+    + '&nbsp;<button type="bt" class="btn btn-primary" onclick="closeThisModal()" id="buttonCloseModal" >Cancel</button></form>'
     + '</div><br>'
 
   // $('.tables-trips').html(html);
@@ -261,37 +286,59 @@ function createEditWindow() {
   $('.modal-content').html(html);
   $('#myModalNew').modal('show');
 }
+function closeThisModal() {
+  $('#myModalNew').modal('hide');
+}
+function more(element) {
+  let intValue = parseInt(element.value) + 1;
+  element.value = intValue
 
-function more() {
-  let intValue = parseInt(document.getElementById("passengerValue").value) + 1;
-  document.getElementById("passengerValue").value = intValue
 }
 
-function less() {
-  let intValue = parseInt(document.getElementById("passengerValue").value) - 1;
-  if (intValue <= 1) {
-    intValue = 1;
+function less(element,lowerBounder) {
+    let intValue = parseInt(element.value) - 1;
+  if (intValue <= lowerBounder) {
+    intValue = lowerBounder;
   }
-  document.getElementById("passengerValue").value = intValue
+
+  element.value = intValue
 
 }
 
+function calculateTotalValue(){
+
+  let amountValue= parseFloat(document.getElementById('feeCounter').value);
+  let qtyValue=0;
+  qtyValue+=parseInt(document.getElementById('inputTextBoarding').value)
+  qtyValue+=parseInt(document.getElementById('inputText10KgBag').value)
+  qtyValue+=parseInt(document.getElementById('inputText20KgBag').value)
+  qtyValue+=parseInt(document.getElementById('inputTextExcessBaggageFee').value)
+  qtyValue+=parseInt(document.getElementById('inputTextSportEquipment').value)
+  qtyValue+=parseInt(document.getElementById('inputTextMusicalEquipment').value)
+  amountValue= Math.round(amountValue+(qtyValue*30.00)).toFixed(2)
+  document.getElementById('amountValue').innerHTML="Amount: € "+ amountValue.replace(".",",");;
+
+}
 
 function chooseTrip() {
   if (!checkFirstStepElements()) {
     return false
   }
-  ;
   extractTrips();
 }
 
 function checkFirstStepElements() {
-
+  var customer = document.getElementById('CustomerList').value;
   var departure = document.getElementById('DepartureList').value;
   var destination = document.getElementById('DestinationList').value;
   let dateDeparture = document.getElementById('dateDeparture').value;
   let date_regex = /^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|(([1][26]|[2468][048]|[3579][26])00))))$/g;
 
+  if ((customer == "") || (customer == "undefined")) {
+    alert("Please insert a customer! ");
+    document.getElementById('Customer').focus();
+    return false;
+  }
 
   if ((departure == "") || (departure == "undefined")) {
     alert("Please insert a departure city! ");
@@ -365,11 +412,22 @@ function extractTrips() {
         }
       }
       html += '</tbody></table></div>';
-      // console.log(html)
       let elementToDelete = document.getElementById('travelFlight')
       if (elementToDelete != undefined) elementToDelete.remove();
       elementToDelete = document.getElementById('seatsFlight')
       if (elementToDelete != undefined) elementToDelete.remove();
+
+      elementToDelete = document.getElementById('amountValue')
+      if (elementToDelete != undefined) elementToDelete.remove();
+      elementToDelete = document.getElementById('containerDataPassenger')
+      if (elementToDelete != undefined) elementToDelete.remove();
+      elementToDelete = document.getElementById('containerAdditionalServicePassenger')
+      if (elementToDelete != undefined) elementToDelete.remove();
+      elementToDelete = document.getElementById('purchaseElements')
+      if (elementToDelete != undefined) elementToDelete.remove();
+      elementToDelete = document.getElementById('panelValueAndCounter')
+      if (elementToDelete != undefined) elementToDelete.remove();
+
       $('#myModalNew').find('.modal-content').append(html);
     })
     .catch(err => {
@@ -396,11 +454,14 @@ function createSeatsFlight(nrSeats, idFlight) {
 
   document.getElementById("button"+idFlight).setAttribute("onclick", null);
 
-  let html = '<br><div align="center" class="container" id="seatsFlight">'
+  let html = '<div class="form-row d-flex justify-content-center" id="panelValueAndCounter"><br><br><h2 id="amountValue">Amount: € 0,00 </h2>'
+    +' <input type="hidden" id="feeCounter" value="0">'
+    +' <input type="hidden" id="idTripValue" value="'+idFlight+'">'
+    +'<br></div><div align="center" class="container border" id="seatsFlight">'
     +   '     <div class="form-row d-flex justify-content-center">'
-    + '<button type="bt" class="btn btn-primary" onclick="additionalService('+nrSeats+')" id="buttonSubmitAdditionalService" >&nbsp;Next&nbsp;</button>'
+    + '<button type="bt" class="btn btn-primary" onclick="addPassengerData('+nrSeats+')" id="buttonSubmitAdditionalService" >&nbsp;Next&nbsp;</button>'
     +   ' </div>'
-  +  '<br><h2 id="amountValue">Amount: € 0,00 </h2><table id="seatsTable">'
+  +  '<br><table id="seatsTable">'
   let nrSeatsRow = Math.floor(nrSeats / 6);
 
   for (let i = 0; i <= nrSeatsRow; i++) {
@@ -431,13 +492,302 @@ function createSeatsFlight(nrSeats, idFlight) {
   html += '</table></div>';
   $('#myModalNew').find('.modal-content').append(html);
 
+  let el=document.getElementById('amountValue');
+
+  $('#myModalNew').scrollTop(el.offsetTop);
+  $('#myModalNew').scrollLeft(el.offsetLeft);
 }
 
-function additionalService(nrSeats){
-  if(checkPassengers(nrSeats, 0)==null){
+function addPassengerData(nrSeats){
+  let arrSeats=checkPassengers(nrSeats, 0);
+  if(arrSeats==null){
     alert("Please select seats equals passengers")
+    return false;
   }
+  let size=arrSeats.length;
+  console.log(size)
+
+  let html = '<div class="container" id="purchaseElements">'
+    +' <input type="hidden" id="totalSeatPassanger" value="'+size+'">'
+
+    +   '     <div class="form-row d-flex justify-content-center" id="containerDataPassenger">'
+    + '<p><button type="bt" class="btn btn-primary" onclick="additionalServices()" id="buttonSubmitAdditionalService" >&nbsp;Next&nbsp;</button></p>'
+    +   ' </div>'
+
+  for(let i=0;i<size;i++){
+       html +='<div class="form-row d-flex justify-content-center">'
+     +' <h2>Seat: '+arrSeats[i] +'</h2>'
+         +' <input type="hidden" id="seatPassangerValue'+i+'" value="'+arrSeats[i]+'">'
+    + '</div>'
+      +'<div class="form-row d-flex justify-content-center">'
+    + '<div class="col">'
+    + '<label for="firstName">First Name</label>'
+    + '<input type="text" class="form-control" id="firstNameInput'+i+'" >'
+    + '</div>'
+    + '<div class="col">'
+    + '<label for="lastName">Last Name</label>'
+    + '<input type="text" class="form-control" id="lastNameInput'+i+'" >'
+    + '</div>'
+    + '<div class="col">'
+         + '<label for="birthDayLabel">Birthday</label>'
+    + '<input type="text" class="form-control"   data-provide="datepicker" data-date-format="dd/mm/yyyy" data-date-autoclose="true" id="birthDayInput'+i+'" >'
+    + '</div>'
+    + '</div>'
+    }
+  html +='</br></div>'
+  let elementToDelete = document.getElementById('seatsFlight')
+  if (elementToDelete != undefined) elementToDelete.remove();
+  $('#myModalNew').find('.modal-content').append(html);
 }
+
+
+function additionalServices() {
+  let bookedSeats=parseInt(document.getElementById('totalSeatPassanger').value)
+  for (let i = 0; i < bookedSeats; i++) {
+    if (document.getElementById('firstNameInput' + i).value == "" ||
+      document.getElementById('firstNameInput' + i).value == undefined) {
+      alert("Please insert the first name of passenger! ");
+      document.getElementById('firstNameInput' + i).focus();
+      return false;
+    }
+
+    if (document.getElementById('lastNameInput' + i).value == "" ||
+      document.getElementById('lastNameInput' + i).value == undefined) {
+      alert("Please insert the last name of passenger! ");
+      document.getElementById('lastNameInput' + i).focus();
+      return false;
+    }
+
+    if (document.getElementById('birthDayInput' + i).value == "" ||
+      document.getElementById('birthDayInput' + i).value == undefined) {
+      alert("Please insert the birthday of passenger! ");
+      document.getElementById('birthDayInput' + i).focus();
+      return false;
+    }
+  }
+
+
+    let html = '<div class="container" id="containerAdditionalServicePassenger">'
+
+      +'<div class="form-row d-flex justify-content-center">'
+      +' <h2>Additional Service:</h2>'
+      + '</div>'
+      +'<div class="row">'
+      +'<div class = "col-md-12">'
+
+      +'  <div class="accordion" id="accordionExample">'
+      +'<div class="card">'
+      +'<div class="card-header" id="headingOne">'
+      +'<h2 class="mb-0">'
+      +' <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">'
+      +'  Priority Boarding'
+      +' </button>'
+      +'</h2>'
+      +' </div>'
+
+      +'    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputTextBoarding">Add Priority Boarding at price of € 30,00</label>'
+      +' </div>'
+      +'<div class="col-4">'
+      + '<div class="input-group">'
+
+
+      // +'  Add Priority Boarding at price of € 30,00'
+       + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputTextBoarding"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputTextBoarding"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputTextBoarding"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      +' </div>'
+      +' </div>'
+      +'</div>'
+      + '</div>'
+      +'<div class="card">'
+      +' <div class="card-header" id="headingTwo">'
+      +' <h2 class="mb-0">'
+      +'  <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">'
+      +'  Checkin Bag(10 KG)'
+      +' </button>'
+      +' </h2>'
+      +' </div>'
+      +'<div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputText10KgBag">Add 10 Checkin Bag at price of € 30,00</label>'
+      +' </div>'
+      +'<div class="col-4">'
+      + '<div class="input-group">'
+
+      + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputText10KgBag"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputText10KgBag"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputText10KgBag"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+      +' </div>'
+      +'</div>'
+      +' </div>'
+      +' </div>'
+      +' <div class="card">'
+      +' <div class="card-header" id="headingThree">'
+      +' <h2 class="mb-0">'
+      +'<button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">'
+      +'  Checkin Bag(20 KG)'
+      +'  </button>'
+      +'  </h2>'
+      +'</div>'
+      +'<div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputText20KgBag">Add 20 Checkin Bag at price of € 30,00<label>'
+      +' </div>'
+      +'<div class="col-4">'
+
+      + '<div class="input-group">'
+
+
+
+      + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputText20KgBag"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputText20KgBag"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputText20KgBag"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+        + '</div>'
+      +' </div>'
+      +' </div>'
+      +'</div>'
+      +'</div>'
+//
+      +'<div class="card">'
+      +' <div class="card-header" id="headingFour">'
+      +' <h2 class="mb-0">'
+      +'  <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">'
+      +'  Excess Baggage Fee'
+      +' </button>'
+      +' </h2>'
+      +' </div>'
+      +'<div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputTextExcessBaggageFee">Excess Baggage Fee per KG at price of € 30,00</label>'
+      +' </div>'
+      +'<div class="col-4">'
+      + '<div class="input-group">'
+
+      + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputTextExcessBaggageFee"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputTextExcessBaggageFee"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputTextExcessBaggageFee"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+      +' </div>'
+      +'</div>'
+      +' </div>'
+      +' </div>'
+
+//
+      +'<div class="card">'
+      +' <div class="card-header" id="headingFive">'
+      +' <h2 class="mb-0">'
+      +'  <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">'
+      +'  Sport Equipment'
+      +' </button>'
+      +' </h2>'
+      +' </div>'
+      +'<div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputTextSportEquipment">Sport Equipment at price of € 30,00 per unit</label>'
+      +' </div>'
+      +'<div class="col-4">'
+      + '<div class="input-group">'
+
+      + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputTextSportEquipment"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputTextSportEquipment"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputTextSportEquipment"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+      +' </div>'
+      +'</div>'
+      +' </div>'
+      +' </div>'
+//
+      +'<div class="card">'
+      +' <div class="card-header" id="headingSix">'
+      +' <h2 class="mb-0">'
+      +'  <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">'
+      +'  Musical Equipment'
+      +' </button>'
+      +' </h2>'
+      +' </div>'
+      +'<div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionExample">'
+      +'<div class="card-body">'
+      +'<div class="row align-items-center"><div class="col-8">'
+      + '<label for="inputTextMusicalEquipment">Musical Equipment at price of € 30,00 per unit</label>'
+      +' </div>'
+      +'<div class="col-4">'
+      + '<div class="input-group">'
+
+      + '<input type="text" class="form-control" placeholder="Qty" value="0" id="inputTextMusicalEquipment"">'
+      + '<div class="input-group-append">'
+      + '<button class="btn btn-outline-secondary" onclick="more('+"inputTextMusicalEquipment"+');calculateTotalValue()" type="button">+</button>'
+      + '<button class="btn btn-outline-secondary" onclick="less('+"inputTextMusicalEquipment"+',0);calculateTotalValue()" type="button">-</button>'
+      + '</div>'
+      + '</div>'
+      +' </div>'
+      +'</div>'
+      +' </div>'
+      +' </div>'
+
+
+
+      //
+      //   +'<table id="purchasesTable" class="table table-hover table-striped">' +
+      // '<thead>'
+      // + '<tr>'
+      // + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">N.</th>'
+      // + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">Additional Service</th>'
+      // + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Quantity</th>'
+      // + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Price</th>'
+      // + '</tr>'
+      // + '</thead>'
+      //   + '<tbody>'
+      // + '<tr>'
+      //
+      // + '</tr>'
+      // + '</tbody>'
+      + '</div>'
+
+    // parentDiv.insertBefore(newNode, sp2)
+    html +='</br></div>'
+
+    $('#containerDataPassenger').after(html);
+    document.getElementById('buttonSubmitAdditionalService').setAttribute('onclick', 'generateJson()')
+    let el=document.getElementById('amountValue');
+
+    $('#myModalNew').scrollTop(el.offsetTop);
+    $('#myModalNew').scrollLeft(el.offsetLeft);
+    // let newNode = document.createElement(html)
+    // let sp2 = document.getElementById("containerDataPassenger")
+    // sp2.after(newNode);
+
+    //
+    //
+    //
+    // arrPassengerData[i] = new Array(4);
+    //   arrPassengerData[i][0]=document.getElementById('seatPassangerValue'+i).value
+    //   arrPassengerData[i][1]=document.getElementById('firstNameInput'+i).value
+    //   arrPassengerData[i][2]=document.getElementById('lastNameInput'+i).value
+    //   arrPassengerData[i][3]=document.getElementById('birthDayInput'+i).value
+
+}
+
 function checkPassengers(nrSeats, idCheckInput) {
   let tableRef = document.getElementById("seatsTable");
   let countRows = $('#seatsTable tr').length
@@ -458,6 +808,8 @@ function checkPassengers(nrSeats, idCheckInput) {
 
     let amount=    Math.round(countChecked*150.00).toFixed(2);
     document.getElementById("amountValue").innerHTML = "Amount: € "+ amount.replace(".",",");
+    document.getElementById('feeCounter').value= amount;
+
   if(countChecked == document.getElementById("passengerValue").value){
     return arraySeats;
   }
@@ -531,6 +883,42 @@ function loadingDataOnEdit(row, idModify, isModify) {
       console.error('An error occurred', err);
     });
 
+  getObjectDB("customers")
+    .then(customers => {
+      customers.sort(function (a, b) {
+        return b.id - a.id;
+      });
+      let selectCustomer = document.getElementById('Customer');
+     if (isModify == true) {
+        let tableRef = document.getElementById("tripsTable");
+        var rowGetData = tableRef.rows;
+        var colGetData = rowGetData[row].cells;
+        let innerHtmlDepartureValue = colGetData[0].innerHTML;
+        let innerHtmlDestinationValue = colGetData[1].innerHTML;
+      }
+
+      for (var i = 0; i < customers.length; i++) {
+        let optCustomer = document.createElement('option');
+        optCustomer.value = customers[i].firstName+" "+customers[i].lastName;
+        optCustomer.setAttribute("data-value", customers[i].id);
+
+        selectCustomer.appendChild(optCustomer);
+        if (isModify == true && customers[i].name.trim() == innerHtmlDepartureValue.trim()) {
+          optDeparture.selected = true;
+
+        }
+
+        if (isModify == true && customers[i].name.trim() == innerHtmlDestinationValue.trim()) {
+          optDestination.selected = true;
+
+        }
+      }
+
+    })
+    .catch(err => {
+      console.error('An error occurred', err);
+    });
+
 
   if (isModify == true) {
 
@@ -550,16 +938,12 @@ function loadingDataOnEdit(row, idModify, isModify) {
 }
 
 function generateJson() {
+  // arrPassengerData[i] = new Array(4);
+  //   arrPassengerData[i][0]=document.getElementById('seatPassangerValue'+i).value
+  //   arrPassengerData[i][1]=document.getElementById('firstNameInput'+i).value
+  //   arrPassengerData[i][2]=document.getElementById('lastNameInput'+i).value
+  //   arrPassengerData[i][3]=document.getElementById('birthDayInput'+i).value
 
-
-  let checkValues = checkInputValues();
-  if (!checkValues) {
-    return false;
-  }
-
-  let departureValue = $("#Departure option[value='" + $('#dataList').val() + "']").attr('data-value');
-
-  alert(departureValue);
   let obj = createJson();
 
   var xhr = new XMLHttpRequest();
