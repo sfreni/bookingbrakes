@@ -1,0 +1,22 @@
+/*! HTML5 Boilerplate v8.0.0 | MIT License | https://html5boilerplate.com/ */
+
+/* main.css 2.1.0 | MIT License | https://github.com/h5bp/main.css#readme */
+/*
+ * What follows is the result of much research on cross-browser styling.
+ * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
+ * Kroc Camen, and the H5BP dev community and team.
+ */
+
+/* ==========================================================================
+   Base styles: opinionated defaults
+   ========================================================================== */
+/*td {border:1px solid;padding:3px;}*/
+td input[type="checkbox"] {position:absolute;
+  left:-9999px;}
+td label {background-color:forestgreen;padding:3px;display:block;color:#fff;border-radius:3px;font-family:arial;}
+td input:checked + label {background-color:steelblue}
+
+/*td.seat {*/
+/*  background-image:url('img/seatflight.png');*/
+/*  background-size:contain;*/
+/*}*/

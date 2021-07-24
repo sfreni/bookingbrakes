@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/creditcardtransactions")
 @Log
