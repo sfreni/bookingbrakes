@@ -347,16 +347,15 @@ class PurchaseServiceTest {
     @Test
     void updatePurchaseStatusNotComplete() {
 
-       PurchaseStatus status = purchaseService.updatePurchaseStatus(purchase);
+       PurchaseStatus status = purchaseService.updatePurchaseStatus(purchase.getProducts(),purchase.getCreditCardTransactions());
         assertEquals("NOT_COMPLETE",status.name());
 
     }
     @Test
     void updatePurchaseStatusComplete() {
         purchase.getCreditCardTransactions().add(creditCardTransaction);
-        PurchaseStatus status = purchaseService.updatePurchaseStatus(purchase);
+        PurchaseStatus status = purchaseService.updatePurchaseStatus(purchase.getProducts(),purchase.getCreditCardTransactions());
         assertEquals("COMPLETE",status.name());
-
     }
 
 

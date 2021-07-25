@@ -102,7 +102,7 @@ public class PurchaseController {
         
         productService.deleteAllProductsByPurchase(purchaseDb);
         purchase.setProducts(productService.saveProducts(products));
-        purchase.setPurchaseStatus(purchaseService.updatePurchaseStatus(purchaseDb));
+        purchase.setPurchaseStatus(purchaseService.updatePurchaseStatus(purchase.getProducts(),purchaseDb.getCreditCardTransactions()));
         purchase.setDatePurchase(new Date(System.currentTimeMillis()));
 
         return ResponseEntity.status(HttpStatus.OK)

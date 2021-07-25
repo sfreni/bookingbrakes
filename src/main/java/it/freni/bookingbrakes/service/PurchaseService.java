@@ -14,6 +14,7 @@ import lombok.extern.java.Log;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 
@@ -250,13 +251,13 @@ public class PurchaseService {
 
     }
 
-    public PurchaseStatus updatePurchaseStatus(Purchase purchase) {
+    public PurchaseStatus updatePurchaseStatus(List<Product> products, List<CreditCardTransaction> creditCardTransactions) {
         double totalPurchase = 0;
-        for (Product product : purchase.getProducts()) {
+        for (Product product : products) {
             totalPurchase += product.getPriceAmount();
         }
         double totalTransactions = 0;
-        for (CreditCardTransaction creditCardTransactionAmount : purchase.getCreditCardTransactions()) {
+        for (CreditCardTransaction creditCardTransactionAmount : creditCardTransactions) {
             if (creditCardTransactionAmount.getTransactionStatus().equals(CreditCardTransactionStatus.PAID)) {
                 totalTransactions += creditCardTransactionAmount.getTotalePriceAmount();
             }

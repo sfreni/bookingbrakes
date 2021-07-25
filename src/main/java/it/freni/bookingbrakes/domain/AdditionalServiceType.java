@@ -5,6 +5,6 @@ public enum AdditionalServiceType {
     TWENTY_KG_CHECKIN_BAG,
     EXCESS_BAGGAGE_FEE,
     SPORT_EQUIPMENT,
-    MUSICAL_EQUIPMENT
+        MUSICAL_EQUIPMENT
 }
 

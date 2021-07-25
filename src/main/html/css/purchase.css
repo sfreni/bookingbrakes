@@ -15,7 +15,7 @@ td input[type="checkbox"] {position:absolute;
   left:-9999px;}
 td label {background-color:forestgreen;padding:3px;display:block;color:#fff;border-radius:3px;font-family:arial;}
 td input:checked + label {background-color:steelblue}
-
+td input:disabled + label {background-color:red}
 /*td.seat {*/
 /*  background-image:url('img/seatflight.png');*/
 /*  background-size:contain;*/
