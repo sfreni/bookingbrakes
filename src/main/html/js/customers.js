@@ -90,25 +90,25 @@ function listPurchase(id) {
       + '</tr>'
         + '</thead>'
         + '<tbody>';
-      result = window.jsonValues;
-      result = result.sort(function(a,b) {
-        return b.id - a.id;
-      });
-      for (var i = 0; i < window.jsonValues[id].purchases.length; i++) {
+      let purchases  = window.jsonValues[id].purchases;
+      purchases = purchases.sort(function(a,b) {
+         return b.id - a.id;
+       });
+      for (var i = 0; i < purchases.length; i++) {
         html += '<tr align=\'center\'  >'
           + '<td  > ' + (i+1)+ '</td>'
-          + '<td  > ' + window.jsonValues[id].purchases[i].datePurchase + '</td>'
-          if(window.jsonValues[id].purchases[i].purchaseStatus == "COMPLETE"){
+          + '<td  > ' + purchases[i].datePurchase + '</td>'
+          if(purchases[i].purchaseStatus == "COMPLETE"){
             html += '<td  ><i  class="fa fa-check" aria-hidden="true" title="Complete"></i></td>'}else{
             html +=   '<td  ><i  class="fa fa-times" aria-hidden="true" title="Not Complete"></i></td>'
           }
-        html += '<td   >' + window.jsonValues[id].purchases[i].trip.startDateFlight + '</td>'
-          + '<td   >' + window.jsonValues[id].purchases[i].trip.departure.name + '</td>'
-          + '<td   >' + window.jsonValues[id].purchases[i].trip.destination.name + '</td>'
-          + '<td   >' + window.jsonValues[id].purchases[i].trip.tripStatus + '</td>';
+        html += '<td   >' + purchases[i].trip.startDateFlight + '</td>'
+          + '<td   >' + purchases[i].trip.departure.name + '</td>'
+          + '<td   >' + purchases[i].trip.destination.name + '</td>'
+          + '<td   >' + purchases[i].trip.tripStatus + '</td>';
         let totalAmount =0;
-        for (var j = 0; j < window.jsonValues[id].purchases[i].products.length; j++) {
-                totalAmount+=window.jsonValues[id].purchases[i].products[j].priceAmount;
+        for (var j = 0; j < purchases[i].products.length; j++) {
+                totalAmount+=purchases[i].products[j].priceAmount;
         }
 
 

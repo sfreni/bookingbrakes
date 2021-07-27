@@ -79,7 +79,7 @@ function loadTable() {
               + '<i class="fa fa-search-plus" aria-hidden="true" onclick="detailsPurchase(' + (i) + ')" title="Details" ></i>&nbsp;'
               + '<i class="fa fa-pencil" aria-hidden="true" onclick="modifyPurchase(' + (i) + ')" title="Modify"></i>&nbsp;'
               + '<i  class="fa fa-trash" aria-hidden="true" onclick="deleteRow(' + result[i].id + ')" title="Delete"></i>&nbsp;'
-
+              + '<i  class="fas fa-hand-holding-usd" aria-hidden="true" onclick="refundPurchase(' +  (i) + ')" title="Refund"></i>&nbsp;'
               + '</div></td>'
               + '</tr>';
 
@@ -174,7 +174,7 @@ function detailsPurchase(row) {
     html += '<h2 align="center">Transactions</h2><br><div class="row d-flex justify-content-center ">'
     + '<div class="col"></div><div class="col align-self-center"">'
     + '<div class="col"></div></div></div>'
-    + '<table id="detailsTable" class="table table-hover table-striped">'
+    + '<table><tbody><div id="detailsTable" class="table table-hover table-striped">'
     + '<thead>'
     + '<tr>'
     + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">Nr.</th>'
@@ -187,6 +187,7 @@ function detailsPurchase(row) {
 
     creditCardTransaction = window.jsonValues[row].creditCardTransactions;
     let totalTransactionsPaid=0;
+    let totalTransactionsRefund=0;
     for (var i = 0; i < creditCardTransaction.length; i++) {
       html += '<tr align=\'center\'  >'
 
@@ -210,25 +211,26 @@ function detailsPurchase(row) {
 
       let amountValue = Math.round(creditCardTransaction[i].totalePriceAmount).toFixed(2)
 
-      html += '<td   >€ ' + amountValue.replace(".", ",") + '</td>'
+       if(creditCardTransaction[i].transactionStatus==="PAID") {
+         html += '<td   >€ ' + amountValue.replace(".", ",") + '</td>'
+       }else{
+         html += '<td   >- € ' + amountValue.replace(".", ",") + '</td>'
 
-
-        // + '<td >' + creditCardTransaction[i].totalePriceAmount + ' </td>'
+       }
 
         + '</tr>';
       if(creditCardTransaction[i].transactionStatus==="PAID"){
         totalTransactionsPaid+=creditCardTransaction[i].totalePriceAmount
       }
+      if(creditCardTransaction[i].transactionStatus==="REFUND"){
+        totalTransactionsRefund+=creditCardTransaction[i].totalePriceAmount
+      }
     }
     totalTransactionsPaid = Math.round(totalTransactionsPaid).toFixed(2)
+    totalTransactionsRefund=Math.round(totalTransactionsRefund).toFixed(2)
 
-
-    html += '<tr align=\'center\'  >'
-      + '<td  > </td>'
-      + '<td  > </td>'      + '<td  > </td>'
-      + '<td  ><b>Tot.'
-      + ' € ' + totalTransactionsPaid.replace(".", ",") +'</b></td>'
-      + '</tr></table></div>'
+    html += '</div></tbody><thead><b><h4 align="center">Total Paid: € ' + totalTransactionsPaid.replace(".", ",") +'. ' +
+      'Total Refund: € '+totalTransactionsRefund.replace(".", ",") + '</b></h4></thead></table></div><br>'
   }else{
     html += '<h4 align="center"><br><b>No Valid Transactions</b></h4><br>';
   }
@@ -239,16 +241,102 @@ function detailsPurchase(row) {
 
 }
 
+function refundPurchase(row) {
+    let totalAmount=0;
+    let products=window.jsonValues[row].products
+    for(let i=0;i<products.length;i++){
+          totalAmount+=products[i].priceAmount;
+      }
+  let totalPaid=0;
+  let creditCardTransactions=window.jsonValues[row].creditCardTransactions
+  for(let i=0;i<creditCardTransactions.length;i++){
+    if(creditCardTransactions[i].transactionStatus==="PAID")
+      totalPaid+=creditCardTransactions[i].totalePriceAmount;
+
+  }
+  let totalRefund=0;
+  for(let i=0;i<creditCardTransactions.length;i++){
+    if(creditCardTransactions[i].transactionStatus==="REFUND")
+      totalRefund+=creditCardTransactions[i].totalePriceAmount;
+
+  }
+
+  console.log(totalAmount+ " "+ totalPaid+ " "+ totalRefund)
+  let html = '<br>'
+    + '<div class="container"><h2 align="center"><p>The Purchase N.' + window.jsonValues[row].id + ' has a total amount € '+(totalAmount)+'.</p>'
+    if((totalPaid-totalRefund) > 0) {
+      html +='<p> You can refund  € ' + (totalPaid - totalRefund) + '</p></h2>'
+    }else {
+      html +='<p> Ther&apos;s no payment to refund </p></h2>'
+    }
+      html += '<br><div class="form-row d-flex justify-content-center">'
+  if((totalPaid-totalRefund) > 0) {
+    html += '<button type="bt" class="btn btn-primary" onclick="refundJson(' + row + ',' + (totalPaid - totalRefund) + ')" id="buttonCloseModal" >Refund</button></form>'
+  }
+    html +=  '&nbsp;<button type="bt" class="btn btn-primary" onclick="closeThisModal()" id="buttonCloseModal" >Close</button></form>'
+      + '</div><br>'
+
+  $('.modal-content').html(html);
+  $('#myModalNew').modal('show');
+}
+function refundJson(row,totalRefund){
+
+  let object = {
+    creditcard: window.jsonValues[row].creditCardTransactions[0].creditcard,
+    totalePriceAmount: totalRefund,
+    purchase: window.jsonValues[row],
+    transactionStatus: "REFUND",
+    customer: window.jsonValues[row].customer
+  };
+
+
+  var xhr = new XMLHttpRequest();
+  var url = "http://localhost:8080/creditcardtransactions";
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+
+  xhr.send(JSON.stringify(object));
+  xhr.onreadystatechange = function () {
+    var status = xhr.status;
+    if (status === 201) {
+      let html = '<div class="container"><br><div class="form-row d-flex justify-content-center">'
+        + '<h2 align="center">Your refund is now complete!</h2>'
+        + '</div>'
+        + '<br><div class="form-row d-flex justify-content-center">'
+        + '<button type="bt" class="btn btn-primary" onclick="closeThisModal()" id="buttonSubmitValues" >Ok</button></form>'
+        + '</div>'
+        + '</div><br>'
+      loadTable();
+      $('.modal-content').html(html);
+    } else {
+      alert("Error on creating new Trips, Error: " + status)
+    }
+  }
+
+
+}
+
 function modifyPurchase(row){
   let html =  '<div class="container">'
+  let totalPaid=0;
+  let creditCardTransactions=window.jsonValues[row].creditCardTransactions
+  for(let i=0;i<creditCardTransactions.length;i++){
+    if(creditCardTransactions[i].transactionStatus==="PAID")
+      totalPaid+=creditCardTransactions[i].totalePriceAmount;
 
+  }
+  let totalRefund=0;
+  for(let i=0;i<creditCardTransactions.length;i++){
+    if(creditCardTransactions[i].transactionStatus==="REFUND")
+      totalRefund+=creditCardTransactions[i].totalePriceAmount;
 
-    + '<br><div class="form-row d-flex justify-content-center" id="rowForPassangers">'
+  }
+    if(totalPaid>totalRefund){
+      html+= '<br><div class="form-row d-flex justify-content-center" id="rowForPassangers">'
     + '<div class="col">'
     + ' <label for="exampleInputPassword1">Passengers</label>'
     + '<div class="input-group">'
-
-
     + '<input type="text" class="form-control" placeholder="Passengers" id="passengerValue">'
     + '<div class="input-group-append">'
     + '<button class="btn btn-outline-secondary" onclick="more(' + "passengerValue" + ')" type="button">+</button>'
@@ -262,7 +350,6 @@ function modifyPurchase(row){
     + '</div>'
     + '<div class="col">'
     + '</div>'
-
     + '</div>'
 
 
@@ -272,7 +359,16 @@ function modifyPurchase(row){
   $('#myModalNew').modal('show');
 
   createSeatsFlight(window.jsonValues[row].trip.airplane.numberSeats,window.jsonValues[row].trip.id,true)
-}
+    }else{
+      document.getElementById("modalSizeValue").className = "modal-dialog modal-lg";
+      html+= '<div class="container"><h2 align="center">Your order N.' + window.jsonValues[row].id + ' has been refunded, so you can&apos;t modify it again</h2>'
+
+      $('.modal-content').html("");
+      $('.modal-content').html(html);
+      $('#myModalNew').modal('show');
+    }
+
+    }
 
 function convertUnreadableName(unreadableName){
 
@@ -1245,7 +1341,7 @@ function loadPayment(purchase) {
     + '<br><div class="form-row d-flex justify-content-center">'
     + '<div class="col">'
     + '<label for="customerLabel">Credit Card</label>'
-    + '<input class="form-control " type="text" id="numberCard" placeholder="Credit Card Numer">'
+      + '<input class="form-control " type="text" id="numberCard" placeholder="Credit Card Number ">'
     + '<input type="hidden" id="issuerNetwork" value="">'
     + '<input type="hidden" id="custId" value="'+purchaseJson.customer.id +'" >'
     + '<input type="hidden" id="purchaseId" value="'+purchaseJson.id +'" >'
@@ -1288,6 +1384,7 @@ function loadPayment(purchase) {
     + '<button type="bt" class="btn btn-primary" onclick="payOrder()" id="buttonSubmitValues" >Pay</button></form>'
     + '&nbsp;<button type="bt" class="btn btn-primary" onclick="closeThisModal()" id="buttonCloseModal" >Cancel</button></form>'
     + '</div><br>'
+
 }else{
   html += '<br>'
     + '<div class="container"><h2 align="center">Your order N.' + purchaseJson.id + ' is acquired, there&apos;s no amount to pay.</h2>'
@@ -1296,11 +1393,19 @@ function loadPayment(purchase) {
   + '</div><br>'
 }
 
+
+
+
   document.getElementById("modalSizeValue").className = "modal-dialog modal-sx";
   $('.modal-content').html("");
   $('.modal-content').html(html);
 
+
 }
+
+
+
+
 
 function payOrder() {
     if(!checkCrediCard()) {
@@ -1461,7 +1566,8 @@ function createCreditCardJson() {
 
 function checkCrediCard() {
    var card = document.getElementById("numberCard").value;
-  var visaRegEx = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+  var card = card.replace(/-/g, "");
+   var visaRegEx = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
   var mastercardRegEx = /^(?:5[1-5][0-9]{14})$/;
   var amexpRegEx = /^(?:3[47][0-9]{13})$/;
   var discovRegEx = /^(?:6(?:011|5[0-9][0-9])[0-9]{12})$/;
@@ -1688,7 +1794,7 @@ function checkInputValues() {
 
 
 function deleteRow(numRec) {
-  if (!confirm("Are you sure?")) {
+  if (!confirm("Delete a Purchase, Are you sure?")) {
     return false;
   }
   var url = "http://localhost:8080/purchases/";
