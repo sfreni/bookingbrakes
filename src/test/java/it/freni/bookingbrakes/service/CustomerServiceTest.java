@@ -87,6 +87,7 @@ class CustomerServiceTest {
         customer.setFirstName("Stefano");
         customer.setLastName("Freni");
         customer.setPurchases(purchases);
+        customerList.add(customer);
         customerDto = new CustomerControllerDto();
         creditCardDto = new CreditCardDto();
         creditCardDtoList = new ArrayList<>();
@@ -183,7 +184,8 @@ class CustomerServiceTest {
 
         doNothing().when(customerRepository).deleteById(anyLong());
         when(customerRepository.findById(1L)).thenReturn(Optional.ofNullable(customer));
-        customer.setPurchases(null);
+        List<Purchase> purchasesTest= new ArrayList<>();
+        customer.setPurchases(purchasesTest);
         customerService.deleteCustomerById(1L);
         verify(customerRepository, times(1)).deleteById(anyLong());
 

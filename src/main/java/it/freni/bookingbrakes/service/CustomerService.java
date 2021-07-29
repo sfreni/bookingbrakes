@@ -67,9 +67,9 @@ public class CustomerService {
             log.log(Level.SEVERE, OBJECT_NOT_FOUND);
             throw new NotObjectFound( OBJECT_NOT_FOUND);
         }
-        Optional<List<Purchase>> purchasesLocal=Optional.ofNullable(customer.get().getPurchases());
+        List<Purchase> purchasesLocal=customer.get().getPurchases();
 
-            if (purchasesLocal.get().size()>0) {
+            if (purchasesLocal.size()>0) {
                 log.log(Level.SEVERE, CUSTOMER_NOT_DELETE);
             throw new NotObjectFound( CUSTOMER_NOT_DELETE);
         }
