@@ -20,24 +20,24 @@ function loadTable() {
           });
 
 
-          html += '<table id="tripsTable" class="table table-hover table-striped">'
+          html += '<h2 align="center">Flights:  '+result.length+'</h2><table id="tripsTable" class="table table-hover table-striped">'
             + '<thead>'
             + '<tr>'
-            + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:15%\"  scope="col">Departure</th>'
+            + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">Departure</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Destination</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Departure Time</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Arrival Time</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:15%\"  scope="col">Airplane</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Trip Status</th>'
+            + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Reserved Book</th>'
             + '<th  class=\'text-center\ bg-primary text-white\'  align="center" style="width:10%\"  scope="col">Methods</th>'
             + '</tr>'
             + '</thead>'
             + '<tbody>';
-
           for (var i = 0; i < result.length; i++) {
             html += '<tr align=\'center\'  >'
-              + '<td  > ' + result[i].departure.name + '</td>'
-              + '<td  >' + result[i].destination.name + '</td>';
+              + '<td  > ' + result[i].departure.city + '</td>'
+              + '<td  >' + result[i].destination.city + '</td>';
             let startDateFlightValue= result[i].startDateFlight;
             startDateFlightValue= startDateFlightValue.substr(8,2)+"/"+startDateFlightValue.substr(5,2)+"/"+startDateFlightValue.substr(0,4)+" "+startDateFlightValue.substr(11,5);
 
@@ -48,12 +48,26 @@ function loadTable() {
             html +=  '<td   >' + endDateFlightValue + '</td>'
               + '<td   >' + result[i].airplane.name + '</td>'
               + '<td   >' + result[i].tripStatus + '</td>'
+
+
+            let productList=[];
+            for (let j = 0; j < result[i].purchases.length; j++) {
+              for (let k = 0; k < result[i].purchases[j].products.length; k++) {
+                if(result[i].purchases[j].products[k].type=="Seat"){
+                  productList.push(result[i].purchases[j].products[k].nrSeat);
+                }
+              }
+            }
+
+            let reservedPercentage=parseInt(productList.length / result[i].airplane.numberSeats *100);
+
+            html +=  '<td   >'+productList.length+ '/'+result[i].airplane.numberSeats+ '<b> (' + reservedPercentage + '%)</b></td>'
               + '<td   >'
               + '<div class="pointer">'
               + '<i class="fa fa-pencil" aria-hidden="true" onclick="editTrip(' + (i + 1) + ',' + result[i].id + ',true)" title="Modify Trip"></i>&nbsp;'
               + '<i  class="fa fa-trash" aria-hidden="true" onclick="deleteRow(' + result[i].id + ')" title="Delete Trip"></i>&nbsp;'
               + '<i class="fa fa-shopping-bag" aria-hidden="true" onclick="listPurchase(' + i + ')" title="List Purchase" ></i>&nbsp;'
-
+              + '<i class="fa fa-folder-open" aria-hidden="true" onclick="lookAvaibleSeats(' + result[i].airplane.numberSeats + ','+ result[i].id +','+"true"+')" title="List Seats" ></i>&nbsp;'
               + '</div></td>'
               + '</tr>';
 
@@ -94,26 +108,26 @@ function listPurchase(id) {
       + '</tr>'
       + '</thead>'
       + '<tbody>';
-    result = window.jsonValues;
-    result = result.sort(function (a, b) {
+    purchases = window.jsonValues[id].purchases;
+    purchases = purchases.sort(function (a, b) {
       return b.id - a.id;
     });
-    for (var i = 0; i < window.jsonValues[id].purchases.length; i++) {
+    for (var i = 0; i < purchases.length; i++) {
       html += '<tr align=\'center\'  >'
         + '<td  > ' + (i + 1) + '</td>'
-      let datePurchase= window.jsonValues[id].purchases[i].datePurchase.substr(8,2)+"/"+window.jsonValues[id].purchases[i].datePurchase.substr(5,2)+"/"+window.jsonValues[id].purchases[i].datePurchase.substr(0,4)+" "+window.jsonValues[id].purchases[i].datePurchase.substr(11,5);
+      let datePurchase= purchases[i].datePurchase.substr(8,2)+"/"+purchases[i].datePurchase.substr(5,2)+"/"+purchases[i].datePurchase.substr(0,4)+" "+purchases[i].datePurchase.substr(11,5);
 
 
       html += '<td  > ' + datePurchase + '</td>'
-      if (window.jsonValues[id].purchases[i].purchaseStatus == "COMPLETE") {
+      if (purchases[i].purchaseStatus == "COMPLETE") {
         html += '<td  ><i  class="fa fa-check" aria-hidden="true" title="Complete"></i></td>'
       } else {
         html += '<td  ><i  class="fa fa-times" aria-hidden="true" title="Not Complete"></i></td>'
       }
-      html += '<td>' + window.jsonValues[id].purchases[i].customer.firstName+ ' ' + window.jsonValues[id].purchases[i].customer.lastName+ '</td>'
+      html += '<td>' + purchases[i].customer.firstName+ ' ' + purchases[i].customer.lastName+ '</td>'
       let totalAmount = 0;
-      for (var j = 0; j < window.jsonValues[id].purchases[i].products.length; j++) {
-        totalAmount += window.jsonValues[id].purchases[i].products[j].priceAmount;
+      for (var j = 0; j < purchases[i].products.length; j++) {
+        totalAmount += purchases[i].products[j].priceAmount;
       }
 
 
@@ -453,3 +467,96 @@ function deleteRow(numRec) {
 };
 
 
+
+function lookAvaibleSeats(nrSeats, idFlight,isModify) {
+
+  let api = "http://localhost:8080/trips/"+idFlight;
+
+
+  return fetch(api)
+    .then(response => response.json())
+    .then(tripId => {
+
+
+      let productList=[];
+      for (let i = 0; i < tripId.purchases.length; i++) {
+        for (let j = 0; j < tripId.purchases[i].products.length; j++) {
+          if(tripId.purchases[i].products[j].type=="Seat"){
+            productList.push(tripId.purchases[i].products[j].nrSeat);
+          }
+        }
+      }
+
+
+
+      let html = ''
+      let productPurchase=[];
+      let reservedPercentage=parseInt(productList.length / tripId.airplane.numberSeats *100);
+      html += '<br><p><h2 align="center" id="amountValue">Reserved Seats N. '+productList.length+'/'+tripId.airplane.numberSeats+' ('+reservedPercentage+'%)</h2></p>' +
+        '<h4 align="center">Departure: <b>' + tripId.departure.city + '</b> Destination: <b>' + tripId.destination.city + '</b></h4>'
+      let dateDeparture= tripId.startDateFlight.substr(8,2)+"/"+tripId.startDateFlight.substr(5,2)+"/"+tripId.startDateFlight.substr(0,4)+" "+tripId.startDateFlight.substr(11,5);
+      let dateArrivale= tripId.endDateFlight.substr(8,2)+"/"+tripId.endDateFlight.substr(5,2)+"/"+tripId.endDateFlight.substr(0,4)+" "+tripId.endDateFlight.substr(11,5);
+      html += '<p><h4 align="center">Departure Time: <b>' + dateDeparture + '</b></p> <p>Arrival Time: <b>' + dateArrivale + '</b></p></h4>'
+      +  '<table id="seatsTable">'
+      let nrSeatsRow = Math.floor(nrSeats / 6);
+
+      for (let i = 0; i <= nrSeatsRow; i++) {
+        html += '<tr >';
+        let character = convertToNumberingScheme(i + 1);
+        for (let j = 1; j <= 6; j++) {
+          if (((i * 6) + j) <= nrSeats) {
+
+            if (j == 4) {
+              html += '  <td width="10%">' + i
+
+                + ' </td>'
+
+            }
+            html += '  <td width="10%">'
+            if(productList.indexOf(character + '0' + j )>=0){
+
+              if(isModify && productPurchase.indexOf(character + '0' + j )>=0) {
+                html +=  '   <input type="checkbox" id="seat' + ((i * 6) + j) + '" onclick="checkPassengers(' + nrSeats + ',' + ((i * 6) + j) + ')" disabled />'
+                  +    '   <label for="seat' + ((i * 6) + j) + '" id="label' + ((i * 6) + j) + '">' + character + '0' + j + '</label>'
+
+              }else{
+                html +=  '   <input type="checkbox" id="seat' + ((i * 6) + j) + '" onclick="checkPassengers(' + nrSeats + ',' + ((i * 6) + j) + ')" checked disabled/>'
+                  +              '   <label for="seat' + ((i * 6) + j) + '" id="label' + ((i * 6) + j) + '">' + 'X' + '</label>'
+              }
+            }else{
+              html +=  '   <input type="checkbox" id="seat' + ((i * 6) + j) + '" onclick="checkPassengers(' + nrSeats + ',' + ((i * 6) + j) + ')" disabled/>'
+                +              '   <label for="seat' + ((i * 6) + j) + '" id="label' + ((i * 6) + j) + '">' + character + '0' + j + '</label>'
+            }
+            html +=  ' </td>'
+
+          }
+
+        }
+
+        html += '</tr >'
+
+      }
+      html += '</table>';
+      document.getElementById("modalSizeValue").className="modal-dialog   ";
+      $('.modal-content').html(html);
+      $('#myModalNew').modal('show');
+
+    })
+    .catch(err => {
+      console.error('An error occurred', err);
+    });
+
+}
+
+function convertToNumberingScheme(number) {
+  var baseChar = ("A").charCodeAt(0),
+    letters = "";
+
+  do {
+    number -= 1;
+    letters = String.fromCharCode(baseChar + (number % 26)) + letters;
+    number = (number / 26) >> 0;
+  } while (number > 0);
+
+  return letters;
+}

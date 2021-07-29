@@ -20,7 +20,7 @@ function loadTable() {
           });
 
 
-          html += '<table id="purchasesTable" class="table table-hover table-striped">'
+          html += '<h2 align="center">Purchases:  '+result.length+'</h2><table id="purchasesTable" class="table table-hover table-striped">'
             + '<thead>'
             + '<tr>'
             + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:25%\"  colspan="4" scope="col">Trip</th>'
@@ -51,7 +51,7 @@ function loadTable() {
           });
           for (var i = 0; i < result.length; i++) {
             html += '<tr align=\'center\'  >'
-              + '<td  >' + result[i].id + '</b><td  >' + result[i].trip.departure.name + '</b></td><td align=\'center\'  >' + result[i].trip.destination.name + '</b></td>' +
+              + '<td  >' + result[i].id + '</b><td  >' + result[i].trip.departure.city + '</b></td><td align=\'center\'  >' + result[i].trip.destination.city + '</b></td>' +
               '<td>' + result[i].trip.startDateFlight + '</b></p></td>'
             let datePurchase = result[i].datePurchase.substr(8, 2) + "/" + result[i].datePurchase.substr(5, 2) + "/" + result[i].datePurchase.substr(0, 4) + " " + result[i].datePurchase.substr(11, 5);
 
@@ -332,7 +332,7 @@ function modifyPurchase(row){
       totalRefund+=creditCardTransactions[i].totalePriceAmount;
 
   }
-    if(totalPaid>totalRefund){
+    if(totalRefund==0 || totalPaid>totalRefund){
       html+= '<br><div class="form-row d-flex justify-content-center" id="rowForPassangers">'
     + '<div class="col">'
     + ' <label for="exampleInputPassword1">Passengers</label>'
@@ -645,16 +645,7 @@ function createSeatsFlight(nrSeats, idFlight,isModify) {
     .then(response => response.json())
     .then(tripId => {
 
-      let tableRef = document.getElementById("tripsTable");
-      let countRows = $('#tripsTable tr').length
-      for (let i = 0; i < countRows; i++) {
-        let rowGetData = tableRef.rows[i];
-        if (rowGetData.id != "trip" + idFlight) {
-          rowGetData.remove();
-          countRows = $('#tripsTable tr').length;
-          i = 0;
-        }
-      }
+
       let productList=[];
       for (let i = 0; i < tripId.purchases.length; i++) {
         for (let j = 0; j < tripId.purchases[i].products.length; j++) {

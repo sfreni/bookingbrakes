@@ -16,7 +16,7 @@ function loadTable() {
           let params = new URLSearchParams(queryString)
 
 
-          html += '<table id="airportsTable" class="table table-hover table-striped">'
+          html += '<h2 align="center">Airports:  '+result.length+'</h2><table id="airportsTable" class="table table-hover table-striped">'
             + '<thead>'
             + '<tr>'
             + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">Name</th>'

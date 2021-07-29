@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+  <script src="https://kit.fontawesome.com/c625ff51b8.js" crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- Popper JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/trip.css">
+  <script src="js/home.js"></script>
+  <meta charset="UTF-8">
+  <div w3-include-html="menu.html"></div>
+  <title>Booking Brakes</title>
+</head>
+<script>
+  w3IncludeHTML();
+</script>
+<body onLoad="loadValues()">
+
+
+<br>
+<h1 align="center">Booking System Dashboard</h1>
+<br>
+<div class="container ">
+  <br>
+  <div class="form-row d-flex justify-content-center ">
+    <div class="col-5 border" style="background-color:#2d89ef;">
+      <div class="row">
+        <div class="col">
+          <b></b>
+          <h1 align="center" id="totalPurchases" style="color:white;"></h1></b>
+          <h4 align="center" style="color:white;">Purchases</h4>
+
+        </div>
+        <div class="col">
+
+        </div>
+        <div class="col-2  align-self-center ">
+          <i class="fas fa-shopping-bag fa-3x" aria-hidden="true" style="color:white"></i>
+        </div>
+
+
+      </div>
+    </div>
+    <!--      <canvas id="pie-chart" width="800" height="450"></canvas>-->
+
+<!--      <h2 align="center" style="color:white;">Revenue:</h2>-->
+<!--      <h1 align="center" id="totalRevenue" style="color:white;"></h1>-->
+      <div class="col-5 border" style="background-color:#00a300;">
+        <div class="row">
+          <div class="col-7">
+            <b></b>
+            <h1 align="center" id="totalRevenue" style="color:white;"></h1></b>
+            <h4 align="center" style="color:white;">Revenue</h4>
+
+          </div>
+          <div class="col">
+          &nbsp;
+          </div>
+          <div class="col align-self-center ">
+          <i class="fas fa-money-bill-wave fa-3x" aria-hidden="true" style="color:white"></i>
+        </div>
+
+
+      </div>
+    </div>
+
+    </div>
+
+  <br>
+  <div class="form-row d-flex justify-content-center ">
+    <div class="col-5 border" style="background-color:#2d89ef;">
+    <div class="row">
+        <div class="col">
+          <b></b>
+          <h1 align="center" id="totalTrips" style="color:white;"></h1></b>
+          <h4 align="center" style="color:white;">Flights</h4>
+
+        </div>
+        <div class="col">
+
+        </div>
+        <div class="col-2 align-self-center ">
+          <i class="fas fa-globe fa-3x" aria-hidden="true" style="color:white"></i>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+
+    <!--      <canvas id="pie-chart" width="800" height="450"></canvas>-->
+    <div class="col-5 border" style="background-color:#00a300;">
+           <div class="row">
+    <div class="col-7">
+          <b></b>
+          <h1 align="center" id="totalCustomers" style="color:white;"></h1></b>
+          <h4 align="center" style="color:white;">Customers</h4>
+
+        </div>
+        <div class="col">
+
+        </div>
+        <div class="col-3 align-self-center ">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i class="fas fa-street-view fa-3x" aria-hidden="true" style="color:white"></i>
+        </div>
+
+
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+</body>
+
+
+</html>

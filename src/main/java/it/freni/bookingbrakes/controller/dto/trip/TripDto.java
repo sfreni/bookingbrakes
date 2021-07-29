@@ -16,6 +16,6 @@ public class TripDto {
     private AirplaneDto airplane;
     private AirportDto departure;
     private AirportDto destination;
-    private List<PurchaseWithoutTripDto> purchases;
+        private List<PurchaseWithoutTripDto> purchases;
     private TripStatus tripStatus;
 }

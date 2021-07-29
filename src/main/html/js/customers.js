@@ -20,7 +20,7 @@ function loadTable() {
           });
 
 
-          html += '<table id="customersTable" class="table table-hover table-striped">'
+          html += '<h2 align="center">Customers:  '+result.length+'</h2><table id="customersTable" class="table table-hover table-striped">'
             + '<thead>'
             + '<tr>'
             + '<th  class=\"text-center\ bg-primary text-white\" align="center" style="width:10%\"  scope="col">First Name</th>'
@@ -103,8 +103,8 @@ function listPurchase(id) {
             html +=   '<td  ><i  class="fa fa-times" aria-hidden="true" title="Not Complete"></i></td>'
           }
         html += '<td   >' + purchases[i].trip.startDateFlight + '</td>'
-          + '<td   >' + purchases[i].trip.departure.name + '</td>'
-          + '<td   >' + purchases[i].trip.destination.name + '</td>'
+          + '<td   >' + purchases[i].trip.departure.city + '</td>'
+          + '<td   >' + purchases[i].trip.destination.city + '</td>'
           + '<td   >' + purchases[i].trip.tripStatus + '</td>';
         let totalAmount =0;
         for (var j = 0; j < purchases[i].products.length; j++) {

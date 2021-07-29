@@ -19,7 +19,7 @@
   let modifyRecord = parseInt(params.get("mod"))
   let deleteRecord = parseInt(params.get("del"))
 
-  html += '<table id="airplaneTable" class=" table table-hover table-striped">'
+  html += '<h2 align="center">Airplanes:  '+result.length+'</h2><table id="airplaneTable" class=" table table-hover table-striped">'
   + '<thead>'
   + '<tr>'
   + '<th  class=\'text-center\ bg-primary text-white\' align=\'center\' style=\'width:20%\'  scope="col">Name</th>'
