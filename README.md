@@ -1,7 +1,7 @@
 # bookingbrakes
 Booking Airplane System
 
-Questo software è stato sviluppato con la finalità di dimostrare le competenze in ambito informatico e la conoscenza del linguaggio JAVA/SPRING/JAVASCRIPT/HTML E CSS.
+Il  software è stato sviluppato con la finalità di dimostrare le competenze in ambito informatico e la conoscenza del linguaggio JAVA/SPRING/JAVASCRIPT/HTML E CSS.
 
 Lo sviluppo riguarda la gestione di un sistema di prenotazione per compagnie aeree, in particolare per la gestione clienti, aereoplani, aereoporti e gli ordini.
 
