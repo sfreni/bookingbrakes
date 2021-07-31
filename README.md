@@ -1,12 +1,13 @@
 # bookingbrakes
-Booking Airplane Engine
+Booking Airplane System
 
 Questo software è stato sviluppato con la finalità di dimostrare le competenze in ambito informatico e la conoscenza del linguaggio JAVA/SPRING/JAVASCRIPT/HTML E CSS.
 
-Lo sviluppo riguarda sia la parte Backend, per il quale è stato utilizzato SpringBoot con la gestione Rest-Api, e la parte Front-end con cui ho utilizzato Javascript,CSS e Html.
+Lo sviluppo riguarda la gestione di un sistema di prenotazione per compagnie aeree, in particolare per la gestione clienti, aereoplani, aereoporti e gli ordini.
 
-Inoltre il software è stato integralmente testato.
+La parte Backend è stata sviluppato un sistema Rest-Api con  SpringBoot, e la parte Front-end è stato sviluppato Javascript,CSS e Html.
 
+Inoltre il software è stato testato al 100% con file presenti nella cartella test.
 
 Per il funzionamento dovete installare MySql e creare il database con il nome "bookingbrakes_dev", sarà poi software a creare le tabelle per far funzionare il sistema.
 
